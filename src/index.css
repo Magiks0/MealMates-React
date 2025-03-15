@@ -1,1 +1,22 @@
 @import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Lobster&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');     
+
+@theme {
+    --color-primary:  #2A3934;
+    --color-secondary: #009B6A; 
+    --font-lobster: Lobster, sans-serif;
+  }
+
+:root {
+    --primary-color: #2A3934;
+    --secondary-color: #009B6A;
+  }
+
+body {
+    font-family: "Montserrat", sans-serif;
+}
+
+.btn {
+    border-radius: 5px;
+}

@@ -1,0 +1,121 @@
+header {
+    width: 100%;
+    height: 5rem;
+    background-color: #223131; /* Couleur foncée comme dans la maquette */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 1rem;
+    z-index: 1000;
+}
+
+.hamburger-menu {
+    display: none;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 30px;
+    height: 21px;
+    cursor: pointer;
+}
+
+.hamburger-menu span {
+    display: block;
+    height: 3px;
+    width: 100%;
+    background-color: white;
+    border-radius: 3px;
+}
+
+.logo-container {
+    position: absolute;
+    top: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.logo-container img {
+    width: 10rem;
+    max-width: 100px;
+}
+
+.auth-buttons {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.btn-register {
+    color: #00B686; /* Couleur verte comme dans la maquette */
+    text-decoration: none;
+}
+
+.btn-connect {
+    padding: 0.5rem 1rem;
+    background-color: #00B686; /* Couleur verte comme dans la maquette */
+    color: #223131; /* Couleur foncée */
+    text-decoration: none;
+    border-radius: 4px;
+}
+
+.btn-connect:hover {
+    transition: 0.125s ease;
+    background-color: #009b6aa9;
+}
+
+/* Media queries responsive */
+@media screen and (max-width: 720px) {
+    .btn-register {
+        font-size: small;
+    }
+    
+    .btn-connect {
+        font-size: small;
+        padding: 0.25rem 0.5rem;
+    }
+
+    .logo-container img {
+        width: 4rem;
+    }
+}
+
+@media screen and (max-width: 585px) {
+
+    .btn-register {
+        font-size: x-small;
+    }
+    
+    .btn-connect {
+        white-space: nowrap;
+        font-size: x-small;
+        padding: 0.25rem 0.5rem;
+    }
+}
+
+/* Pour les très petits écrans */
+@media screen and (max-width: 400px) {
+    header {
+        height: 3.5rem;
+    }
+
+    .btn-register {
+        font-size: xx-small;
+    }
+    
+    .btn-connect {
+        white-space: nowrap;
+        font-size: xx-small;
+    }
+
+    .logo-container img {
+        top: 6rem;
+    }
+
+    .auth-buttons {
+        gap: 0.5rem;
+    }
+
+    
+    .logo-container img {
+        width: 3rem;
+    }
+}
