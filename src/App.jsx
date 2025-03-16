@@ -1,5 +1,6 @@
 import './App.css';
-import { Header } from './components/common/Header'
+import { Header } from './components/common/Header';
+import Advantages from './components/LandingPage/Advantages';
 
 
 function App() {
@@ -29,30 +30,10 @@ function App() {
         <div className='h-1/2'>
           Test
         </div>
-        <div className='advantages w-full h-1/2 bg-primary flex flex-col items-center text-white gap-5'>
-          <div className='text-black bg-white w-full p-5'>
-            <h2>Les avantages de <span className='text-secondary'>Meal</span>Mates</h2>
-          </div>
-          <div className='mt-6 w-2/3'>
-            <p className='title'>Réduire le gaspillage alimentaire</p>
-            <p className='content'>Contribuez à un monde plus durable en sauvant des produits encore délicieux, tout en faisant des économies.</p>
-          </div>
-          <hr />
-          <div className='w-2/3'>
-            <p className='title'>Participer à la protection de l'environement</p>
-            <p className='content'>Faites un geste pour la planète en consommant des aliments locaux et en évitant le gaspillage alimentaire.</p>
-          </div>
-          <hr />
-          <div className='w-2/3'>
-            <p className='title'>Se faire plaisir a moindre coût</p>
-            <p className='content'>Dégustez des plats savoureux à petit prix tout en soutenant les commerçants locaux et en limitant les déchets.</p>
-          </div>
-          <hr />
-          <div className='w-2/3'>
-            <p className='title'>Intéragir avec le communauté pour découvrir de nouvelles recettes</p>
-            <p className='content'>Rejoignez une communauté engagée pour échanger des astuces et découvrir des recettes créatives à partir de produits sauvés.</p>
-          </div>
+        <div className='text-black w-full p-5 flex justify-center x'>
+            <h2 className='text-xl md:text-3xl'>Les avantages de <span className='text-secondary'>Meal</span>Mates</h2>
         </div>
+        <Advantages />
       </section>
     </>
   )
