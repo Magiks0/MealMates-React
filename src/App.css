@@ -3,38 +3,3 @@
     background-size: contain;
     background-repeat: no-repeat;
 }
-
-.advantages div {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    gap: 1rem;
-}
-
-.advantages hr {
-    width: 35%;
-    color: var(--color-secondary);
-}
-
-.advantages div .title {
-    text-align: center;
-    font-size: 12px;
-}
-
-.advantages div .content {
-    font-size: 9px;
-    text-align: center;
-}
-
-@media screen and (min-width: 40rem) {
-    .advantages div {
-        width: 100%;
-
-    }
-
-    .advantages hr {
-        display: none;
-    }
-}

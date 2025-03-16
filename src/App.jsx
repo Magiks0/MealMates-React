@@ -1,5 +1,6 @@
 import './App.css';
 import { Header } from './components/common/Header';
+import { Footer } from './components/common/Footer'
 import Advantages from './components/LandingPage/Advantages';
 
 
@@ -31,10 +32,14 @@ function App() {
           Test
         </div>
         <div className='text-black w-full p-5 flex justify-center x'>
-            <h2 className='text-xl md:text-3xl'>Les avantages de <span className='text-secondary'>Meal</span>Mates</h2>
+            <h2 className='text-xl md:text-3xl'>Les avantages de <span className='text-secondary font-lobster'>Meal</span>Mates</h2>
         </div>
         <Advantages />
       </section>
+      <section>
+        Tesst
+      </section>
+      <Footer />
     </>
   )
 }
