@@ -5,7 +5,8 @@ import { BrowserRouter, Routes, Route } from "react-router";
 import "./index.css";
 import App from "./App.jsx";
 import Welcome from "./pages/Welcome.jsx"; 
-import Profile from "./pages/profile.jsx"; 
+import Account from "./pages/Account.jsx"; 
+import Profile from "./pages/Profile.jsx"; 
 
 const root = document.getElementById("root");
 
@@ -15,7 +16,8 @@ createRoot(root).render(
       <Routes>
         <Route path="/" element={<App />} />
         <Route path="/home" element={<Welcome />} />
-        <Route path="/profile" element={<Profile />} />
+        <Route path="/account" element={<Account />} />
+        <Route path="/account/profile" element={<Profile />} />
       </Routes>
     </BrowserRouter>
   </StrictMode>

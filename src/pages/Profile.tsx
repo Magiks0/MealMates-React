@@ -1,70 +1,73 @@
 import React from "react";
 import { Link } from "react-router";
+import { AiOutlineArrowLeft, AiFillStar } from "react-icons/ai";
 import Navbar from "../components/common/navbar/Navbar";
 
-const Profile = () => {
+const ProfilePage = () => {
   return (
     <div className="flex flex-col h-screen bg-gray-100">
-      {/* Header */}
-      <div className="p-6 bg-white shadow-md">
-        <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold">Tom Zarb</h1>
-          <img
-            src="../assets/user.svg"
-            alt="Profile"
-            className="w-12 h-12 rounded-full"
-          />
+      <div className="flex items-center p-4 bg-white shadow">
+        <Link to="/account" className="text-xl">
+          <AiOutlineArrowLeft />
+        </Link>
+        <h1 className="text-lg font-semibold flex-1 text-center">Profil</h1>
+      </div>
+
+      <div className="flex flex-col items-center p-4">
+        <div className="flex justify-around items-center w-90 mb-4">
+            <div className="w-20 h-20 flex items-center justify-center rounded-full bg-gray-300 text-xl font-bold">
+            T
+            </div>
+            <button className="mt-2 px-4 border border-green-500 text-green-500 rounded-full text-sm h-10">
+            Ajoutez une photo
+            </button>  
+        </div>
+        <p className="text-xs text-center text-gray-600 mt-2">
+          Avec une photo de profil, vous avez de quoi personnaliser votre profil et rassurer les autres membres !
+        </p>
+      </div>
+
+      <div className="px-4 space-y-3">
+        <div>
+          <label className="text-sm text-gray-600">Nom d'utilisateur</label>
+          <input type="text" value="Tom" className="w-full p-2 border rounded-md mt-1" readOnly />
+        </div>
+        <div>
+          <label className="text-sm text-gray-600">Adresse</label>
+          <input type="text" value="19 rue Gaston Fontaine Oissery" className="w-full p-2 border rounded-md mt-1" readOnly />
         </div>
       </div>
 
-      {/* Options rapides */}
-      <div className="p-4 grid grid-cols-3 gap-4">
-        <Link to="/favorite" className="flex flex-col items-center bg-white p-3 rounded-lg shadow-sm hover:bg-gray-200 transition">
-          <span className="text-xl">❤️</span>
-          <p className="text-sm">Favoris</p>
-        </Link>
-
-        <Link to="/wallet" className="flex flex-col items-center bg-white p-3 rounded-lg shadow-sm hover:bg-gray-200 transition">
-          <span className="text-xl">💳</span>
-          <p className="text-sm">Wallet</p>
-        </Link>
-
-        <Link to="/my-order" className="flex flex-col items-center bg-white p-3 rounded-lg shadow-sm hover:bg-gray-200 transition">
-          <span className="text-xl">📦</span>
-          <p className="text-sm">Commande</p>
+      <div className="px-4 mt-4">
+        <Link to="/reviews" className="flex justify-between items-center py-3 border-b">
+          <div className="flex items-center space-x-2">
+            <p className="text-sm">Avis</p>
+            <div className="flex text-green-500">
+              {[...Array(5)].map((_, i) => (
+                <AiFillStar key={i} />
+              ))}
+            </div>
+            <span className="text-xs text-gray-500">(12)</span>
+          </div>
+          <span className="text-gray-400">{">"}</span>
         </Link>
       </div>
 
-      {/* Menu des paramètres */}
-      <div className="bg-white p-4 shadow-md mt-4">
-        <div className="space-y-4">
-          <Link to="/personal-data" className="flex items-center space-x-2 border-b pb-2 hover:text-blue-500 transition">
-            <span className="text-xl">👤</span>
-            <p>Mes informations</p>
-          </Link>
-
-          <Link to="/my-ads" className="flex items-center space-x-2 border-b pb-2 hover:text-blue-500 transition">
-            <span className="text-xl">📜</span>
-            <p>Mes annonces</p>
-          </Link>
-
-          <Link to="/settings" className="flex items-center space-x-2 hover:text-blue-500 transition">
-            <span className="text-xl">⚙️</span>
-            <p>Paramètres</p>
-          </Link>
-        </div>
-      </div>
-
-      {/* Bouton de déconnexion */}
-      <div className="flex justify-center mt-auto mb-24">
-        <button className="px-6 py-2 text-red-600 border border-red-600 rounded-full hover:bg-red-600 hover:text-white transition">
-          Déconnexion
-        </button>
+      <div className="px-4 space-y-3 mt-2">
+        <Link to="/availability" className="flex justify-between items-center py-3 border-b">
+          <p className="text-sm">Mes disponibilités</p>
+          <span className="text-gray-400">{">"}</span>
+        </Link>
+        <Link to="/preferences" className="flex justify-between items-center py-3">
+          <p className="text-sm">Mes préférences alimentaires</p>
+          <span className="text-gray-400">{">"}</span>
+        </Link>
       </div>
 
       <Navbar />
+
     </div>
   );
 };
 
-export default Profile;
+export default ProfilePage;
