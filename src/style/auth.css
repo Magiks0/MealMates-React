@@ -1,0 +1,74 @@
+/* Styles généraux */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f2f2f2;
+    margin: 0;
+    padding: 0;
+  }
+  
+  /* Container commun pour les formulaires */
+  .form-container,
+  .sso-container {
+    max-width: 400px;
+    margin: 50px auto;
+    padding: 2rem;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Titres */
+  .form-container h2,
+  .sso-container h2 {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    color: #333;
+  }
+  
+  /* Formulaire */
+  .form-container form,
+  .sso-container form {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  /* Champs de saisie */
+  .form-container input,
+  .sso-container input {
+    padding: 0.75rem;
+    margin-bottom: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1rem;
+  }
+  
+  /* Placeholder */
+  input::placeholder {
+    color: #999;
+  }
+  
+  /* Bouton */
+  .form-container button,
+  .sso-container button {
+    padding: 0.75rem;
+    background-color: #007BFF;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .form-container button:hover,
+  .sso-container button:hover {
+    background-color: #0056b3;
+  }
+  
+  /* Message d'erreur */
+  .error {
+    color: #ff0000;
+    margin-bottom: 1rem;
+    text-align: center;
+  }
+  
