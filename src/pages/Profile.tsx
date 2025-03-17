@@ -54,7 +54,7 @@ const ProfilePage = () => {
       </div>
 
       <div className="px-4 space-y-3 mt-2">
-        <Link to="/availability" className="flex justify-between items-center py-3 border-b">
+        <Link to="/account/availability" className="flex justify-between items-center py-3 border-b">
           <p className="text-sm">Mes disponibilités</p>
           <span className="text-gray-400">{">"}</span>
         </Link>
