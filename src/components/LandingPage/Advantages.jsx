@@ -26,7 +26,7 @@ export default function Advantages(){
       <section className="relative advantages bg-primary text-white flex flex-col items-center justify-center gap-4 p-6 sm:grid sm:grid-cols-2 sm:gap-12 sm:h-100">
         {advantages.map((adv, index) => (
           <div key={index} className="flex flex-col items-center justify-center w-full gap-4 text-center p-3">
-            <p className="title text-sm font-bold md:text-xl">{adv.title}</p>
+            <p className="title text-sm font-bold md:text-lg">{adv.title}</p>
             <p className="content text-xs md:text-md">{adv.content}</p>
             {index < advantages.length - 1 && <hr className="w-1/3 text-secondary sm:hidden" />}
           </div>
