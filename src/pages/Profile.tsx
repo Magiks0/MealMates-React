@@ -58,7 +58,7 @@ const ProfilePage = () => {
           <p className="text-sm">Mes disponibilités</p>
           <span className="text-gray-400">{">"}</span>
         </Link>
-        <Link to="/preferences" className="flex justify-between items-center py-3">
+        <Link to="/account/preferences" className="flex justify-between items-center py-3">
           <p className="text-sm">Mes préférences alimentaires</p>
           <span className="text-gray-400">{">"}</span>
         </Link>
