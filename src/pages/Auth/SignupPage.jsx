@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router';
 import authService from '../../services/authService';
-import '../../style/auth.css';
+import '../../style/auth.css'; // Fichier de style modifié
 
 const SignupPage = () => {
   const [formData, setFormData] = useState({
@@ -20,7 +20,7 @@ const SignupPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (formData.password !== formData.confirmPassword) {
-      setError("Les mots de passe ne correspondent pas");
+      setError('Les mots de passe ne correspondent pas');
       return;
     }
 
@@ -34,36 +34,48 @@ const SignupPage = () => {
   };
 
   return (
-    <div className="form-container">
-      <h2>Inscription</h2>
-      {error && <p className="error">{error}</p>}
-      <form onSubmit={handleSubmit}>
-        <input
-          type="email"
-          name="email"
-          placeholder="Email"
-          value={formData.email}
-          onChange={handleChange}
-          required
-        />
-        <input
-          type="password"
-          name="password"
-          placeholder="Mot de passe"
-          value={formData.password}
-          onChange={handleChange}
-          required
-        />
-        <input
-          type="password"
-          name="confirmPassword"
-          placeholder="Confirmer le mot de passe"
-          value={formData.confirmPassword}
-          onChange={handleChange}
-          required
-        />
-        <button type="submit">S’inscrire</button>
-      </form>
+    <div className="signup-wrapper">
+      {/* Optionnel : logo ou nom du produit */}
+      <img
+        src="/assets/mealmates-logo.png"
+        alt="MealMates Logo"
+        className="signup-logo"
+      />
+      
+      <div className="signup-container">
+        <h2>Inscription</h2>
+        {error && <p className="error">{error}</p>}
+        <form onSubmit={handleSubmit}>
+          <input
+            type="email"
+            name="email"
+            placeholder="Saisir une adresse mail"
+            value={formData.email}
+            onChange={handleChange}
+            required
+          />
+          <input
+            type="password"
+            name="password"
+            placeholder="Saisir un mot de passe"
+            value={formData.password}
+            onChange={handleChange}
+            required
+          />
+          <input
+            type="password"
+            name="confirmPassword"
+            placeholder="Confirmer le mot de passe"
+            value={formData.confirmPassword}
+            onChange={handleChange}
+            required
+          />
+          <button type="submit">S’inscrire</button>
+        </form>
+        <p className="login-link">
+          Vous avez déjà un compte ? <a href="/login">Connectez-vous</a>
+        </p>
+      </div>
     </div>
   );
 };
