@@ -1,7 +1,7 @@
 // src/services/authService.js
 import axios from 'axios';
 
-const API_URL = 'https://groupe-3.lycee-stvincent.net:82/';
+const API_URL = import.meta.env.VITE_API_URL;
 
 async function register({ email, password }) {
   const res = await axios.post(`${API_URL}/register`, { email, password });
