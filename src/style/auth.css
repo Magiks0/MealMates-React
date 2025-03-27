@@ -1,0 +1,226 @@
+/* src/style/auth.css */
+
+/* Wrapper principal pour la page d'inscription */
+.signup-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem;
+  min-height: 100vh;
+  justify-content: center;
+  position: relative;
+}
+
+/* Logo au-dessus du formulaire (optionnel) */
+.signup-logo {
+  width: 120px;
+  margin-bottom: 1rem;
+}
+
+/* Container vert foncé pour le formulaire d'inscription */
+.signup-container {
+  background-color: #2F3E2E; /* Ajustez selon vos goûts */
+  border-radius: 12px;
+  padding: 2rem 2.5rem;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  text-align: center; /* Pour centrer le titre et le bouton */
+}
+
+/* Titre du formulaire d'inscription */
+.signup-container h2 {
+  color: #fff;
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Formulaire d'inscription */
+.signup-container form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Champs de saisie dans le formulaire d'inscription */
+.signup-container input {
+  width: 100%;
+  margin-bottom: 1rem;
+  padding: 0.75rem 1rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  background-color: #fff; /* Champs blancs */
+  color: #333;
+}
+
+/* Placeholder */
+.signup-container input::placeholder {
+  color: #888;
+}
+
+/* Bouton d'inscription */
+.signup-container button {
+  width: 100%;
+  padding: 0.75rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  background-color: #37A163; /* Vert clair */
+  color: #fff;
+  font-weight: bold;
+}
+
+.signup-container button:hover {
+  background-color: #2B7F4D; /* Vert plus foncé au survol */
+}
+
+/* Lien "Vous avez déjà un compte ?" (pour aller vers login) */
+.login-link {
+  margin-top: 1rem;
+  color: #fff;
+}
+
+.login-link a {
+  color: #F6D65B; /* Par exemple, un jaune clair */
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.login-link a:hover {
+  text-decoration: underline;
+}
+
+/* Message d'erreur (commun) */
+.error {
+  color: #ffcccc;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+}
+
+/* ======================= */
+/* 3. Styles pour la page de connexion (Login) */
+/* ======================= */
+
+/* Wrapper principal pour la page de connexion */
+.login-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem;
+  min-height: 100vh;
+  justify-content: center;
+  position: relative;
+}
+
+/* Logo au-dessus du formulaire (optionnel) */
+.login-logo {
+  width: 120px;
+  margin-bottom: 1rem;
+}
+
+/* Container vert foncé pour le formulaire de connexion */
+.login-container {
+  background-color: #2A3934; /* Ajustez selon vos goûts */
+  border-radius: 12px;
+  padding: 2rem 2.5rem;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  text-align: center;
+}
+
+/* Titre du formulaire de connexion */
+.login-container h2 {
+  color: #fff;
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Formulaire de connexion */
+.login-container form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+/* Champs de saisie dans le formulaire de connexion */
+.login-container input {
+  width: 100%;
+  margin-bottom: 1rem;
+  padding: 0.75rem 1rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  background-color: #fff; 
+  color: #333;
+}
+
+.login-container input::placeholder {
+  color: #888;
+}
+
+/* Bouton de connexion */
+.login-container button {
+  width: 100%;
+  padding: 0.75rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  background-color: #009B6A; /* Vert clair */
+  color: #fff;
+  font-weight: bold;
+}
+
+.login-container button:hover {
+  background-color: #2B7F4D; 
+}
+
+/* Liens sous le formulaire (mot de passe oublié, créer un compte) */
+.login-links {
+  margin-bottom: 1rem;
+}
+
+.login-links a {
+  display: inline-block;
+  margin: 0.25rem 0;
+  color: #00D19A; 
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.login-links a:hover {
+  text-decoration: underline;
+}
+
+/* Séparateur "Ou" pour encadrer le texte */
+.separator {
+  display: flex;             
+  align-items: center;      
+  margin: 1rem 0;
+  color: #757575; /* Couleur du trait et du texte "Ou" */
+}
+
+.separator hr {
+  flex: 1;                   
+  border: none;              
+  border-top: 1px solid #757575;
+  margin: 0 0.5rem;          
+}
+
+.separator span {
+  white-space: nowrap;       
+  font-weight: bold;         
+}
+
+/* Section SSO (Google) */
+.sso-login p {
+  color: #fff;
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+}
