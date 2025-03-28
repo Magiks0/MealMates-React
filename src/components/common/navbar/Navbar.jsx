@@ -4,8 +4,8 @@ import Box from "@mui/material/Box";
 import BottomNavigation from "@mui/material/BottomNavigation";
 import BottomNavigationAction from "@mui/material/BottomNavigationAction";
 
-import "../navbar/Navbar.css";
-import "../../../assets/user.svg" 
+import "./Navbar.css";
+import "/public/assets/user.svg" 
 
 const Navbar = () => {
   const location = useLocation(); 
