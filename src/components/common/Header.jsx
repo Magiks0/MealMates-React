@@ -21,10 +21,10 @@ export function Header(){
                 </Link>
             </div>
             <div className='auth-buttons'>
-                <Link to="/" className='btn btn-register'>
+                <Link to="/signup" className='btn btn-register'>
                     S'inscrire
                 </Link>
-                <Link to="/" className='btn btn-connect'>
+                <Link to="/login" className='btn btn-connect'>
                     Se connecter
                 </Link>
             </div>
