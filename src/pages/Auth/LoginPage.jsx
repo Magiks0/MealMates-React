@@ -33,7 +33,7 @@ const LoginPage = () => {
     try {
       const res = await authService.googleLogin(credentialResponse.credential);
       localStorage.setItem("token", res.token);
-      navigate("/profile");
+      navigate("/home");
     } catch (error) {
       console.error("Erreur lors de la connexion Google", error);
     }
