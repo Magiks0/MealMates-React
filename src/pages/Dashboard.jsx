@@ -2,31 +2,36 @@ import React, { useEffect, useState } from 'react';
 import { Sliders, MapPin } from 'lucide-react';
 import AdvancedFilter from '../components/AdvancedFilter';
 import ProductCard from '../components/common/ProductCard';
+import { useSearchParams, useLocation } from 'react-router';
 
-export default function Dashboard () {
+export default function Dashboard ({}) {
   const [products, setProducts] = useState([]);
   const [filterOpen, setFilterOpen] = useState(false);
   const [activeFilters, setActiveFilters] = useState(null);
   const [error, setError] = useState(null);
+  const [filters, setFilters] = useSearchParams();
+  const location = useLocation();
 
   const API_URL = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
     async function fetchProducts() {
       try {
-        const response = await fetch(`${API_URL}/products`);
+        const queryParams = new URLSearchParams(location.search);
+        const response = await fetch(`${API_URL}/products?${queryParams.toString()}`);
         if (!response.ok) {
           throw new Error(`Erreur HTTP: ${response.status}`);
         }
         const data = await response.json();
         setProducts(data);
       } catch (err) {
+        console.error(err);
         setError(err.message);
       }
     }
 
     fetchProducts();
-  }, [API_URL]);
+  }, [API_URL, filters]);
 
   return (
     <div className="relative min-h-screen bg-gray-50">
