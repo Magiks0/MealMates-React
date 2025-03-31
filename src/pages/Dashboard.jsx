@@ -35,7 +35,6 @@ export default function Dashboard ({}) {
 
   return (
     <div className="relative min-h-screen bg-gray-50">
-      {/* En-tête avec localisation et filtres */}
       <div className="sticky top-0 bg-white shadow-sm z-10">
         <div className="px-4 py-3 flex items-center justify-between">
           <div className="flex items-center">
@@ -59,7 +58,6 @@ export default function Dashboard ({}) {
           </div>
         </div>
         
-        {/* Barre de recherche */}
         <div className="px-4 pb-3">
           <div className="relative">
             <input
@@ -93,20 +91,25 @@ export default function Dashboard ({}) {
         )}
       </div>
 
-      {/* Liste des produits */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
-        {products.map((product) => (
-          <ProductCard key={product.id} product={product} />
-        ))}
-      </div>
+      {
+        products.length === 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
+            Aucun produit trouvé
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
+            {products.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+        )
+      }
 
-      {/* Slider de filtres avancés */}
       <AdvancedFilter
         isOpen={filterOpen} 
         onClose={() => setFilterOpen(false)}
       />
-      
-      {/* Overlay sombre quand le filtre est ouvert */}
+
       {filterOpen && (
         <div 
           className="fixed inset-0 bg-black opacity-20 z-40"

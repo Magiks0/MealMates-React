@@ -30,7 +30,12 @@ const ProductCard = ({product}) => {
         
         <div className="flex items-center text-xs text-gray-500 mb-2">
           <Clock className="w-4 h-4 mr-1" /> 
-          <span>{product.expiryTime}</span>
+          <span>{new Date(product.peremptionDate).toLocaleDateString('fr-FR', {
+              day: 'numeric',
+              month: 'long',
+              year: 'numeric'
+            })}
+          </span>
         </div>
         
         <div className="flex items-center text-xs text-gray-500 mb-2">
@@ -46,7 +51,7 @@ const ProductCard = ({product}) => {
           <span className="text-sm text-gray-700">{product.sellerName}</span>
         </div>
         <div className="bg-yellow-100 px-2 py-1 rounded text-xs font-medium text-yellow-800">
-          ★ {product.sellerRating}
+          ★ {product.user.note}
         </div>
       </div>
     </div>
