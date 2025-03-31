@@ -29,29 +29,23 @@ const AdvancedFilter = ({ isOpen, onClose }) => {
   };
 
   const handleSubmit = (e) => {
-    e.preventDefault(); // Empêche la soumission classique du formulaire
+    e.preventDefault();
   
-    // Préparer les paramètres de recherche dans l'URL
     const newParams = new URLSearchParams();
   
-    // Ajouter les filtres de prix, localisation, catégorie, etc.
     if (filters.minPrice) newParams.set("minPrice", filters.minPrice);
     if (filters.maxPrice) newParams.set("maxPrice", filters.maxPrice);
     if (filters.location) newParams.set("location", filters.location);
     if (filters.peremptionDate) newParams.set("peremptionDate", filters.peremptionDate);
     if (filters.dietetic) newParams.set("dietetic", filters.dietetic);
   
-    // Ajouter les types de produits sélectionnés dans les paramètres d'URL
     if (selectedTypes.length > 0) {
       newParams.set("types", selectedTypes.join(","));
     }
-  
-    // Mettre à jour l'URL avec les nouveaux paramètres
-    setParams(newParams); // Ou si tu veux rediriger : history.push(`/search?${newParams.toString()}`);
+ 
+    setParams(newParams); 
   };
   
-
-
   useEffect(() => {
       async function fetchDietetics() {
         try {

@@ -8,7 +8,7 @@ import Dashboard from "./pages/Dashboard.jsx";
 import Account from "./pages/Account.jsx"; 
 import ProfilePage from "./pages/Profile.tsx"; 
 import Preference from "./pages/Preference.jsx"; 
-import Availability from "./pages/availability.jsx"; 
+import Availability from "./pages/Availability.jsx"; 
 import "./index.css";
 
 export default function App() {

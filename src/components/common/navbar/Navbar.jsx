@@ -12,7 +12,6 @@ const Navbar = () => {
   const navigate = useNavigate();
   const [value, setValue] = React.useState(location.pathname);
 
-  // Icon active pour la page active
   const getIcon = (path, defaultIcon, activeIcon) => {
     return location.pathname === path ? (
       <img src={activeIcon} alt={path} className="navbar-icon" />
