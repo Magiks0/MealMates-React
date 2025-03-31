@@ -5,7 +5,6 @@ const ProductCard = ({product}) => {
   
   return (
     <div className="max-w-2xs rounded-lg overflow-hidden shadow-lg bg-white hover:shadow-xl transition-shadow duration-300">
-      {/* Image avec badge de réduction */}
       <div className="relative">
         <img 
           src='/public/assets/bg-first-section.png' 
@@ -17,7 +16,6 @@ const ProductCard = ({product}) => {
         </button>
       </div>
       
-      {/* Contenu */}
       <div className="px-4 py-3">
         <div className="flex justify-between items-start mb-1">
           <h3 className="font-bold text-lg text-gray-800 truncate">{product.title}</h3>
@@ -44,7 +42,6 @@ const ProductCard = ({product}) => {
         </div>
       </div>
       
-      {/* Pied de carte */}
       <div className="px-4 py-2 bg-gray-50 border-t border-gray-100 flex justify-between items-center">
         <div className="flex items-center">
           <User className="w-4 h-4 text-gray-500 mr-1" />
