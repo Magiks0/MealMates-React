@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router";
 import { AiOutlineArrowLeft, AiFillStar } from "react-icons/ai";
-import Navbar from "../components/common/Navbar";
+import Navbar from "../components/common/navbar/Navbar";
 
 const ProfilePage = () => {
   return (
