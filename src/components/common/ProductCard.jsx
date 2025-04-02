@@ -7,7 +7,7 @@ const ProductCard = ({product}) => {
     <div className="max-w-2xs rounded-lg overflow-hidden shadow-lg bg-white hover:shadow-xl transition-shadow duration-300">
       <div className="relative">
         <img 
-          src='/public/assets/bg-first-section.png' 
+          src='/assets/bg-first-section.png' 
           alt={product.title} 
           className="w-full h-48 object-cover"
         />

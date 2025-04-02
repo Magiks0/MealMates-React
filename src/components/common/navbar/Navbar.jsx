@@ -5,7 +5,7 @@ import BottomNavigation from "@mui/material/BottomNavigation";
 import BottomNavigationAction from "@mui/material/BottomNavigationAction";
 
 import "./Navbar.css";
-import "/public/assets/user.svg" 
+import "/assets/user.svg" 
 
 const Navbar = () => {
   const location = useLocation(); 
