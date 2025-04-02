@@ -47,7 +47,7 @@ const LoginPage = () => {
     <div className="login-wrapper">
       {/* Logo optionnel (même style que pour signup) */}
       <img
-        src="/public/assets/logo_mealmates.png"
+        src="/assets/logo_mealmates.png"
         alt="MealMates Logo"
         className="login-logo"
       />

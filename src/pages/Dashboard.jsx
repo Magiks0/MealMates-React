@@ -4,7 +4,7 @@ import AdvancedFilter from '../components/AdvancedFilter';
 import ProductCard from '../components/common/ProductCard';
 import { useSearchParams, useLocation } from 'react-router';
 
-export default function Dashboard ({}) {
+export default function Dashboard () {
   const [products, setProducts] = useState([]);
   const [filterOpen, setFilterOpen] = useState(false);
   const [activeFilters, setActiveFilters] = useState(null);
@@ -25,7 +25,6 @@ export default function Dashboard ({}) {
         const data = await response.json();
         setProducts(data);
       } catch (err) {
-        console.error(err);
         setError(err.message);
       }
     }
@@ -53,7 +52,7 @@ export default function Dashboard ({}) {
               className="p-2 text-white"
               aria-label="Filtres avancés"
             >
-              <img src="/public/assets/filter-icon.png" alt="filter-icon" />
+              <img src="/assets/filter-icon.png" alt="filter-icon" />
             </button>
           </div>
         </div>

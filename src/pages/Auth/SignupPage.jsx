@@ -37,7 +37,7 @@ const SignupPage = () => {
     <div className="signup-wrapper">
       {/* Optionnel : logo ou nom du produit */}
       <img
-        src="/public/assets/logo_mealmates.png"
+        src="/assets/logo_mealmates.png"
         alt="MealMates Logo"
         className="signup-logo"
       />

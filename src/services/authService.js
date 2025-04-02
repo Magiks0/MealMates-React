@@ -4,12 +4,21 @@ import axios from 'axios';
 const API_URL = import.meta.env.VITE_API_URL;
 
 async function register({ email, password }) {
-  const res = await axios.post(`${API_URL}/register`, { email, password });
+  const res = await axios.post(`${API_URL}/register`, { email, password }, {
+    headers: {
+      "Content-Type": "application/json",
+    }
+  ,});
   return res.data;
 }
 
 async function login({ email, password }) {
-  const res = await axios.post(`${API_URL}/login`, { email, password });
+  const res = await axios.post(`${API_URL}/login`, { email, password }, {
+    headers: {
+      "Content-Type": "application/json",
+    }
+  ,});
+
   return res.data;
 }
 
