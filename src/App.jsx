@@ -9,6 +9,7 @@ import Account from "./pages/Account.jsx";
 import ProfilePage from "./pages/Profile.tsx"; 
 import Preference from "./pages/Preference.jsx"; 
 import Availability from "./pages/Availability.jsx"; 
+import Map from "./pages/Search/Map.tsx"; 
 import "./index.css";
 
 export default function App() {
@@ -23,6 +24,7 @@ export default function App() {
         <Route path="/account/profile" element={<ProfilePage />} />
         <Route path="/account/preferences" element={<Preference />} />
         <Route path="/account/availability" element={<Availability />} />
+        <Route path="/search" element={<Map />} />
       </Routes>
   );
 }
