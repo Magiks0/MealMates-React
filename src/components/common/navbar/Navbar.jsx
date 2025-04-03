@@ -52,8 +52,8 @@ const Navbar = () => {
         />
         <BottomNavigationAction
           label="Profil"
-          value="/profile"
-          icon={getIcon("/profile", "/assets/user.svg", "/assets/user-active.svg")}
+          value="/account"
+          icon={getIcon("/account", "/assets/user.svg", "/assets/user-active.svg")}
         />
       </BottomNavigation>
     </Box>
