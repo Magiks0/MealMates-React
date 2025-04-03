@@ -3,6 +3,7 @@ import { Sliders, MapPin } from 'lucide-react';
 import AdvancedFilter from '../components/AdvancedFilter';
 import ProductCard from '../components/common/ProductCard';
 import { useSearchParams, useLocation } from 'react-router';
+import Navbar from '../components/common/navbar/Navbar';
 
 export default function Dashboard () {
   const [products, setProducts] = useState([]);
@@ -115,6 +116,8 @@ export default function Dashboard () {
           onClick={() => setFilterOpen(false)}
         ></div>
       )}
+
+      <Navbar />
     </div>
   );
 };
