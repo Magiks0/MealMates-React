@@ -83,7 +83,7 @@ const AdvancedFilter = ({ isOpen, onClose }) => {
   return (
     <form
       onSubmit={handleSubmit}
-      className={`fixed top-0 right-0 h-full bg-white w-80 shadow-xl transform transition-transform duration-300 ease-in-out z-50 flex flex-col ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}
+      className={`fixed top-0 right-0 h-full bg-white w-80 shadow-xl transform transition-transform duration-300 ease-in-out z-402 flex flex-col ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}
     >
       <div className="flex items-center justify-between p-5 border-b">
         <h2 className="text-lg font-medium text-gray-800">Filtres</h2>
