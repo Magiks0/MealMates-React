@@ -1,41 +1,47 @@
 import React, { useEffect, useState } from 'react';
-import { Sliders, MapPin } from 'lucide-react';
+import { MapPin } from 'lucide-react';
 import AdvancedFilter from '../components/AdvancedFilter';
-import ProductCard from '../components/common/ProductCard';
 import { useSearchParams, useLocation } from 'react-router';
 import Navbar from '../components/common/navbar/Navbar';
+import ProductSlider from '../components/Dashboard/ProductSlider';
+import ProductService  from '../services/ProductService';
 
 export default function Dashboard () {
   const [products, setProducts] = useState([]);
+  const [lastChanceProducts, setLastChanceProducts] = useState([]);
+  const [recentProducts, setRecentProducts] = useState([]);
+  const [recomendedProducts, setRecomendedProducts] = useState([]);
   const [filterOpen, setFilterOpen] = useState(false);
   const [activeFilters, setActiveFilters] = useState(null);
   const [error, setError] = useState(null);
   const [filters, setFilters] = useSearchParams();
   const location = useLocation();
 
-  const API_URL = import.meta.env.VITE_API_URL;
-
+  
+  console.log(lastChanceProducts);
   useEffect(() => {
-    async function fetchProducts() {
+    const load = async () => {
       try {
-        const queryParams = new URLSearchParams(location.search);
-        const response = await fetch(`${API_URL}/products?${queryParams.toString()}`);
-        if (!response.ok) {
-          throw new Error(`Erreur HTTP: ${response.status}`);
-        }
-        const data = await response.json();
-        setProducts(data);
-      } catch (err) {
-        setError(err.message);
+          const [recomendedProducts, lastChanceProducts, recentProducts] = await Promise.all([
+            ProductService.getFilteredProducts(filters),
+            ProductService.getLastChanceProducts(),
+            ProductService.getRecentProducts(),
+          ]);
+
+          setRecomendedProducts(recomendedProducts);
+          setLastChanceProducts(lastChanceProducts);
+          setRecentProducts(recentProducts);
+      } catch (error) {
+        console.error('Erreur :', error);
       }
-    }
-
-    fetchProducts();
-  }, [API_URL, filters]);
-
+    };
+  
+    load();
+  }, [filters]);
+  
   return (
     <div className="relative min-h-screen bg-gray-50">
-      <div className="sticky top-0 bg-white shadow-sm z-10">
+      <div className="sticky top-0 bg-white shadow-sm z-10 px-4">
         <div className="px-4 py-3 flex items-center justify-between">
           <div className="flex items-center">
             <MapPin className="w-5 h-5 text-gray-500 mr-2" />
@@ -91,19 +97,9 @@ export default function Dashboard () {
         )}
       </div>
 
-      {
-        products.length === 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
-            Aucun produit trouvé
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
-            {products.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
-        )
-      }
+      <ProductSlider sectionTitle={"Nos recommendations"} products={recomendedProducts} />
+      <ProductSlider sectionTitle={"Dernières chances !"} products={lastChanceProducts} />
+      <ProductSlider sectionTitle={"Récemment ajoutés"} products={recentProducts} />
 
       <AdvancedFilter
         isOpen={filterOpen} 
