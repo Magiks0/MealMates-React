@@ -8,7 +8,8 @@ import Dashboard from "./pages/Dashboard.jsx";
 import Account from "./pages/Account.jsx"; 
 import ProfilePage from "./pages/Profile.tsx"; 
 import Preference from "./pages/Preference.jsx"; 
-import Availability from "./pages/Availability.jsx"; 
+import Availability from "./pages/Availability.jsx";
+import ProductNew from "./pages/ProductNew.jsx"; 
 import "./index.css";
 
 export default function App() {
@@ -19,6 +20,7 @@ export default function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/login/google" element={<SSOLoginPage />} />
         <Route path="/home" element={<Dashboard />} />
+        <Route path="/new-product" element={<ProductNew />} />
         <Route path="/account" element={<Account />} />
         <Route path="/account/profile" element={<ProfilePage />} />
         <Route path="/account/preferences" element={<Preference />} />

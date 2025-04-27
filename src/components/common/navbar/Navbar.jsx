@@ -42,7 +42,7 @@ const Navbar = () => {
         />
         <BottomNavigationAction
           label="Publier"
-          value="/add"
+          value="/new-product"
           icon={getIcon("/add", "/assets/add.svg", "/assets/add-active.svg")}
         />
         <BottomNavigationAction

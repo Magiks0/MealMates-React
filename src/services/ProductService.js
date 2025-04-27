@@ -46,10 +46,26 @@ function getRecentProducts() {
     });
 }
 
+function createProduct(values) {
+    return axios.post(`${API_URL}/product/new`, values, {
+        headers: {
+            'Content-Type': 'multipart/form-data',
+        }
+    })
+    .then(res => {
+        return res.data;
+    })
+    .catch(err => {
+        console.error("Error creating product:", err);
+        return null;
+    });
+}
+
 
 export default {
     getFilteredProducts,
     getLastChanceProducts,
     getRecentProducts,
-    getRecomendations
+    getRecomendations,
+    createProduct,
   };
