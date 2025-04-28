@@ -44,10 +44,10 @@ export default function ProductNew() {
 
       console.log(res);
 
-      if (!res.ok) {
-        alert('Erreur lors de la création');
+      if (res.status !== 200) {
+        alert(`Erreur lors de la création: ${res.status} - ${res.statusText}`);
       } else {
-        alert('Produit créé avec succès');
+        alert(res.message);
         form.reset();
         setStep(1);
         setSelectedImages([]);
