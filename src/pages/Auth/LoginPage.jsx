@@ -7,7 +7,7 @@ import { GoogleLogin } from "@react-oauth/google";
 import "../../style/auth.css";
 
 const LoginPage = () => {
-  const [credentials, setCredentials] = useState({ email: "", password: "" });
+  const [credentials, setCredentials] = useState({ username: "", password: "" });
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
@@ -18,8 +18,7 @@ const LoginPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await authService.login(credentials);
-      localStorage.setItem("token", res.token);
+      await authService.login(credentials);
       navigate("/home");
     } catch (err) {
       setError(
@@ -47,7 +46,7 @@ const LoginPage = () => {
     <div className="login-wrapper">
       {/* Logo optionnel (même style que pour signup) */}
       <img
-        src="/public/assets/logo_mealmates.png"
+        src="/assets/logo_mealmates.png"
         alt="MealMates Logo"
         className="login-logo"
       />
@@ -59,10 +58,10 @@ const LoginPage = () => {
         {/* Formulaire de connexion */}
         <form onSubmit={handleSubmit}>
           <input
-            type="email"
-            name="email"
-            placeholder="Email"
-            value={credentials.email}
+            type="text"
+            name="username"
+            placeholder="Nom d'utilisateur"
+            value={credentials.username}
             onChange={handleChange}
             required
           />

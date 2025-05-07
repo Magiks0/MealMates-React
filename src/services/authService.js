@@ -1,25 +1,60 @@
-// src/services/authService.js
 import axios from 'axios';
 
 const API_URL = import.meta.env.VITE_API_URL;
+const TOKEN_KEY = 'token';
 
-async function register({ email, password }) {
-  const res = await axios.post(`${API_URL}/register`, { email, password });
+const isAuthenticated = () => {
+  return localStorage.getItem(TOKEN_KEY) !== null;
+};
+
+const getToken = () => {
+  return localStorage.getItem(TOKEN_KEY);
+};
+
+async function register({ username, email, password }) {
+  const res = await axios.post(`${API_URL}/register`, { username, email, password }, {
+    headers: {
+      "Content-Type": "application/json",
+    }
+  });
   return res.data;
 }
 
-async function login({ email, password }) {
-  const res = await axios.post(`${API_URL}/login`, { email, password });
+async function login({ username, password }) {
+  const res = await axios.post(`${API_URL}/login`, { username, password }, {
+    headers: {
+      "Content-Type": "application/json",
+    }
+  });
+  
+  if (res.data.token) {
+    localStorage.setItem(TOKEN_KEY, res.data.token);
+  }
+  
   return res.data;
 }
 
+// SSO connexion with goole
 async function googleLogin(token) {
   const res = await axios.post(`${API_URL}/google-login`, { token });
+  
+  if (res.data.token) {
+    localStorage.setItem(TOKEN_KEY, res.data.token);
+  }
+  
   return res.data;
 }
+
+// Déconnexion
+const logout = () => {
+  localStorage.removeItem(TOKEN_KEY);
+};
 
 export default {
   register,
   login,
-  googleLogin
+  googleLogin,
+  logout,
+  isAuthenticated,
+  getToken
 };

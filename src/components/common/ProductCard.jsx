@@ -2,12 +2,11 @@ import React from 'react';
 import { Clock, MapPin, User, Heart } from 'lucide-react';
 
 const ProductCard = ({product}) => {
-  
   return (
-    <div className="max-w-2xs rounded-lg overflow-hidden shadow-lg bg-white hover:shadow-xl transition-shadow duration-300">
+    <div className="relative max-w-2xs w-64 h-full rounded-lg overflow-hidden shadow-lg bg-white hover:shadow-xl transition-shadow duration-300">
       <div className="relative">
         <img 
-          src='/public/assets/bg-first-section.png' 
+          src='/assets/bg-first-section.png' 
           alt={product.title} 
           className="w-full h-48 object-cover"
         />
@@ -20,7 +19,9 @@ const ProductCard = ({product}) => {
         <div className="flex justify-between items-start mb-1">
           <h3 className="font-bold text-lg text-gray-800 truncate">{product.title}</h3>
           <div className="flex items-baseline">
-            <span className="text-lg font-bold text-green-600">{product.price}€</span>
+            <span className="text-lg font-bold text-green-600">
+              {product.price > 0 ? `${product.price}€` : 'Don'}
+            </span>
           </div>
         </div>
         
@@ -36,18 +37,18 @@ const ProductCard = ({product}) => {
           </span>
         </div>
         
-        <div className="flex items-center text-xs text-gray-500 mb-2">
+        <div className="flex items-center text-xs text-gray-500 mb-2 pb-3">
           <MapPin className="w-4 h-4 mr-1" /> 
           <span>{product.location}</span>
         </div>
       </div>
       
-      <div className="px-4 py-2 bg-gray-50 border-t border-gray-100 flex justify-between items-center">
+      <div className="px-4 py-2 w-full bg-gray-50 border-t border-gray-100 absolute bottom-0 flex justify-between items-center">
         <div className="flex items-center">
           <User className="w-4 h-4 text-gray-500 mr-1" />
-          <span className="text-sm text-gray-700">{product.sellerName}</span>
+          <span className="text-sm text-gray-700">{product.user.username}</span>
         </div>
-        <div className="bg-yellow-100 px-2 py-1 rounded text-xs font-medium text-yellow-800">
+        <div className="px-2 py-1 rounded text-xs font-medium text-secondary">
           ★ {product.user.note}
         </div>
       </div>

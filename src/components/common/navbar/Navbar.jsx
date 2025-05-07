@@ -5,7 +5,7 @@ import BottomNavigation from "@mui/material/BottomNavigation";
 import BottomNavigationAction from "@mui/material/BottomNavigationAction";
 
 import "./Navbar.css";
-import "/public/assets/user.svg" 
+import "/assets/user.svg" 
 
 const Navbar = () => {
   const location = useLocation(); 
@@ -42,7 +42,7 @@ const Navbar = () => {
         />
         <BottomNavigationAction
           label="Publier"
-          value="/add"
+          value="/new-product"
           icon={getIcon("/add", "/assets/add.svg", "/assets/add-active.svg")}
         />
         <BottomNavigationAction
@@ -52,8 +52,8 @@ const Navbar = () => {
         />
         <BottomNavigationAction
           label="Profil"
-          value="/profile"
-          icon={getIcon("/profile", "/assets/user.svg", "/assets/user-active.svg")}
+          value="/account"
+          icon={getIcon("/account", "/assets/user.svg", "/assets/user-active.svg")}
         />
       </BottomNavigation>
     </Box>

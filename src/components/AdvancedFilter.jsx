@@ -5,7 +5,7 @@ import { useSearchParams } from 'react-router';
 const AdvancedFilter = ({ isOpen, onClose }) => {
   const [filters, setFilters] = useState({});
   const [error, setError] = useState(null);
-  const [dietetics , setDietetics] = useState([]);
+  const [dietaries , setDietaries] = useState([]);
   const [types, setTypes] = useState([]);
   const [params, setParams] = useSearchParams();
   const [selectedTypes, setSelectedTypes] = useState([]);
@@ -47,20 +47,20 @@ const AdvancedFilter = ({ isOpen, onClose }) => {
   };
   
   useEffect(() => {
-      async function fetchDietetics() {
+      async function fetchDietaries() {
         try {
-          const response = await fetch(`${API_URL}/dietetics`);
+          const response = await fetch(`${API_URL}/dietaries`);
           if (!response.ok) {
             throw new Error(`Erreur HTTP: ${response.status}`);
           }
           const data = await response.json();
-          setDietetics(data);
+          setDietaries(data);
         } catch (err) {
           setError(err.message);
         }
       }
   
-      fetchDietetics();
+      fetchDietaries();
     }, [API_URL]);
 
     useEffect(() => {
@@ -156,7 +156,7 @@ const AdvancedFilter = ({ isOpen, onClose }) => {
               className="w-full p-3 border-0 bg-gray-50 rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none appearance-none transition-all pr-10"
             >
               <option value="">Tous les régimes</option>
-              {dietetics.map((dietetic) => (
+              {dietaries.map((dietetic) => (
                 <option key={dietetic.id} value={dietetic.name}>
                   {dietetic.name}
                 </option>
