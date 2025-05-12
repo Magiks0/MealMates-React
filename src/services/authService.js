@@ -34,7 +34,6 @@ async function login({ username, password }) {
   return res.data;
 }
 
-// SSO connexion with goole
 async function googleLogin(token) {
   const res = await axios.post(`${API_URL}/google-login`, { token });
   
@@ -45,9 +44,9 @@ async function googleLogin(token) {
   return res.data;
 }
 
-// Déconnexion
 const logout = () => {
   localStorage.removeItem(TOKEN_KEY);
+  window.location.href = '/login';
 };
 
 export default {

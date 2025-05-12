@@ -1,5 +1,5 @@
 import axios from 'axios';
-import authService from './authService';
+import authService from './AuthService';
 
 const API_URL = import.meta.env.VITE_API_URL;
 const TOKEN = authService.getToken();
@@ -71,12 +71,11 @@ export async function createProduct(formData) {
         const res = await axios.post(`${API_URL}/product/new`, formData, {
             headers: {
                 'Authorization': `Bearer ${token}`,
-                'Content-Type': 'multipart/form-data',
             }
         });
         return res;
     } catch (error) {
-        console.error("Error in creating product:", error);
+        console.error(error.message);
         throw error;
     }
 }
