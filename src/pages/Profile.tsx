@@ -2,8 +2,39 @@ import React from "react";
 import { Link } from "react-router";
 import { AiOutlineArrowLeft, AiFillStar } from "react-icons/ai";
 import Navbar from "../components/common/navbar/Navbar";
+import UserService from "../services/UserService";
+import { User } from "lucide-react";
+import { useForm } from "@tanstack/react-form";
+import { z } from "zod";
+
+const user = await UserService.getCurrentUser();
 
 const ProfilePage = () => {
+  interface User {
+    username: string
+    firstName: string
+    lastName: string
+    email: string
+    address: string
+  }
+  const defaultUser: User = { username: user.username, firstName: user.firstName, lastName: user.lastName, email: user.email, address: user.address }
+  
+  const form = useForm({
+    defaultValues: defaultUser,
+    onSubmit: async ({ value }) => {
+      console.log(value)
+    },
+    validators: {
+      onChange: z.object({
+        username: z.string().min(1, "Username is required"),
+        firstName: z.string().min(1, "First name is required"),
+        lastName: z.string().min(1, "Last name is required"),
+        email: z.string().email("Invalid email address"),
+        address: z.string().min(1, "Address is required")
+      }),
+    },
+  });
+
   return (
     <div className="flex flex-col h-screen bg-gray-100">
       <div className="flex items-center p-4 bg-white shadow">
@@ -16,10 +47,10 @@ const ProfilePage = () => {
       <div className="flex flex-col items-center p-4">
         <div className="flex justify-around items-center w-90 mb-4">
             <div className="w-20 h-20 flex items-center justify-center rounded-full bg-gray-300 text-xl font-bold">
-            T
+              {user.username[0]}
             </div>
             <button className="mt-2 px-4 border border-green-500 text-green-500 rounded-full text-sm h-10">
-            Ajoutez une photo
+              Ajoutez une photo
             </button>  
         </div>
         <p className="text-xs text-center text-gray-600 mt-2">
@@ -28,14 +59,39 @@ const ProfilePage = () => {
       </div>
 
       <div className="px-4 space-y-3">
-        <div>
-          <label className="text-sm text-gray-600">Nom d'utilisateur</label>
-          <input type="text" value="Tom" className="w-full p-2 border rounded-md mt-1" readOnly />
-        </div>
-        <div>
-          <label className="text-sm text-gray-600">Adresse</label>
-          <input type="text" value="19 rue Gaston Fontaine Oissery" className="w-full p-2 border rounded-md mt-1" readOnly />
-        </div>
+        <form onSubmit={(e) => {
+          e.preventDefault();
+          form.handleSubmit();
+        }}>
+          <form.Field 
+            name="username"
+            children={(field) => (
+              <div className="flex flex-col">
+                <label htmlFor="username" className="text-sm font-semibold mb-1">Nom d'utilisateur</label>
+                <input
+                  name="username"
+                  value={field.state.value}
+                  onBlur={field.handleBlur}
+                  onChange={(e) => field.handleChange(e.target.value)}
+                />
+              </div>
+            )}
+          />
+          <form.Field 
+            name="email"
+            children={(field) => (
+              <div className="flex flex-col">
+                <label htmlFor="email" className="text-sm font-semibold mb-1">Email</label>
+                <input
+                  name="email"
+                  value={field.state.value}
+                  onBlur={field.handleBlur}
+                  onChange={(e) => field.handleChange(e.target.value)}
+                />
+              </div>
+            )}
+          />
+        </form>
       </div>
 
       <div className="px-4 mt-4">

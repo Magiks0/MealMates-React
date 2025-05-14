@@ -36,17 +36,16 @@ export default function ProductNew() {
       formData.append('collection_date', value.collectionDate);
       formData.append('location', JSON.stringify(value.location));
 
-      value.files.forEach((file, index) => {
-        formData.append(`files[${index}]`, file);
+      value.files.forEach((file) => {
+        formData.append('files[]', file);
       });
 
       const res = await ProductService.createProduct(formData);
 
-      console.log(res);
-
       if (res.status !== 200) {
-        alert(`Erreur lors de la création: ${res.status} - ${res.statusText}`);
+        
       } else {
+        console.log('Annonce créée avec succès:', res.data);
         alert(res.message);
         form.reset();
         setStep(1);
@@ -61,7 +60,7 @@ export default function ProductNew() {
   const handleImageSelection = (e) => {
     const files = Array.from(e.target.files || []);
     setSelectedImages(files.map(file => URL.createObjectURL(file)));
-    form.setFieldValue('files', files);  // Mise à jour avec setFieldValue au lieu de getFieldValue
+    form.setFieldValue('files', files);
   };
 
   const renderProgressBar = () => {
@@ -263,6 +262,7 @@ export default function ProductNew() {
                           <label className="aspect-square border border-gray-300 rounded-lg flex flex-col items-center justify-center cursor-pointer bg-gray-100">
                             <Camera size={24} className="text-gray-400 mb-1" />
                             <input
+                              name='files[]'
                               type="file"
                               multiple
                               accept="image/*"
