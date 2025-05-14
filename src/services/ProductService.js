@@ -94,6 +94,24 @@ function deleteSavedSearch(id) {
     });
 }
 
+function getNotifications() {
+  return axios
+    .get(`${API_URL}/notifications`, { headers: authHeaders() })
+    .then(r => r.data)
+    .catch(err => {
+      console.error('Error fetching notifications:', err);
+      return [];
+    });
+}
+
+function markNotificationRead(id) {
+  return axios
+    .patch(`${API_URL}/notifications/${id}/read`, null, {
+      headers: authHeaders(),
+    })
+    .catch(err => console.error('Error marking notification read:', err));
+}
+
 export default {
   getFilteredProducts,
   getLastChanceProducts,
@@ -103,4 +121,6 @@ export default {
   getSavedSearches,
   createSavedSearch,
   deleteSavedSearch,
+  getNotifications,
+  markNotificationRead,
 };

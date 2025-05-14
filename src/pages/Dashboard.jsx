@@ -6,6 +6,7 @@ import Navbar from "../components/common/navbar/Navbar";
 import ProductSlider from "../components/Dashboard/ProductSlider";
 import ProductService from "../services/ProductService";
 import SavedSearchDropdown from "../components/SavedSearchDropdown";
+import NotificationBell from "../components/NotificationBell";
 
 export default function Dashboard() {
   const [products, setProducts] = useState([]);
@@ -64,6 +65,7 @@ export default function Dashboard() {
           </div>
 
           <div className="flex items-center space-x-1">
+            <NotificationBell />
             <button
               onClick={() => setFilterOpen(true)}
               className="p-2 text-white"
