@@ -12,6 +12,7 @@ import Availability from "./pages/Availability.jsx";
 import ProductNew from "./pages/ProductNew.jsx";
 import ProtectedRoute from './components/Security/ProtectedRoutes';
 import "./index.css";
+import MessagesList from './pages/MessagesList.jsx';
 
 export default function App() {
   return (
@@ -27,6 +28,7 @@ export default function App() {
         <Route path="/home" element={<Dashboard />} />
         <Route path="/new-product" element={<ProductNew />} />
         <Route path="/account" element={<Account />} />
+        <Route path="/chats" element={<MessagesList />} />
         <Route path="/account/profile" element={<ProfilePage />} />
         <Route path="/account/preferences" element={<Preference />} />
         <Route path="/account/availability" element={<Availability />} />

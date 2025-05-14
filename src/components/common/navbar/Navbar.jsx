@@ -47,7 +47,7 @@ const Navbar = () => {
         />
         <BottomNavigationAction
           label="Message"
-          value="/message"
+          value="/chats"
           icon={getIcon("/message", "/assets/message.svg", "/assets/message-active.svg")}
         />
         <BottomNavigationAction
