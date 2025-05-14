@@ -57,5 +57,8 @@ export default {
   googleLogin,
   logout,
   isAuthenticated,
-  getToken
+  getToken,
+  logout,
+  isAuthenticated,
+  getToken,
 };
