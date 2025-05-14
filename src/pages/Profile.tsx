@@ -1,39 +1,53 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router";
 import { AiOutlineArrowLeft, AiFillStar } from "react-icons/ai";
 import Navbar from "../components/common/navbar/Navbar";
 import UserService from "../services/UserService";
-import { User } from "lucide-react";
 import { useForm } from "@tanstack/react-form";
 import { z } from "zod";
 
-const user = await UserService.getCurrentUser();
+interface User {
+  username: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  address: string;
+}
 
 const ProfilePage = () => {
-  interface User {
-    username: string
-    firstName: string
-    lastName: string
-    email: string
-    address: string
-  }
-  const defaultUser: User = { username: user.username, firstName: user.firstName, lastName: user.lastName, email: user.email, address: user.address }
-  
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const data = await UserService.getCurrentUser();
+      setUser(data);
+    };
+    fetchUser();
+  }, []);
+
   const form = useForm({
-    defaultValues: defaultUser,
+    defaultValues: {
+      username: user?.username ?? "",
+      firstName: user?.firstName ?? "",
+      lastName: user?.lastName ?? "",
+      email: user?.email ?? "",
+      address: user?.address ?? "",
+    },
     onSubmit: async ({ value }) => {
-      console.log(value)
+      console.log(value);
     },
     validators: {
       onChange: z.object({
         username: z.string().min(1, "Username is required"),
         firstName: z.string().min(1, "First name is required"),
         lastName: z.string().min(1, "Last name is required"),
-        email: z.string().email("Invalid email address"),
-        address: z.string().min(1, "Address is required")
+        email: z.string().email("Email invalide"),
+        address: z.string().min(1, "Adresse requise"),
       }),
     },
   });
+
+  if (!user) return <div className="p-4 text-center">Chargement...</div>;
 
   return (
     <div className="flex flex-col h-screen bg-gray-100">
@@ -46,12 +60,12 @@ const ProfilePage = () => {
 
       <div className="flex flex-col items-center p-4">
         <div className="flex justify-around items-center w-90 mb-4">
-            <div className="w-20 h-20 flex items-center justify-center rounded-full bg-gray-300 text-xl font-bold">
-              {user.username[0]}
-            </div>
-            <button className="mt-2 px-4 border border-green-500 text-green-500 rounded-full text-sm h-10">
-              Ajoutez une photo
-            </button>  
+          <div className="w-20 h-20 flex items-center justify-center rounded-full bg-gray-300 text-xl font-bold">
+            {user.username[0]}
+          </div>
+          <button className="mt-2 px-4 border border-green-500 text-green-500 rounded-full text-sm h-10">
+            Ajoutez une photo
+          </button>
         </div>
         <p className="text-xs text-center text-gray-600 mt-2">
           Avec une photo de profil, vous avez de quoi personnaliser votre profil et rassurer les autres membres !
@@ -59,11 +73,13 @@ const ProfilePage = () => {
       </div>
 
       <div className="px-4 space-y-3">
-        <form onSubmit={(e) => {
-          e.preventDefault();
-          form.handleSubmit();
-        }}>
-          <form.Field 
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            form.handleSubmit();
+          }}
+        >
+          <form.Field
             name="username"
             children={(field) => (
               <div className="flex flex-col">
@@ -77,7 +93,7 @@ const ProfilePage = () => {
               </div>
             )}
           />
-          <form.Field 
+          <form.Field
             name="email"
             children={(field) => (
               <div className="flex flex-col">
@@ -121,7 +137,6 @@ const ProfilePage = () => {
       </div>
 
       <Navbar />
-
     </div>
   );
 };
