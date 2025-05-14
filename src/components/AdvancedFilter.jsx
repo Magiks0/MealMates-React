@@ -16,7 +16,7 @@ const AdvancedFilter = ({ isOpen, onClose }) => {
   };
 
   const handleReset = () => {
-    setFilters({ minPrice: '', maxPrice: '', location: '', category: '' });
+    setFilters({ minPrice: '', maxPrice: '', address: '', category: '' });
     setParams({});
   };
 
@@ -35,7 +35,7 @@ const AdvancedFilter = ({ isOpen, onClose }) => {
   
     if (filters.minPrice) newParams.set("minPrice", filters.minPrice);
     if (filters.maxPrice) newParams.set("maxPrice", filters.maxPrice);
-    if (filters.location) newParams.set("location", filters.location);
+    if (filters.address) newParams.set("address", filters.address);
     if (filters.peremptionDate) newParams.set("peremptionDate", filters.peremptionDate);
     if (filters.dietetic) newParams.set("dietetic", filters.dietetic);
   
@@ -127,8 +127,8 @@ const AdvancedFilter = ({ isOpen, onClose }) => {
           <label className="text-sm font-medium text-gray-500 uppercase tracking-wider">Localisation</label>
           <input
             type="text"
-            name="location"
-            value={filters.location}
+            name="address"
+            value={filters.address}
             onChange={handleChange}
             className="w-full p-3 border-0 bg-gray-50 rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none transition-all"
             placeholder="Ville, région..."

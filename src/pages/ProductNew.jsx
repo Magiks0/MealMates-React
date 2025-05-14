@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useForm } from '@tanstack/react-form';
 import { MapPin, Camera, ArrowRight, ArrowLeft } from 'lucide-react';
-import ProductService from '../services/ProductService';
+import ProductService from '../services/productService';
 
 export default function ProductNew() {
   const [step, setStep] = useState(1);
@@ -41,8 +41,6 @@ export default function ProductNew() {
       });
 
       const res = await ProductService.createProduct(formData);
-
-      console.log(res);
 
       if (res.status !== 200) {
         alert(`Erreur lors de la création: ${res.status} - ${res.statusText}`);
