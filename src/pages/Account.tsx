@@ -3,15 +3,35 @@ import { Link } from "react-router";
 import authService from "../services/AuthService";
 import UserService from "../services/UserService";
 import Navbar from "../components/common/navbar/Navbar";
-
-const user = await UserService.getCurrentUser();
+import { useState, useEffect } from "react";
 
 const Profile = () => {
+  type User = {
+    id: number;
+    email: string;
+    username: string;
+    roles: string[];
+  };
+
+  const [user, setUser] = useState<User>();
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const data = await UserService.getCurrentUser();
+      setUser(data);
+    };
+    fetchUser();
+  }, []);
+
+  if (!user) {
+    return <div className="p-6">Chargement du profil...</div>;
+  }
+
   return (
     <div className="flex flex-col h-screen bg-gray-100">
       <div className="p-6 bg-white shadow-md">
         <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold">{user.username}</h1>
+        <h1 className="text-2xl font-bold">{user.username}</h1>
           <img
             src="../assets/user.svg"
             alt="Profile"
