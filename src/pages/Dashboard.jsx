@@ -4,7 +4,7 @@ import AdvancedFilter from '../components/AdvancedFilter';
 import { useSearchParams, useLocation } from 'react-router';
 import Navbar from '../components/common/navbar/Navbar';
 import ProductSlider from '../components/Dashboard/ProductSlider';
-import ProductService  from '../services/ProductService';
+import ProductService  from '../services/productService';
 
 export default function Dashboard () {
   const [products, setProducts] = useState([]);
@@ -17,9 +17,7 @@ export default function Dashboard () {
   const [filters, setFilters] = useSearchParams();
   const location = useLocation();
 
-  
-  console.log(lastChanceProducts);
-  useEffect(() => {
+    useEffect(() => {
     const load = async () => {
       try {
           const [recomendedProducts, lastChanceProducts, recentProducts] = await Promise.all([

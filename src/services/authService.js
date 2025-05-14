@@ -36,6 +36,7 @@ async function login({ username, password }) {
   const res = await axios.post(`${API_URL}/login`, { username, password }, {
     headers: {
       "Content-Type": "application/json",
+      // 'Access-Control-Allow-Origin': 'http://localhost:5173/login'
     }
   });
   
@@ -67,5 +68,8 @@ export default {
   googleLogin,
   logout,
   isAuthenticated,
-  getToken
+  getToken,
+  logout,
+  isAuthenticated,
+  getToken,
 };

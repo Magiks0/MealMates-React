@@ -11,6 +11,7 @@ import Preference from "./pages/Preference.jsx";
 import Availability from "./pages/Availability.jsx";
 import ProductNew from "./pages/ProductNew.jsx";
 import ProtectedRoute from './components/Security/ProtectedRoutes';
+import Map from "./pages/Search/Map.tsx"; 
 import "./index.css";
 
 export default function App() {
@@ -30,6 +31,7 @@ export default function App() {
         <Route path="/account/profile" element={<ProfilePage />} />
         <Route path="/account/preferences" element={<Preference />} />
         <Route path="/account/availability" element={<Availability />} />
+        <Route path="/search" element={<Map />} />
       </Route>
     </Routes>
   );
