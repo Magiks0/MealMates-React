@@ -1,9 +1,9 @@
 import React from 'react';
 import { Navigate, Outlet } from 'react-router';
-import authService from '../../services/AuthService';
+import AuthService from '../../services/AuthService';
 
 export default function ProtectedRoute() {
-  if (!authService.isAuthenticated()) {
+  if (!AuthService.isAuthenticated()) {
     return <Navigate to="/login" replace />;
   }
 

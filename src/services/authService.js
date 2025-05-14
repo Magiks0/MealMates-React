@@ -1,9 +1,21 @@
 import axios from 'axios';
+import {jwtDecode} from 'jwt-decode';
 
 const API_URL = import.meta.env.VITE_API_URL;
 const TOKEN_KEY = 'token';
 
+const isTokenExpired = (token) => {
+  const decodedToken = jwtDecode(token);
+  const currentTime = Date.now() / 1000;
+  return decodedToken.exp < currentTime;
+};
+
 const isAuthenticated = () => {
+  if(isTokenExpired(localStorage.getItem(TOKEN_KEY))) {
+    localStorage.removeItem(TOKEN_KEY);
+    return false;
+  }
+
   return localStorage.getItem(TOKEN_KEY) !== null;
 };
 

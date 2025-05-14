@@ -42,10 +42,8 @@ export default function ProductNew() {
 
       const res = await ProductService.createProduct(formData);
 
-      console.log(res);
-
       if (res.status !== 200) {
-        alert(`Erreur lors de la création: ${res.status} - ${res.statusText}`);
+        
       } else {
         console.log('Annonce créée avec succès:', res.data);
         alert(res.message);

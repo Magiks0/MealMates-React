@@ -1,12 +1,14 @@
 import React from 'react';
 import { Clock, MapPin, User, Heart } from 'lucide-react';
 
+const IMG_URL = import.meta.env.VITE_IMG_URL;
+
 const ProductCard = ({product}) => {
   return (
     <div className="relative max-w-2xs w-64 h-full rounded-lg overflow-hidden shadow-lg bg-white hover:shadow-xl transition-shadow duration-300">
       <div className="relative">
         <img 
-          src={product.files[0]?.code ? `data:image/jpeg;base64,${product.files[1].code}` : '/assets/bg-first-section.png'}
+          src={product.files[0]?.path ? `${IMG_URL}${product.files[1].path}` : '/assets/bg-first-section.png'}
           alt={product.title} 
           className="w-full h-48 object-cover"
         />
