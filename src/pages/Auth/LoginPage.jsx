@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { useNavigate } from "react-router";
-import authService from "../../services/authService";
+import authService from "../../services/AuthService";
 import { GoogleLogin } from "@react-oauth/google";
 import "../../style/auth.css";
 
@@ -44,7 +44,6 @@ const LoginPage = () => {
 
   return (
     <div className="login-wrapper">
-      {/* Logo optionnel (même style que pour signup) */}
       <img
         src="/assets/logo_mealmates.png"
         alt="MealMates Logo"
@@ -54,8 +53,6 @@ const LoginPage = () => {
       <div className="login-container">
         <h2>Connexion</h2>
         {error && <p className="error">{error}</p>}
-
-        {/* Formulaire de connexion */}
         <form onSubmit={handleSubmit}>
           <input
             type="text"
@@ -76,7 +73,6 @@ const LoginPage = () => {
           <button type="submit">Se connecter</button>
         </form>
 
-        {/* Liens sous le formulaire */}
         <div className="login-links">
           <a href="/forgot-password">Mot de passe oublié ?</a>
           <p>
@@ -84,14 +80,12 @@ const LoginPage = () => {
           </p>
         </div>
 
-        {/* Séparateur "Ou" */}
         <div className="separator">
           <hr />
           <span>Ou</span>
           <hr />
         </div>
 
-        {/* Section SSO / Google */}
         <div className="sso-login">
           <GoogleLogin
             onSuccess={handleGoogleSuccess}

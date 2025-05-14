@@ -1,7 +1,7 @@
 // src/pages/Auth/SignupPage.jsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router';
-import authService from '../../services/authService';
+import authService from '../../services/AuthService';
 import '../../style/auth.css'; // Fichier de style modifié
 
 const SignupPage = () => {
