@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router';
 import { Star, Bookmark, Share2, ShoppingCart, ArrowLeft } from 'lucide-react';
-import ProductService from "../../services/ProductService";
+import ProductService from '../../services/ProductService';
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -9,6 +9,9 @@ const ProductDetail = () => {
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  
+  // Image par défaut pour les produits sans image
+  const defaultImage = '/assets/bg-first-section.png';
 
   useEffect(() => {
     const fetchProductDetail = async () => {
@@ -49,6 +52,10 @@ const ProductDetail = () => {
     );
   }
 
+  // Déterminer l'image à afficher
+  const productImage = product.image || product.files?.length > 0 ? 
+    (product.files[0].path || defaultImage) : defaultImage;
+
   return (
     <div className="flex flex-col h-screen bg-white">
       {/* Header with back button */}
@@ -61,9 +68,13 @@ const ProductDetail = () => {
       {/* Product Image */}
       <div className="w-full">
         <img 
-          src={product.image} 
+          src={productImage}
           alt={product.title} 
           className="w-full h-64 object-cover"
+          onError={(e) => {
+            e.target.onerror = null; // Évite une boucle infinie si l'image par défaut ne charge pas
+            e.target.src = defaultImage; // Utilise l'image par défaut en cas d'erreur
+          }}
         />
       </div>
 
@@ -82,14 +93,22 @@ const ProductDetail = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center">
               <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center mr-2">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                </svg>
+                {product.user?.image_url ? (
+                  <img 
+                    src={product.user.image_url} 
+                    alt={product.user.username} 
+                    className="w-full h-full rounded-full object-cover" 
+                  />
+                ) : (
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                  </svg>
+                )}
               </div>
-              <span>{product.user.username}</span>
+              <span>{product.user?.username || "Vendeur inconnu"}</span>
             </div>
             <div className="flex items-center text-green-600">
-              <span className="mr-1">{product.user.note}</span>
+              <span className="mr-1">{product.user?.note || "N/A"}</span>
               <Star className="w-5 h-5 fill-current" />
             </div>
           </div>
