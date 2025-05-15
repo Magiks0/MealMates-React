@@ -14,6 +14,7 @@ import ProtectedRoute from './components/Security/ProtectedRoutes';
 import Map from "./pages/Search/Map.tsx"; 
 import "./index.css";
 import MessagesList from './pages/MessagesList.jsx';
+import Message from './pages/Message.jsx';
 
 export default function App() {
   return (
@@ -30,6 +31,7 @@ export default function App() {
         <Route path="/new-product" element={<ProductNew />} />
         <Route path="/account" element={<Account />} />
         <Route path="/chats" element={<MessagesList />} />
+        <Route path="/chats/:chatId" element={<Message />} />
         <Route path="/account/profile" element={<ProfilePage />} />
         <Route path="/account/preferences" element={<Preference />} />
         <Route path="/account/availability" element={<Availability />} />
