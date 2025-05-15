@@ -14,7 +14,6 @@ function getFilteredProducts(filters) {
         return res.data;
     })
     .catch(err => {
-        console.log(err.message);
         console.error("Error fetching products:", err);
         return [];
     });
