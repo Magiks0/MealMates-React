@@ -119,6 +119,7 @@ export async function createProduct(formData) {
 export default {
     getProducts,
     getLastChanceProducts,
+    getFilteredProducts,
     getRecentProducts,
     getRecomendations,
     createProduct,

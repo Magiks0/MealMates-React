@@ -61,7 +61,7 @@ const ProfilePage = () => {
       <div className="flex flex-col items-center p-4">
         <div className="flex justify-around items-center w-90 mb-4">
           <div className="w-20 h-20 flex items-center justify-center rounded-full bg-gray-300 text-xl font-bold">
-            {user.username[0]}
+            {user?.username[0]}
           </div>
           <button className="mt-2 px-4 border border-green-500 text-green-500 rounded-full text-sm h-10">
             Ajoutez une photo

@@ -31,7 +31,7 @@ const Profile = () => {
     <div className="flex flex-col h-screen bg-gray-100">
       <div className="p-6 bg-white shadow-md">
         <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">{user.username}</h1>
+        <h1 className="text-2xl font-bold">{user?.username}</h1>
           <img
             src="../assets/user.svg"
             alt="Profile"
