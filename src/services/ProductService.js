@@ -20,41 +20,6 @@ function getFilteredProducts(filters) {
     });
 }
 
-function getProducts() {
-    return axios.get(`${API_URL}/products`,  {
-        headers: {
-            'Authorization': `Bearer ${TOKEN}`,
-        }
-    })
-    .then(res => {
-        return res.data;
-    })
-    .catch(err => {
-        console.error("Error fetching products:", err);
-        return [];
-    });
-}
-
-function getProductsByDistance(latitude, longitude, radius = 10) {
-    return axios.get(`${API_URL}/products/search`, {
-        params: {
-            latitude,
-            longitude,
-            radius
-        },
-        headers: {
-            'Authorization': `Bearer ${TOKEN}`,
-        }
-    })
-    .then(res => {
-        return res.data;
-    })
-    .catch(err => {
-        console.error("Error fetching products by distance:", err);
-        return [];
-    });
-}
-
 function getLastChanceProducts() {
     return axios.get(`${API_URL}/product/last-chance`,  {
         headers: {
@@ -100,9 +65,24 @@ function getRecentProducts() {
     });
 }
 
+function getProductById(id) {
+    return axios.get(`${API_URL}/product/${id}`, {
+        headers: {
+            'Authorization': `Bearer ${TOKEN}`,
+        }
+    })
+    .then(res => {
+        return res.data;
+    })
+    .catch(err => {
+        console.error(`Error fetching product with ID ${id}:`, err);
+        throw err;
+    });
+}
+
 export async function createProduct(formData) {
     const token = localStorage.getItem('token');
-    
+
     try {
         const res = await axios.post(`${API_URL}/product/new`, formData, {
             headers: {
@@ -117,11 +97,11 @@ export async function createProduct(formData) {
 }
 
 export default {
-    getProducts,
+    getFilteredProducts,
     getLastChanceProducts,
     getFilteredProducts,
     getRecentProducts,
     getRecomendations,
+    getProductById,
     createProduct,
-    getProductsByDistance
 };
