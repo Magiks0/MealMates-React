@@ -5,7 +5,7 @@ import Navbar from "../../components/common/navbar/Navbar";
 import "./Maps.css";
 import SearchBar from "../../components/common/searchbar/SearchBar";
 import L from "leaflet";
-import productService from "../../services/productService";
+import productService from "../../services/ProductService";
 
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({

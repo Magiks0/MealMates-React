@@ -4,7 +4,7 @@ import AdvancedFilter from '../components/AdvancedFilter';
 import { useSearchParams, useLocation } from 'react-router';
 import Navbar from '../components/common/navbar/Navbar';
 import ProductSlider from '../components/Dashboard/ProductSlider';
-import ProductService  from '../services/productService';
+import ProductService  from '../services/ProductService';
 
 export default function Dashboard () {
   const [products, setProducts] = useState([]);
