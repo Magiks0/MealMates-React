@@ -1,18 +1,33 @@
 import React from 'react';
 import { Clock, MapPin, User, Heart } from 'lucide-react';
+import { useNavigate } from 'react-router';
 
 const IMG_URL = import.meta.env.VITE_IMG_URL;
 
-const ProductCard = ({ product }) => {
+const ProductCard = ({product}) => {
+  const navigate = useNavigate();
+
+  const handleProductClick = () => {
+    navigate(`/product/${product.id}`);
+  };
+
   return (
-    <div className="relative max-w-xs w-64 rounded-xl overflow-hidden shadow-lg bg-white hover:shadow-2xl transition-shadow duration-300 flex flex-col">
+    <div 
+      className="relative max-w-2xs w-64 h-full rounded-lg overflow-hidden shadow-lg bg-white hover:shadow-xl transition-shadow duration-300 cursor-pointer"
+      onClick={handleProductClick}
+    >
       <div className="relative">
         <img 
           src={product.files?.[0]?.path ? `${IMG_URL}${product.files[0].path}` : '/assets/bg-first-section.png'}
           alt={product.title} 
           className="w-full h-40 object-cover"
         />
-        <button className="absolute top-2 right-2 p-2 bg-white bg-opacity-80 rounded-full shadow hover:bg-gray-100 transition">
+        <button 
+          className="absolute top-0 right-0 m-2 p-2 bg-white rounded-full shadow hover:bg-gray-100"
+          onClick={(e) => {
+            e.stopPropagation();
+          }}
+        >
           <Heart className={`w-5 h-5 ${product.saved ? 'text-red-500 fill-red-500' : 'text-gray-400'}`} />
         </button>
       </div>
