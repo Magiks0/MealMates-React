@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useForm } from '@tanstack/react-form';
 import { MapPin, Camera, ArrowRight, ArrowLeft } from 'lucide-react';
+import Navbar from "../components/common/navbar/Navbar";
 import ProductService from '../services/ProductService';
 
 export default function ProductNew() {
@@ -375,6 +376,7 @@ export default function ProductNew() {
           </div>
         </form>
       </div>
+      <Navbar />
     </div>
   );
 }
