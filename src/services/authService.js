@@ -70,7 +70,4 @@ export default {
   logout,
   isAuthenticated,
   getToken,
-  logout,
-  isAuthenticated,
-  getToken,
 };

@@ -43,11 +43,11 @@ export default function ProductNew() {
 
       const res = await ProductService.createProduct(formData);
 
-      if (res.status !== 200) {
+      if (res.status === 200 || res.status === 201) {
         alert('Nouveau produit crée avec succès');
         window.location.href = '/home';
       } else {
-        console.log('Annonce créée avec succès:', res.data);
+        console.log('Erreur lors de la création', res.error);
         alert(res.message);
         form.reset();
         setStep(1);
