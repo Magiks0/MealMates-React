@@ -33,6 +33,7 @@ async function register({ username, email, password }) {
 }
 
 async function login({ username, password }) {
+  console.log(API_URL);
   const res = await axios.post(`${API_URL}/login`, { username, password }, {
     headers: {
       "Content-Type": "application/json",
