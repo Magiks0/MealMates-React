@@ -17,9 +17,7 @@ export default function Dashboard () {
   const [filters, setFilters] = useSearchParams();
   const location = useLocation();
 
-  
-  console.log(lastChanceProducts);
-  useEffect(() => {
+    useEffect(() => {
     const load = async () => {
       try {
           const [recomendedProducts, lastChanceProducts, recentProducts] = await Promise.all([

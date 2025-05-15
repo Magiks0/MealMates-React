@@ -1,5 +1,5 @@
 import axios from 'axios';
-import authService from './authService';
+import authService from './AuthService';
 
 const API_URL = import.meta.env.VITE_API_URL;
 const TOKEN = authService.getToken();
@@ -14,7 +14,43 @@ function getFilteredProducts(filters) {
         return res.data;
     })
     .catch(err => {
+        console.log(err.message);
         console.error("Error fetching products:", err);
+        return [];
+    });
+}
+
+function getProducts() {
+    return axios.get(`${API_URL}/products`,  {
+        headers: {
+            'Authorization': `Bearer ${TOKEN}`,
+        }
+    })
+    .then(res => {
+        return res.data;
+    })
+    .catch(err => {
+        console.error("Error fetching products:", err);
+        return [];
+    });
+}
+
+function getProductsByDistance(latitude, longitude, radius = 10) {
+    return axios.get(`${API_URL}/products/search`, {
+        params: {
+            latitude,
+            longitude,
+            radius
+        },
+        headers: {
+            'Authorization': `Bearer ${TOKEN}`,
+        }
+    })
+    .then(res => {
+        return res.data;
+    })
+    .catch(err => {
+        console.error("Error fetching products by distance:", err);
         return [];
     });
 }
@@ -66,25 +102,26 @@ function getRecentProducts() {
 
 export async function createProduct(formData) {
     const token = localStorage.getItem('token');
-
+    
     try {
         const res = await axios.post(`${API_URL}/product/new`, formData, {
             headers: {
                 'Authorization': `Bearer ${token}`,
-                'Content-Type': 'multipart/form-data',
             }
         });
         return res;
     } catch (error) {
-        console.error("Error in creating product:", error);
+        console.error(error.message);
         throw error;
     }
 }
 
 export default {
-    getFilteredProducts,
+    getProducts,
     getLastChanceProducts,
+    getFilteredProducts,
     getRecentProducts,
     getRecomendations,
     createProduct,
-  };
+    getProductsByDistance
+};
