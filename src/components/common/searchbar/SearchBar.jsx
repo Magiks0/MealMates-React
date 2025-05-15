@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
 import './SearchBar.css';
-import axios from 'axios';
 
 const SearchBar = ({ 
   onSearch, 
@@ -50,6 +49,8 @@ const SearchBar = ({
           label: feature.properties.label,
           longitude: feature.geometry.coordinates[0],
           latitude: feature.geometry.coordinates[1],
+          city: feature.properties.city,
+          postcode: feature.properties.postcode
         }));
         
         setSearchResults(formattedResults);
@@ -88,7 +89,12 @@ const SearchBar = ({
   const handleSelectAddress = (result) => {
     setSearchValue(result.label);
     setShowDropdown(false);
-    if (onSelectAddress) onSelectAddress(result);
+    
+    // Notifier le composant parent de l'adresse sélectionnée
+    if (onSelectAddress) {
+      console.log(`Adresse sélectionnée: ${result.label}, Coordonnées: ${result.latitude}, ${result.longitude}`);
+      onSelectAddress(result);
+    }
   };
 
   // Effacer la recherche
@@ -104,9 +110,18 @@ const SearchBar = ({
     if (onRadiusChange) onRadiusChange(newRadius);
   };
 
+  // Gérer la soumission du formulaire pour une recherche directe
+  const handleFormSubmit = (e) => {
+    e.preventDefault();
+    if (searchValue.trim() && searchResults.length > 0) {
+      // Sélectionner le premier résultat si l'utilisateur appuie sur Entrée
+      handleSelectAddress(searchResults[0]);
+    }
+  };
+
   return (
     <div className="search-bar-container">
-      <div className="search-input-wrapper">
+      <form onSubmit={handleFormSubmit} className="search-input-wrapper">
         <div className="input-with-icon">
           <input
             type="text"
@@ -117,6 +132,7 @@ const SearchBar = ({
           />
           {searchValue ? (
             <button 
+              type="button"
               onClick={clearSearch}
               className="clear-button"
               aria-label="Effacer la recherche"
@@ -124,9 +140,9 @@ const SearchBar = ({
               <i className="fa-solid fa-times"></i>
             </button>
           ) : (
-            <div className="search-icon">
+            <button type="submit" className="search-icon" aria-label="Rechercher">
               <i className="fa-solid fa-search"></i>
-            </div>
+            </button>
           )}
         </div>
         
@@ -157,7 +173,7 @@ const SearchBar = ({
             ))}
           </div>
         )}
-      </div>
+      </form>
       
       {/* Information sur le rayon de recherche */}
       {selectedLocation && (

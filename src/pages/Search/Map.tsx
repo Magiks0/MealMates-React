@@ -25,13 +25,26 @@ const userIcon = new L.Icon({
   className: 'user-marker' 
 });
 
-function SetViewOnUserLocation({ coords }) {
+const searchLocationIcon = new L.Icon({
+  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
+  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
+  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41],
+  className: 'search-marker'
+});
+
+function MapViewControl({ centerPosition, zoom }) {
   const map = useMap();
+  
   useEffect(() => {
-    if (coords) {
-      map.setView(coords, 15);
+    if (centerPosition) {
+      map.setView(centerPosition, zoom || map.getZoom());
     }
-  }, [coords, map]);
+  }, [centerPosition, zoom, map]);
+  
   return null;
 }
 
@@ -43,17 +56,35 @@ const Map = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  
+  const [searchedLocation, setSearchedLocation] = useState(null);
+  const [mapCenter, setMapCenter] = useState(null);
+  const [searchRadius, setSearchRadius] = useState(10); // Rayon en km
 
-  const fetchProducts = async () => {
+  // Fonction optimisée pour la recherche géospatiale
+  const fetchProducts = async (latitude, longitude, radius) => {
     try {
       setLoading(true);
-      const data = await productService.getProducts();
+      console.log(`Recherche de produits près de [${latitude}, ${longitude}] dans un rayon de ${radius || searchRadius}km`);
+      
+      // Utilisation de la méthode spécifique pour la recherche géographique
+      const data = await productService.getNearbyProducts(latitude, longitude, radius || searchRadius);
+      
+      console.log(`${data.length} produits trouvés dans le rayon`);
       setProducts(data);
       setLoading(false);
     } catch (err) {
-      console.error("Erreur lors de la récupération des produits:", err);
-      setError("Impossible de charger les produits");
-      setLoading(false);
+      // Si la méthode géospatiale échoue, on revient à la méthode standard
+      try {
+        const queryParams = `?latitude=${latitude}&longitude=${longitude}&radius=${radius || searchRadius}`;
+        const data = await productService.getFilteredProducts(queryParams);
+        setProducts(data);
+        setLoading(false);
+      } catch (fallbackErr) {
+        console.error("Erreur lors de la récupération des produits:", err);
+        setError("Impossible de charger les produits");
+        setLoading(false);
+      }
     }
   };
 
@@ -64,7 +95,10 @@ const Map = () => {
         (position) => {
           const { latitude, longitude } = position.coords;
           setUserPosition([latitude, longitude]);
+          setMapCenter([latitude, longitude]);
           setIsLocating(false);
+          
+          fetchProducts(latitude, longitude, searchRadius);
         },
         (error) => {
           console.error("Erreur de géolocalisation:", error);
@@ -85,13 +119,32 @@ const Map = () => {
   const closeModal = () => {
     setShowModal(false);
   };
+  
+  const handleSelectAddress = (address) => {
+    console.log("Adresse sélectionnée:", address);
+    
+    setSearchedLocation(address);
+    
+    setMapCenter([address.latitude, address.longitude]);
+    
+    fetchProducts(address.latitude, address.longitude, searchRadius);
+  };
+  
+  const handleRadiusChange = (radius) => {
+    setSearchRadius(radius);
+    
+    if (searchedLocation) {
+      fetchProducts(searchedLocation.latitude, searchedLocation.longitude, radius);
+    } 
+    else if (userPosition) {
+      fetchProducts(userPosition[0], userPosition[1], radius);
+    }
+  };
 
   useEffect(() => {
     getUserLocation();
-    fetchProducts();
   }, []);
 
-  // Préparation des données pour les marqueurs
   const getMarkerData = () => {
     if (!products || products.length === 0) return [];
     
@@ -100,27 +153,41 @@ const Map = () => {
       .map(product => {
         return {
           id: product.id,
-          position: [product.address.latitude, product.address.longitude],
+          position: [parseFloat(product.address.latitude), parseFloat(product.address.longitude)],
           name: product.title,
           description: product.description,
           date: new Date(product.collection_date).toLocaleDateString('fr-FR'),
           price: product.donation ? "Don" : `${product.price}€`,
           type: product.type?.name || "Non spécifié",
           rating: product.user?.note || 0,
-          // Comme il n'y a pas de champ files dans votre format de données, on utilise une image par défaut
           image: "../assets/sandwich.webp"
         };
       });
   };
 
   const markersData = getMarkerData();
+  
+  const currentMapCenter = mapCenter || userPosition;
+  
+  const radiusCenter = searchedLocation ? [searchedLocation.latitude, searchedLocation.longitude] : userPosition;
 
   return (
     <div>
-      <SearchBar />
+      <SearchBar 
+        onSelectAddress={handleSelectAddress} 
+        selectedLocation={searchedLocation}
+        searchRadius={searchRadius}
+        onRadiusChange={handleRadiusChange}
+        onClearSearch={() => {
+          setSearchedLocation(null);
+          setMapCenter(userPosition);
+          fetchProducts(userPosition[0], userPosition[1], searchRadius);
+        }}
+      />
+      
       <MapContainer
         style={{ height: "100vh", width: "100%" }}
-        center={userPosition}
+        center={currentMapCenter}
         zoom={15}
         zoomControl={false}
       >
@@ -135,9 +202,20 @@ const Map = () => {
           </Popup>
         </Marker>
         
+        {searchedLocation && (
+          <Marker 
+            position={[searchedLocation.latitude, searchedLocation.longitude]}
+            icon={searchLocationIcon}
+          >
+            <Popup>
+              {searchedLocation.label}
+            </Popup>
+          </Marker>
+        )}
+        
         <Circle 
-          center={userPosition}
-          radius={1000} 
+          center={radiusCenter}
+          radius={searchRadius * 1000} 
           pathOptions={{ 
             color: '#009B6A', 
             fillColor: '#009B6A', 
@@ -145,7 +223,7 @@ const Map = () => {
           }}
         />
 
-        <SetViewOnUserLocation coords={userPosition} />
+        <MapViewControl centerPosition={currentMapCenter} zoom={15} />
 
         {loading ? (
           <div className="loading-overlay">Chargement des produits...</div>
