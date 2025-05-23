@@ -25,6 +25,8 @@ Réduire le gaspillage alimentaire en facilitant la revente de produits non cons
 
 ## 📦 Installation
 
+⚠️ Cette application nécessite le backend Symfony : [MealMates-SF](https://github.com/Magiks0/MealMates-SF)
+
 ```bash
 git clone https://github.com/Magiks0/MealMates-React.git
 cd MealMates-React
