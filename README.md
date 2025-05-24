@@ -1,14 +1,34 @@
-# MealMates
+# MealMates - Frontend
 
-# React + Vite
+Interface utilisateur de la plateforme MealMates : un service de revente de produits alimentaires entre particuliers (C-to-C).
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## 🧠 Objectif
 
-Currently, two official plugins are available:
+Réduire le gaspillage alimentaire en facilitant la revente de produits non consommés entre particuliers via une application intuitive et sécurisée.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## ⚙️ Stack technique
 
-## Expanding the ESLint configuration
+- **React**
+- **TypeScript**
+- **TailwindCSS**
+- **API REST** (consommée depuis le backend Symfony)
+- **React Router**
+- **Axios**
 
-If you are developing a production application, we recommend using TypeScript and enable type-aware lint rules. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## 🚀 Fonctionnalités principales (en cours)
+
+- 🔐 Authentification et inscription
+- 🛒 Ajout, modification et suppression d’annonces de produits
+- 🔎 Recherche et filtrage des produits disponibles
+- 💳 Intégration d'un module de paiement ( Stripe )
+- 📱 Interface responsive
+
+## 📦 Installation
+
+⚠️ Cette application nécessite le backend Symfony : [MealMates-SF](https://github.com/Magiks0/MealMates-SF)
+
+```bash
+git clone https://github.com/Magiks0/MealMates-React.git
+cd MealMates-React
+npm install
+npm run dev

@@ -10,8 +10,9 @@ import ProfilePage from "./pages/Profile.tsx";
 import Preference from "./pages/Preference.jsx"; 
 import Availability from "./pages/Availability.jsx";
 import ProductNew from "./pages/ProductNew.jsx";
+import ProductDetail from "./pages/Product/ProductDetail.jsx";
+import Map from "./pages/Search/Map.tsx";
 import ProtectedRoute from './components/Security/ProtectedRoutes';
-import Map from "./pages/Search/Map.tsx"; 
 import "./index.css";
 import MessagesList from './pages/MessagesList.jsx';
 import Message from './pages/Message.jsx';
@@ -29,6 +30,7 @@ export default function App() {
       <Route element={<ProtectedRoute />}>
         <Route path="/home" element={<Dashboard />} />
         <Route path="/new-product" element={<ProductNew />} />
+        <Route path="/product/:id" element={<ProductDetail />} />
         <Route path="/account" element={<Account />} />
         <Route path="/chats" element={<MessagesList />} />
         <Route path="/chats/:chatId" element={<Message />} />
