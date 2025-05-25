@@ -99,7 +99,6 @@ export async function createProduct(formData) {
 export default {
     getFilteredProducts,
     getLastChanceProducts,
-    getFilteredProducts,
     getRecentProducts,
     getRecomendations,
     getProductById,

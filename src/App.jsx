@@ -16,6 +16,7 @@ import ProtectedRoute from './components/Security/ProtectedRoutes';
 import "./index.css";
 import MessagesList from './pages/MessagesList.jsx';
 import Message from './pages/Message.jsx';
+import NewMessage from './pages/NewMessage';
 
 export default function App() {
   return (
@@ -33,6 +34,7 @@ export default function App() {
         <Route path="/product/:id" element={<ProductDetail />} />
         <Route path="/account" element={<Account />} />
         <Route path="/chats" element={<MessagesList />} />
+        <Route path="/new-message" element={<NewMessage />} />
         <Route path="/chats/:chatId" element={<Message />} />
         <Route path="/account/profile" element={<ProfilePage />} />
         <Route path="/account/preferences" element={<Preference />} />
