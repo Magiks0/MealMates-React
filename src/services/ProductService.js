@@ -1,106 +1,69 @@
 import axios from 'axios';
-import authService from './AuthService';
 
-const API_URL = import.meta.env.VITE_API_URL;
-const TOKEN = authService.getToken();
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
+const TOKEN_KEY = 'token';
 
-function getFilteredProducts(filters) {
-    return axios.get(`${API_URL}/products?${filters}`, {
-        headers: {
-            'Authorization': `Bearer ${TOKEN}`,
-        }
-    })
-    .then(res => {
-        return res.data;
-    })
-    .catch(err => {
-        console.log(err.message);
-        console.error("Error fetching products:", err);
-        return [];
-    });
+function getAuthHeaders() {
+  const token = localStorage.getItem(TOKEN_KEY);
+  return token ? { Authorization: `Bearer ${token}` } : {};
 }
 
-function getLastChanceProducts() {
-    return axios.get(`${API_URL}/product/last-chance`,  {
+const ProductService = {
+  getFilteredProducts(filters) {
+    return axios
+      .get(`${API_URL}/products?${filters}`, {
         headers: {
-            'Authorization': `Bearer ${TOKEN}`,
-        }
-    })
-    .then(res => {
-        return res.data;
-    })
-    .catch(err => {
-        console.error("Error fetching last chance products:", err);
-        return [];
-    });
-}
-
-function getRecomendations() {
-    return axios.get(`${API_URL}/product/recommendations`,  {
-        headers: {
-            'Authorization': `Bearer ${TOKEN}`,
-        }
-    })
-    .then(res => {
-        return res.data;
-    })
-    .catch(err => {
-        console.error("Error fetching recommendations:", err);
-        return [];
-    });
-}
-
-function getRecentProducts() {
-    return axios.get(`${API_URL}/product/recent`,  {
-        headers: {
-            'Authorization': `Bearer ${TOKEN}`,
-        }
-    })
-    .then(res => {
-        return res.data;
-    })
-    .catch(err => {
-        console.error("Error fetching recent products:", err);
-        return [];
-    });
-}
-
-function getProductById(id) {
-    return axios.get(`${API_URL}/product/${id}`, {
-        headers: {
-            'Authorization': `Bearer ${TOKEN}`,
-        }
-    })
-    .then(res => {
-        return res.data;
-    })
-    .catch(err => {
-        console.error(`Error fetching product with ID ${id}:`, err);
+          ...getAuthHeaders(),
+        },
+      })
+      .then((res) => res.data)
+      .catch((err) => {
+        console.error('Erreur getFilteredProducts :', err);
         throw err;
-    });
-}
+      });
+  },
 
-export async function createProduct(formData) {
-    const token = localStorage.getItem('token');
+  getLastChanceProducts() {
+    return axios
+      .get(`${API_URL}/product/last-chance`, {
+        headers: {
+          ...getAuthHeaders(),
+        },
+      })
+      .then((res) => res.data)
+      .catch((err) => {
+        console.error('Erreur getLastChanceProducts :', err);
+        throw err;
+      });
+  },
 
-    try {
-        const res = await axios.post(`${API_URL}/product/new`, formData, {
+  getRecentProducts() {
+    return axios
+      .get(`${API_URL}/product/recent`, {
+        headers: {
+          ...getAuthHeaders(),
+        },
+      })
+      .then((res) => res.data)
+      .catch((err) => {
+        console.error('Erreur getRecentProducts :', err);
+        throw err;
+      });
+  },
+
+    getProductById(productId) {
+        return axios
+        .get(`${API_URL}/products/${productId}`, {
             headers: {
-                'Authorization': `Bearer ${token}`,
-            }
+            ...getAuthHeaders(),
+            },
+        })
+        .then((res) => res.data)
+        .catch((err) => {
+            console.error('Erreur getProductById :', err);
+            throw err;
         });
-        return res;
-    } catch (error) {
-        console.error(error.message);
-        throw error;
-    }
-}
-
-export default {
-    getFilteredProducts,
-    getLastChanceProducts,
-    getRecentProducts,
-    getRecomendations,
-    getProductById,
-    createProduct,
+    },
 };
+
+export default ProductService;

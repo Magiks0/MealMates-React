@@ -1,9 +1,15 @@
 import React from 'react';
 import { Navigate, Outlet } from 'react-router';
-import AuthService from '../../services/AuthService';
+import { useAuth } from '../../context/AuthContext.jsx';
 
 export default function ProtectedRoute() {
-  if (!AuthService.isAuthenticated()) {
+  const { isAuthenticated, loadingAuth } = useAuth();
+
+  if (loadingAuth) {
+    return <div>Chargement...</div>;
+  }
+
+  if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
   }
 

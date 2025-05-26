@@ -1,8 +1,8 @@
 import './LandingPage.css';
-import { Header } from '../components/common/Header';
-import { Footer } from '../components/common/Footer'
-import Advantages from '../components/LandingPage/Advantages';
-import Testimonials from '../components/LandingPage/Testimonials';
+import { Header } from '../../components/LandingPage/Header';
+import { Footer } from '../../components/LandingPage/Footer'
+import Advantages from '../../components/LandingPage/Advantages';
+import Testimonials from '../../components/LandingPage/Testimonials';
 
 export default function LandingPage() {
 

@@ -1,15 +1,15 @@
-// src/pages/Auth/LoginPage.jsx
-
 import React, { useState } from "react";
 import { useNavigate } from "react-router";
-import authService from "../../services/AuthService";
+import { useAuth } from "../../context/AuthContext";
 import { GoogleLogin } from "@react-oauth/google";
+import authService from "../../services/AuthService";
 import "../../style/auth.css";
 
 const LoginPage = () => {
   const [credentials, setCredentials] = useState({ username: "", password: "" });
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleChange = (e) => {
     setCredentials({ ...credentials, [e.target.name]: e.target.value });
@@ -17,29 +17,37 @@ const LoginPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError(null);
+
     try {
-      await authService.login(credentials);
+      await login(credentials);
       navigate("/home");
     } catch (err) {
       setError(
         err.response?.data?.error ||
-          "Une erreur est survenue lors de la connexion"
+        "Une erreur est survenue lors de la connexion"
       );
     }
   };
 
   const handleGoogleSuccess = async (credentialResponse) => {
     try {
+      // Appelle le service directement, car on doit stocker aussi le token
       const res = await authService.googleLogin(credentialResponse.credential);
-      localStorage.setItem("token", res.token);
-      navigate("/home");
+      if (res.token) {
+        localStorage.setItem("token", res.token);
+        // Tu peux aussi envisager d'ajouter une fonction googleLogin dans ton AuthContext
+        navigate("/home");
+      }
     } catch (error) {
       console.error("Erreur lors de la connexion Google", error);
+      setError("Connexion Google échouée");
     }
   };
 
   const handleGoogleFailure = (error) => {
     console.error("Google Login Error:", error);
+    setError("Connexion Google échouée");
   };
 
   return (
