@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { MapPin } from 'lucide-react';
-import AdvancedFilter from '../components/AdvancedFilter';
+import AdvancedFilter from '../../components/Dashboard/AdvancedFilter';
 import { useSearchParams } from 'react-router';
-import Navbar from '../components/common/navbar/Navbar';
-import ProductSlider from '../components/Dashboard/ProductSlider';
-import ProductCard from '../components/common/ProductCard'; 
-import ProductService from '../services/ProductService';
+import ProductSlider from '../../components/Dashboard/ProductSlider';
+import ProductCard from '../../components/common/ProductCard'; 
+import ProductService from '../../services/ProductService';
 
 export default function Dashboard() {
   const [products, setProducts] = useState([]);
@@ -104,8 +103,6 @@ export default function Dashboard() {
           onClick={() => setFilterOpen(false)}
         ></div>
       )}
-
-      <Navbar />
     </div>
   );
 }

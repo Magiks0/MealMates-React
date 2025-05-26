@@ -1,4 +1,4 @@
-import authService from "./authService";
+import authService from "./AuthService";
 import axios from 'axios';
 
 const API_URL = import.meta.env.VITE_API_URL;
@@ -6,11 +6,6 @@ const TOKEN = authService.getToken();
 
 export const chatService = {
   createChatWithMessage: async ({ productId, message, userId }) => {
-    console.log('Creating chat with message:', {
-      productId,
-      message,
-      userId
-    });
     const res = await axios.post(`${API_URL}/chats/new/${userId}`, {
       userId,
       productId,
@@ -21,7 +16,8 @@ export const chatService = {
         'Authorization': `Bearer ${TOKEN}`,
       }
     });
-    return res.data;
+
+    return { chatId: res.data.id };
   },
   
 

@@ -1,8 +1,8 @@
 import React from "react";
 import { Link } from "react-router";
-import authService from "../services/AuthService";
-import UserService from "../services/UserService";
-import Navbar from "../components/common/navbar/Navbar";
+import authService from "../../services/AuthService";
+import UserService from "../../services/UserService";
+import Navbar from "../../components/common/navbar/Navbar";
 import { useState, useEffect } from "react";
 
 const Profile = () => {

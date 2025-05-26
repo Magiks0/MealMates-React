@@ -5,7 +5,7 @@ const TOKEN = localStorage.getItem('token');
 
 async function getCurrentUser() {
   try {
-    const res = await axios.get(`${API_URL}/users/me`, {
+    const res = await axios.get(`${API_URL}/user/profile`, {
       headers: {
         Authorization: `Bearer ${TOKEN}`,
       },

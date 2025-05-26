@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 import { useSearchParams } from 'react-router';
-import { getTypes, getDietaries } from '../services/DashBoardService';
 
 const AdvancedFilter = ({ isOpen, onClose }) => {
   const [filters, setFilters] = useState({});

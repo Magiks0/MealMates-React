@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
-import chatService from '../services/ChatServices';
-import Navbar from '../components/common/navbar/Navbar';
+import chatService from '../../services/ChatServices';
+import Navbar from '../../components/common/navbar/Navbar';
 
 export default function MessagesList() {
   const navigate = useNavigate();

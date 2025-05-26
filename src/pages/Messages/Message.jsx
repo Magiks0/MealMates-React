@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from 'react-router';
 import { useState, useEffect, useRef } from 'react';
 import { MoreVertical, Check, ChevronRight, ArrowLeft } from 'lucide-react';
-import chatService from '../services/ChatServices';
+import chatService from '../../services/ChatServices';
 
 export default function Message() {
   const { chatId } = useParams();

@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router";
 import { AiOutlineArrowLeft, AiFillStar } from "react-icons/ai";
-import Navbar from "../components/common/navbar/Navbar";
-import UserService from "../services/UserService";
+import Navbar from "../../components/common/navbar/Navbar";
+import UserService from "../../services/UserService";
 import { useForm } from "@tanstack/react-form";
 import { z } from "zod";
 
