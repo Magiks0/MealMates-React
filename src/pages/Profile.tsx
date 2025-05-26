@@ -34,7 +34,6 @@ const ProfilePage = () => {
       address: user?.address ?? "",
     },
     onSubmit: async ({ value }) => {
-      console.log(value);
     },
     validators: {
       onChange: z.object({

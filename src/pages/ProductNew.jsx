@@ -47,7 +47,6 @@ export default function ProductNew() {
         alert('Nouveau produit crée avec succès');
         window.location.href = '/home';
       } else {
-        console.log('Annonce créée avec succès:', res.data);
         alert(res.message);
         form.reset();
         setStep(1);
