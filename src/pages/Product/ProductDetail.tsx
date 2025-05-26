@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router';
 import { Star, Bookmark, Share2, ShoppingCart, ArrowLeft } from 'lucide-react';
 import ProductService from '../../services/ProductService';
+import chatService from '../../services/ChatServices';
+import UserService from '../../services/UserService';
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -9,9 +11,18 @@ const ProductDetail = () => {
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [user, setUser] = useState(null);
   
   // Image par défaut pour les produits sans image
   const defaultImage = '/assets/bg-first-section.png';
+
+  useEffect(() => {
+    async function fetchUser() {
+      const user = await UserService.getCurrentUser();
+      setUser(user);
+    }
+    fetchUser();
+  }, []);
 
   useEffect(() => {
     const fetchProductDetail = async () => {
@@ -29,6 +40,20 @@ const ProductDetail = () => {
 
     fetchProductDetail();
   }, [id]);
+
+  const handleContactClick = async () => {
+    try {
+      const { exists, chatId } = await chatService.checkChatExistence(user.id, product.id);
+      if (exists) {
+        navigate(`/chats/${chatId}`);
+      } else {
+        navigate('/new-message', { state: { product, userId: product.user.id } });
+      }
+    } catch (error) {
+      console.error('Erreur lors de la vérification du chat :', error);
+      alert('Impossible de vérifier la conversation. Veuillez réessayer.');
+    }
+  };
 
   if (loading) {
     return (
@@ -119,7 +144,7 @@ const ProductDetail = () => {
       <div className="p-4">
         <button 
           className="w-full bg-green-500 text-white py-3 rounded-lg font-medium"
-          onClick={() => navigate(`/message?userId=${product.user?.id}&productId=${product.id}`)}
+          onClick={handleContactClick}
         >
           Contacter
         </button>
