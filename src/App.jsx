@@ -30,7 +30,7 @@ export default function App() {
 
       {/* Routes protégées */}
       <Route element={<ProtectedRoute />}>
-        <Route path="/" element={<MainLayout />}>
+        <Route element={<MainLayout />}>
           <Route path="/home" element={<Dashboard />} />
           <Route path="/new-product" element={<ProductNew />} />
           <Route path="/product/:id" element={<ProductDetail />} />
