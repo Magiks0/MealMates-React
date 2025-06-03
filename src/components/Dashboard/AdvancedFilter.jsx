@@ -5,7 +5,7 @@ import { useSearchParams } from 'react-router';
 const AdvancedFilter = ({ isOpen, onClose }) => {
   const [filters, setFilters] = useState({});
   const [error, setError] = useState(null);
-  const [dietetics , setDietetics] = useState([]);
+  const [dietaries , setDietaries] = useState([]);
   const [types, setTypes] = useState([]);
   const [params, setParams] = useSearchParams();
   const [selectedTypes, setSelectedTypes] = useState([]);
@@ -16,7 +16,8 @@ const AdvancedFilter = ({ isOpen, onClose }) => {
   };
 
   const handleReset = () => {
-    setFilters({ minPrice: '', maxPrice: '', location: '', category: '' });
+    setFilters({ minPrice: '', maxPrice: '', address: '', category: '', peremptionDate: '', dietetic: '' });
+    setSelectedTypes([]);
     setParams({});
   };
 
@@ -35,9 +36,9 @@ const AdvancedFilter = ({ isOpen, onClose }) => {
   
     if (filters.minPrice) newParams.set("minPrice", filters.minPrice);
     if (filters.maxPrice) newParams.set("maxPrice", filters.maxPrice);
-    if (filters.location) newParams.set("location", filters.location);
+    if (filters.address) newParams.set("address", filters.address);
     if (filters.peremptionDate) newParams.set("peremptionDate", filters.peremptionDate);
-    if (filters.dietetic) newParams.set("dietetic", filters.dietetic);
+    if (filters.dietaries) newParams.set("dietary", filters.dietaries);
   
     if (selectedTypes.length > 0) {
       newParams.set("types", selectedTypes.join(","));
@@ -47,43 +48,33 @@ const AdvancedFilter = ({ isOpen, onClose }) => {
   };
   
   useEffect(() => {
-      async function fetchDietetics() {
-        try {
-          const response = await fetch(`${API_URL}/dietetics`);
-          if (!response.ok) {
-            throw new Error(`Erreur HTTP: ${response.status}`);
-          }
-          const data = await response.json();
-          setDietetics(data);
-        } catch (err) {
-          setError(err.message);
-        }
+    async function fetchDietaries() {
+      try {
+        const data = await getDietaries();
+        setDietaries(data);
+      } catch (err) {
+        setError(err.message);
       }
+    }
+    fetchDietaries();
+  }, []);
   
-      fetchDietetics();
-    }, [API_URL]);
-
-    useEffect(() => {
-      async function fetchTypes() {
-        try {
-          const response = await fetch(`${API_URL}/types`);
-          if (!response.ok) {
-            throw new Error(`Erreur HTTP: ${response.status}`);
-          }
-          const data = await response.json();
-          setTypes(data);
-        } catch (err) {
-          setError(err.message);
-        }
+  useEffect(() => {
+    async function fetchTypes() {
+      try {
+        const data = await getTypes();
+        setTypes(data);
+      } catch (err) {
+        setError(err.message);
       }
-  
-      fetchTypes();
-    }, [API_URL]);
+    }
+    fetchTypes();
+  }, []);
 
   return (
     <form
       onSubmit={handleSubmit}
-      className={`fixed top-0 right-0 h-full bg-white w-80 shadow-xl transform transition-transform duration-300 ease-in-out z-50 flex flex-col ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}
+      className={`fixed top-0 right-0 h-full bg-white w-80 shadow-xl transform transition-transform duration-300 ease-in-out z-402 flex flex-col ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}
     >
       <div className="flex items-center justify-between p-5 border-b">
         <h2 className="text-lg font-medium text-gray-800">Filtres</h2>
@@ -127,8 +118,8 @@ const AdvancedFilter = ({ isOpen, onClose }) => {
           <label className="text-sm font-medium text-gray-500 uppercase tracking-wider">Localisation</label>
           <input
             type="text"
-            name="location"
-            value={filters.location}
+            name="address"
+            value={filters.address}
             onChange={handleChange}
             className="w-full p-3 border-0 bg-gray-50 rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none transition-all"
             placeholder="Ville, région..."
@@ -136,7 +127,7 @@ const AdvancedFilter = ({ isOpen, onClose }) => {
         </div>
 
         <div className="space-y-2">
-          <label className="text-sm font-medium text-gray-500 uppercase tracking-wider">Date de péremption</label>
+          <label className="text-sm font-medium text-gray-500 uppercase tracking-wider">Périme après</label>
           <input
             type="date"
             name="peremptionDate"
@@ -150,15 +141,15 @@ const AdvancedFilter = ({ isOpen, onClose }) => {
           <label className="text-sm font-medium text-gray-500 uppercase tracking-wider">Régime alimentaire</label>
           <div className="relative">
             <select
-              name="dietetic"
-              value={filters.category}
+              name="dietaries"
+              value={filters.dietaries}
               onChange={handleChange}
               className="w-full p-3 border-0 bg-gray-50 rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none appearance-none transition-all pr-10"
             >
               <option value="">Tous les régimes</option>
-              {dietetics.map((dietetic) => (
-                <option key={dietetic.id} value={dietetic.name}>
-                  {dietetic.name}
+              {dietaries.map((dietary) => (
+                <option key={dietary.id} value={dietary.name}>
+                  {dietary.name}
                 </option>
               ))}
             </select>

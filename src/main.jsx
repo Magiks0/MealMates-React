@@ -2,6 +2,8 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from "react-router";
 import { GoogleOAuthProvider } from '@react-oauth/google';
+import "leaflet/dist/leaflet.css";
+import { AuthProvider } from './context/AuthContext.jsx';
 
 const root = document.getElementById("root");
 
@@ -14,7 +16,9 @@ createRoot(root).render(
   <StrictMode>
     <GoogleOAuthProvider clientId={clientId}>
       <BrowserRouter>
-        <App />
+        <AuthProvider>
+          <App />
+        </AuthProvider>
       </BrowserRouter>
     </GoogleOAuthProvider>
   </StrictMode>

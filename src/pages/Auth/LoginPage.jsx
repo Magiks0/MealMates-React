@@ -1,15 +1,15 @@
-// src/pages/Auth/LoginPage.jsx
-
 import React, { useState } from "react";
 import { useNavigate } from "react-router";
-import authService from "../../services/authService";
+import { useAuth } from "../../context/AuthContext";
 import { GoogleLogin } from "@react-oauth/google";
+import authService from "../../services/AuthService";
 import "../../style/auth.css";
 
 const LoginPage = () => {
-  const [credentials, setCredentials] = useState({ email: "", password: "" });
+  const [credentials, setCredentials] = useState({ username: "", password: "" });
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleChange = (e) => {
     setCredentials({ ...credentials, [e.target.name]: e.target.value });
@@ -17,37 +17,43 @@ const LoginPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError(null);
+
     try {
-      const res = await authService.login(credentials);
-      localStorage.setItem("token", res.token);
+      await login(credentials);
       navigate("/home");
     } catch (err) {
       setError(
         err.response?.data?.error ||
-          "Une erreur est survenue lors de la connexion"
+        "Une erreur est survenue lors de la connexion"
       );
     }
   };
 
   const handleGoogleSuccess = async (credentialResponse) => {
     try {
+      // Appelle le service directement, car on doit stocker aussi le token
       const res = await authService.googleLogin(credentialResponse.credential);
-      localStorage.setItem("token", res.token);
-      navigate("/home");
+      if (res.token) {
+        localStorage.setItem("token", res.token);
+        // Tu peux aussi envisager d'ajouter une fonction googleLogin dans ton AuthContext
+        navigate("/home");
+      }
     } catch (error) {
       console.error("Erreur lors de la connexion Google", error);
+      setError("Connexion Google échouée");
     }
   };
 
   const handleGoogleFailure = (error) => {
     console.error("Google Login Error:", error);
+    setError("Connexion Google échouée");
   };
 
   return (
     <div className="login-wrapper">
-      {/* Logo optionnel (même style que pour signup) */}
       <img
-        src="/public/assets/logo_mealmates.png"
+        src="/assets/logo_mealmates.png"
         alt="MealMates Logo"
         className="login-logo"
       />
@@ -55,14 +61,12 @@ const LoginPage = () => {
       <div className="login-container">
         <h2>Connexion</h2>
         {error && <p className="error">{error}</p>}
-
-        {/* Formulaire de connexion */}
         <form onSubmit={handleSubmit}>
           <input
-            type="email"
-            name="email"
-            placeholder="Email"
-            value={credentials.email}
+            type="text"
+            name="username"
+            placeholder="Nom d'utilisateur"
+            value={credentials.username}
             onChange={handleChange}
             required
           />
@@ -77,7 +81,6 @@ const LoginPage = () => {
           <button type="submit">Se connecter</button>
         </form>
 
-        {/* Liens sous le formulaire */}
         <div className="login-links">
           <a href="/forgot-password">Mot de passe oublié ?</a>
           <p>
@@ -85,14 +88,12 @@ const LoginPage = () => {
           </p>
         </div>
 
-        {/* Séparateur "Ou" */}
         <div className="separator">
           <hr />
           <span>Ou</span>
           <hr />
         </div>
 
-        {/* Section SSO / Google */}
         <div className="sso-login">
           <GoogleLogin
             onSuccess={handleGoogleSuccess}

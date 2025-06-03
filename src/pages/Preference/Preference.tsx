@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Switch, Button } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useNavigate } from "react-router";
-import Navbar from "../components/common/navbar/Navbar";
+import Navbar from "../../components/common/navbar/Navbar";
 
 const Preferences = () => {
   const navigate = useNavigate();

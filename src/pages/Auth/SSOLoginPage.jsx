@@ -1,7 +1,7 @@
 // src/pages/Auth/SSOLoginPage.jsx
 import React from 'react';
 import { useNavigate } from 'react-router';
-import authService from '../../services/authService';
+import authService from '../../services/AuthService';
 import { GoogleLogin } from '@react-oauth/google';
 
 const SSOLoginPage = () => {

@@ -1,12 +1,9 @@
-// src/services/authService.js
 import axios from 'axios';
+import {jwtDecode} from 'jwt-decode';
 
 const API_URL = import.meta.env.VITE_API_URL;
+const TOKEN_KEY = 'token';
 
-<<<<<<< Updated upstream
-async function register({ email, password }) {
-  const res = await axios.post(`${API_URL}/register`, { email, password });
-=======
 const isTokenExpired = (token) => {
   if (!token) return true;
   const decodedToken = jwtDecode(token);
@@ -41,22 +38,48 @@ async function register({ username, email, password }) {
       "Content-Type": "application/json",
     }
   });
->>>>>>> Stashed changes
   return res.data;
 }
 
-async function login({ email, password }) {
-  const res = await axios.post(`${API_URL}/login`, { email, password });
-  return res.data;
+async function login({ username, password }) {
+  try {
+    const res = await axios.post(`${API_URL}/login`, { username, password }, {
+      headers: {
+        "Content-Type": "application/json",
+      }
+    });
+
+    if (res.data.token) {
+      localStorage.setItem(TOKEN_KEY, res.data.token);
+    }
+
+    return res.data;
+  } catch (error) {
+    console.error("Login error:", error.response?.data || error.message);
+    throw error;
+  }
 }
 
 async function googleLogin(token) {
   const res = await axios.post(`${API_URL}/google-login`, { token });
+  
+  if (res.data.token) {
+    localStorage.setItem(TOKEN_KEY, res.data.token);
+  }
+  
   return res.data;
 }
+
+const logout = () => {
+  localStorage.removeItem(TOKEN_KEY);
+  window.location.href = '/login';
+};
 
 export default {
   register,
   login,
-  googleLogin
+  googleLogin,
+  logout,
+  isAuthenticated,
+  getToken,
 };

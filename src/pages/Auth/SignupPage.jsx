@@ -1,11 +1,12 @@
 // src/pages/Auth/SignupPage.jsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router';
-import authService from '../../services/authService';
+import authService from '../../services/AuthService';
 import '../../style/auth.css'; // Fichier de style modifié
 
 const SignupPage = () => {
   const [formData, setFormData] = useState({
+    username: '',
     email: '',
     password: '',
     confirmPassword: ''
@@ -25,8 +26,8 @@ const SignupPage = () => {
     }
 
     try {
-      const { email, password } = formData;
-      await authService.register({ email, password });
+      const { email, password, username } = formData;
+      await authService.register({ email, password, username });
       navigate('/login');
     } catch (err) {
       setError(err.response?.data?.error || 'Une erreur est survenue lors de l\'inscription');
@@ -37,7 +38,7 @@ const SignupPage = () => {
     <div className="signup-wrapper">
       {/* Optionnel : logo ou nom du produit */}
       <img
-        src="/public/assets/logo_mealmates.png"
+        src="/assets/logo_mealmates.png"
         alt="MealMates Logo"
         className="signup-logo"
       />
@@ -46,6 +47,14 @@ const SignupPage = () => {
         <h2>Inscription</h2>
         {error && <p className="error">{error}</p>}
         <form onSubmit={handleSubmit}>
+        <input
+            type="text"
+            name="username"
+            placeholder="Saisir un nom d'utilisateur"
+            value={formData.username}
+            onChange={handleChange}
+            required
+          />
           <input
             type="email"
             name="email"
