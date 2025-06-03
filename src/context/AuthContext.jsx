@@ -1,10 +1,9 @@
-  import React, { createContext, useContext, useState, useEffect, useLocation } from 'react';
+  import React, { createContext, useContext, useState, useEffect } from 'react';
   import AuthService from '../services/AuthService';
 
   const AuthContext = createContext();
 
   export function AuthProvider({ children }) {
-    const location = useLocation();
     const publicPaths = ['/', '/login', '/signup', '/login/google'];
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [loadingAuth, setLoadingAuth] = useState(true);
