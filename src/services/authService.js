@@ -5,6 +5,7 @@ const API_URL = import.meta.env.VITE_API_URL;
 const TOKEN_KEY = 'token';
 
 const isTokenExpired = (token) => {
+  if (!token) return true;
   const decodedToken = jwtDecode(token);
   const currentTime = Date.now() / 1000;
   return decodedToken.exp < currentTime;
