@@ -52,18 +52,49 @@ const ProductService = {
   },
 
     getProductById(productId) {
-        return axios
-        .get(`${API_URL}/products/${productId}`, {
-            headers: {
+      return axios
+      .get(`${API_URL}/products/${productId}`, {
+          headers: {
             ...getAuthHeaders(),
-            },
-        })
+          },
+      })
+      .then((res) => res.data)
+      .catch((err) => {
+          console.error('Erreur getProductById :', err);
+          throw err;
+      });
+    },
+
+    goToCheckout(productId) {
+    return axios
+        .post(
+            `${API_URL}/stripe/checkout/${productId}`, {},
+            {
+              headers: {
+                  ...getAuthHeaders(),
+              },
+            }
+        )
         .then((res) => res.data)
         .catch((err) => {
-            console.error('Erreur getProductById :', err);
+            console.error('Checkout error', err);
             throw err;
         });
     },
+
+    createProduct(formData) {
+    return axios
+      .post(`${API_URL}/product/new`, formData, {
+        headers: {
+          ...getAuthHeaders(),
+        },
+      })
+      .then((res) => res.data)
+      .catch((error) => {
+        console.error('Erreur createProduct :', error.message);
+        throw error;
+      });
+  },
 };
 
 export default ProductService;

@@ -4,22 +4,18 @@ import { useParams, useNavigate } from 'react-router';
 import ProductService from '../../services/ProductService';
 import chatService from '../../services/ChatServices';
 import UserService from '../../services/UserService';
-
+import Modal from '../../components/common/Modal';
 
 const ProductDetail = () => {
-  // Votre logique existante
   const { id } = useParams();
   const navigate = useNavigate();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [user, setUser] = useState(null);
-  
-  // Nouveaux états pour l'interface améliorée
+  const [modalOpened, setModalOpened] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
   const [showFullDescription, setShowFullDescription] = useState(false);
-  
-  // Image par défaut pour les produits sans image
   const defaultImage = '/assets/bg-first-section.png';
 
   useEffect(() => {
@@ -58,6 +54,18 @@ const ProductDetail = () => {
     } catch (error) {
       console.error('Erreur lors de la vérification du chat :', error);
       alert('Impossible de vérifier la conversation. Veuillez réessayer.');
+    }
+  };
+
+  const handleCheckout = async () => {
+    try {
+      const { url } = await ProductService.goToCheckout(product.id);
+      if (url) {
+        window.location.href = url;
+      }
+    } catch (error) {
+      console.error(error);
+      alert('Une erreur est survenue lors du processus de paiement. Veuillez réessayer plus tard.');
     }
   };
 
@@ -102,7 +110,7 @@ const ProductDetail = () => {
       <div className="relative">
         <div className="absolute top-0 left-0 right-0 z-10 flex items-center justify-between p-4">
           <button 
-            onClick={() => navigate(-1)} 
+            onClick={() => navigate('/home')} 
             className="p-2 bg-white/90 backdrop-blur-sm rounded-full shadow-lg hover:bg-white transition-all duration-200"
           >
             <ArrowLeft size={20} className="text-gray-700" />
@@ -224,22 +232,34 @@ const ProductDetail = () => {
         </div>
       </div>
 
-      <div className="bg-white border-t border-gray-200 p-4 space-y-3">
+      <div className="bg-white border-t border-gray-200 p-4 space-y-3 flex flex-col  items  -center">
         <button 
-          className="w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-4 rounded-md font-semibold text-lg shadow-lg hover:shadow-xl transform hover:scale-[1.02] transition-all duration-200 flex items-center justify-center"
+          className="w-full bg-gradient-to-r from-green-500 to-green-600 text-white px-8 py-4 rounded-md font-semibold text-lg shadow-lg hover:shadow-xl transform hover:scale-[1.02] transition-all duration-200 flex items-center justify-center"
           onClick={handleContactClick}
         >
           <MessageCircle size={20} className="mr-2" />
           Contacter le vendeur
         </button>
         <button 
-          className="w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-4 rounded-md font-semibold text-lg shadow-lg hover:shadow-xl transform hover:scale-[1.02] transition-all duration-200 flex items-center justify-center"
-          onClick={handleContactClick}
+          className="w-full bg-gradient-to-r from-green-500 to-green-600 text-white px-8 py-4 rounded-md font-semibold text-lg shadow-lg hover:shadow-xl transform hover:scale-[1.02] transition-all duration-200 flex items-center justify-center"
+          onClick={() => {
+            if (product.donation) {
+              setModalOpened(true);
+            } else {
+              handleCheckout();
+            }
+          }}
         >
           <ShoppingCart size={20} className="mr-2" />
           Acheter
         </button>
       </div>
+      <Modal
+        isOpen={modalOpened}
+        onClose={() => setModalOpened(false)}
+        title="Vous vous appréter à acheter ce produit. Veuillez confirmer votre intention"
+      >
+      </Modal>
     </div>
   );
 };
