@@ -42,6 +42,7 @@ export default function ProductNew() {
       });
 
       const res = await ProductService.createProduct(formData);
+      console.log('Response from createProduct:', res);
 
       if (res.status === 200 || res.status === 201) {
         alert('Nouveau produit crée avec succès');
@@ -77,7 +78,7 @@ export default function ProductNew() {
   };
 
   return (
-    <div className="max-w-md mx-auto h-screen bg-white rounded-lg shadow-lg overflow-hidden">
+    <div className="max-w-md mx-auto h-full bg-white rounded-lg shadow-lg overflow-hidden">
       {/* Header */}
       <div className="p-4 border-b">
         <div className="text-center text-lg font-medium">
@@ -376,7 +377,6 @@ export default function ProductNew() {
           </div>
         </form>
       </div>
-      <Navbar />
     </div>
   );
 }

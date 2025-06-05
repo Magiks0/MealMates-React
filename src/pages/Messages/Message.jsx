@@ -110,7 +110,7 @@ export default function Message() {
   }
 
   return (
-    <div className="w-full max-w-sm mx-auto bg-white rounded-lg overflow-hidden shadow-md flex flex-col h-screen">
+    <div className="w-full max-w-2xl mx-auto bg-white rounded-lg overflow-hidden shadow-md flex flex-col h-full">
       {/* Header */}
       <div className="bg-white p-4 border-b flex justify-between items-center">
         <div className="flex items-center">

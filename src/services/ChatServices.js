@@ -148,8 +148,17 @@ export const chatService = {
       console.error(`Erreur lors de la création de la conversation:`, error);
       throw error;
     }
+  },
+
+  getChatByProductIdAndUsers: async (productId, sellerId, buyerId) => {
+    const res = await axios.get(`${API_URL}/chat/check-existence`, {
+      params: { sellerId, productId, buyerId },
+      headers: {
+        'Authorization': `Bearer ${TOKEN}`,
+      },
+    });
+    return res.data;
   }
-  
 };
 
 export default chatService;
