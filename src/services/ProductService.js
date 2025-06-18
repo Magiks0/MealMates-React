@@ -114,10 +114,8 @@ const ProductService = {
   },
 
   getNearbyProducts(latitude, longitude, radius = 10) {
-  // On utilise directement l'endpoint products avec les paramètres de géolocalisation
-  // Cette approche est plus simple et utilise notre méthode rectangulaire pour le filtrage
-  return getFilteredProducts(`latitude=${latitude}&longitude=${longitude}&radius=${radius}`);
-} 
+    return getFilteredProducts(`latitude=${latitude}&longitude=${longitude}&radius=${radius}`);
+  } 
 
 };
 
