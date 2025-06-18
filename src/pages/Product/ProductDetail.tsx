@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { Star, Bookmark, Share2, ShoppingCart, ArrowLeft, Heart, MessageCircle, User, MapPin, Eye, Clock, Shield, Camera } from 'lucide-react';
 import { useParams, useNavigate } from 'react-router';
-import { Star, Bookmark, Share2, ShoppingCart, ArrowLeft } from 'lucide-react';
 import ProductService from '../../services/ProductService';
+import chatService from '../../services/ChatServices';
+import UserService from '../../services/UserService';
+import Modal from '../../components/common/Modal';
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -9,15 +12,25 @@ const ProductDetail = () => {
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  
-  // Image par défaut pour les produits sans image
+  const [user, setUser] = useState(null);
+  const [modalOpened, setModalOpened] = useState(false);
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [showFullDescription, setShowFullDescription] = useState(false);
   const defaultImage = '/assets/bg-first-section.png';
+
+  useEffect(() => {
+    async function fetchUser() {
+      const user = await UserService.getCurrentUser();
+      setUser(user);
+    }
+    fetchUser();
+  }, []);
 
   useEffect(() => {
     const fetchProductDetail = async () => {
       try {
         setLoading(true);
-        const response = await ProductService.getProductById(id);
+        const response = await ProductService.getProductById(Number(id));
         setProduct(response);
         setLoading(false);
       } catch (err) {
@@ -30,113 +43,223 @@ const ProductDetail = () => {
     fetchProductDetail();
   }, [id]);
 
+  const handleContactClick = async () => {
+    try {
+      const { exists, chatId } = await chatService.checkChatExistence(user.id, product.id);
+      if (exists) {
+        navigate(`/chats/${chatId}`);
+      } else {
+        navigate('/new-message', { state: { product, userId: product.user.id } });
+      }
+    } catch (error) {
+      console.error('Erreur lors de la vérification du chat :', error);
+      alert('Impossible de vérifier la conversation. Veuillez réessayer.');
+    }
+  };
+
+  const handleCheckout = async () => {
+    try {
+      const { url } = await ProductService.goToCheckout(product.id);
+      if (url) {
+        window.location.href = url;
+      }
+    } catch (error) {
+      console.error(error);
+      alert('Une erreur est survenue lors du processus de paiement. Veuillez réessayer plus tard.');
+    }
+  };
+
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-500"></div>
+      <div className="flex items-center justify-center h-screen bg-gradient-to-br from-green-50 to-blue-50">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-4 border-green-500 border-t-transparent mx-auto mb-4"></div>
+          <p className="text-gray-600 font-medium">Chargement du produit...</p>
+        </div>
       </div>
     );
   }
 
   if (error || !product) {
     return (
-      <div className="flex flex-col items-center justify-center h-screen p-4">
-        <p className="text-red-500 mb-4">{error || "Ce produit n'existe pas"}</p>
-        <button 
-          onClick={() => navigate('/home')}
-          className="px-4 py-2 bg-green-500 text-white rounded-lg"
-        >
-          Retour à l'accueil
-        </button>
+      <div className="flex flex-col items-center justify-center p-6 bg-gradient-to-br from-red-50 to-orange-50">
+        <div className="text-center max-w-md">
+          <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg className="w-10 h-10 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
+            </svg>
+          </div>
+          <h2 className="text-xl font-bold text-gray-800 mb-2">Oups !</h2>
+          <p className="text-red-600 mb-6">{error || "Ce produit n'existe pas"}</p>
+          <button 
+            onClick={() => navigate('/home')}
+            className="px-6 py-3 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+          >
+            Retour à l'accueil
+          </button>
+        </div>
       </div>
     );
   }
 
-  // Déterminer l'image à afficher
-  const productImage = product.image || product.files?.length > 0 ? 
-    (product.files[0].path || defaultImage) : defaultImage;
+  //TODO: Améliorer l'affichage de l'image du produit
+  const productImage = import.meta.env.VITE_IMG_URL + product.files[0]?.path || defaultImage;
 
   return (
-    <div className="flex flex-col h-screen bg-white">
-      {/* Header with back button */}
-      <div className="p-4 flex items-center">
-        <button onClick={() => navigate(-1)} className="p-1">
-          <ArrowLeft size={24} />
-        </button>
-      </div>
-
-      {/* Product Image */}
-      <div className="w-full">
-        <img 
-          src={productImage}
-          alt={product.title} 
-          className="w-full h-64 object-cover"
-          onError={(e) => {
-            e.target.onerror = null; // Évite une boucle infinie si l'image par défaut ne charge pas
-            e.target.src = defaultImage; // Utilise l'image par défaut en cas d'erreur
-          }}
-        />
-      </div>
-
-      {/* Product Details */}
-      <div className="flex-1 p-4 space-y-4">
-        <h1 className="text-xl font-bold text-gray-800">{product.title}</h1>
-        <p className="text-xl font-semibold text-green-600">{product.price} €</p>
-        
-        <div>
-          <h2 className="font-bold mb-1">Description</h2>
-          <p className="text-gray-700">{product.description}</p>
+    <div className="flex flex-col bg-gray-50">
+      <div className="relative">
+        <div className="absolute top-0 left-0 right-0 z-10 flex items-center justify-between p-4">
+          <button 
+            onClick={() => navigate('/home')} 
+            className="p-2 bg-white/90 backdrop-blur-sm rounded-full shadow-lg hover:bg-white transition-all duration-200"
+          >
+            <ArrowLeft size={20} className="text-gray-700" />
+          </button>
+          <div className="flex space-x-2">
+            <button 
+              onClick={() => setIsFavorite(!isFavorite)}
+              className="p-2 bg-white/90 backdrop-blur-sm rounded-full shadow-lg hover:bg-white transition-all duration-200"
+            >
+              <Heart 
+                size={20} 
+                className={isFavorite ? "text-red-500 fill-current" : "text-gray-700"} 
+              />
+            </button>
+            <button className="p-2 bg-white/90 backdrop-blur-sm rounded-full shadow-lg hover:bg-white transition-all duration-200">
+              <Share2 size={20} className="text-gray-700" />
+            </button>
+          </div>
         </div>
 
-        <div>
-          <h2 className="font-bold mb-1">Vendeur</h2>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center mr-2">
-                {product.user?.image_url ? (
-                  <img 
-                    src={product.user.image_url} 
-                    alt={product.user.username} 
-                    className="w-full h-full rounded-full object-cover" 
-                  />
-                ) : (
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                  </svg>
-                )}
+        <div className="relative">
+          <img 
+            src={productImage}
+            alt={product.title} 
+            className="w-full h-80 object-cover"
+            onError={(e) => {
+              e.target.onerror = null;
+              e.target.src = defaultImage;
+            }}
+          />
+          <div className="absolute bottom-4 right-4 bg-black/50 backdrop-blur-sm text-white px-3 py-1 rounded-full text-sm">
+            <Camera size={14} className="inline mr-1" />
+            1/1
+          </div>
+        </div>
+      </div>
+
+      <div className="flex-1 bg-white rounded-t-3xl -mt-6 relative z-10 overflow-y-auto">
+        <div className="p-6 space-y-6">
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <h1 className="text-2xl font-bold text-gray-900 flex-1 mr-4">{product.title}</h1>
+              <div className="flex items-center space-x-2 text-sm text-gray-500">
+                <Eye size={16} />
+                <span>127</span>
               </div>
-              <span>{product.user?.username || "Vendeur inconnu"}</span>
             </div>
-            <div className="flex items-center text-green-600">
-              <span className="mr-1">{product.user?.note || "N/A"}</span>
-              <Star className="w-5 h-5 fill-current" />
+            <div className="flex items-center justify-between">
+              <p className="text-3xl font-bold text-green-600">{product.price === 0 ? 'Don' : `${product.price} €`}</p>
+              <div className="flex items-center space-x-2 text-sm text-gray-500">
+                <Clock size={16} />
+                <span>Il y a 2 jours</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-gray-50 rounded-2xl p-4">
+            <h2 className="font-bold text-gray-900 mb-3 flex items-center">
+              <User size={18} className="mr-2" />
+              Vendeur
+            </h2>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center">
+                <div className="relative">
+                  <div className="w-12 h-12 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center mr-3 shadow-lg">
+                    {product.user?.image_url ? (
+                      <img 
+                        src={product.user.image_url} 
+                        alt={product.user.username} 
+                        className="w-full h-full rounded-full object-cover" 
+                      />
+                    ) : (
+                      <User className="h-6 w-6 text-white" />
+                    )}
+                  </div>
+                  <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 border-2 border-white rounded-full"></div>
+                </div>
+                <div>
+                  <div className="flex items-center">
+                    <span className="font-semibold text-gray-900">{product.user?.username || "Vendeur inconnu"}</span>
+                    <div className="ml-2 w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center">
+                      <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                      </svg>
+                    </div>
+                  </div>
+                  <div className="flex items-center text-sm text-gray-500">
+                    <MapPin size={14} className="mr-1" />
+                    <span>Paris, France</span>
+                  </div>
+                </div>
+              </div>
+              <div className="text-right">
+                <div className="flex items-center text-green-600 font-semibold">
+                  <span className="mr-1">{product.user?.note || "4.8"}</span>
+                  <Star className="w-5 h-5 fill-current" />
+                </div>
+                <p className="text-xs text-gray-500">125 avis</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-3">
+            <h2 className="font-bold text-gray-900 text-lg">Description</h2>
+            <div className="text-gray-700 leading-relaxed">
+              <p className={`${!showFullDescription && product.description?.length > 150 ? 'line-clamp-3' : ''}`}>
+                {product.description}
+              </p>
+              {product.description?.length > 150 && (
+                <button 
+                  onClick={() => setShowFullDescription(!showFullDescription)}
+                  className="text-green-600 font-medium mt-2 hover:text-green-700 transition-colors"
+                >
+                  {showFullDescription ? 'Voir moins' : 'Voir plus'}
+                </button>
+              )}
             </div>
           </div>
         </div>
       </div>
 
-      {/* Contact Button */}
-      <div className="p-4">
+      <div className="bg-white border-t border-gray-200 p-4 space-y-3 flex flex-col  items  -center">
         <button 
-          className="w-full bg-green-500 text-white py-3 rounded-lg font-medium"
-          onClick={() => navigate(`/message?userId=${product.user?.id}&productId=${product.id}`)}
+          className="w-full bg-gradient-to-r from-green-500 to-green-600 text-white px-8 py-4 rounded-md font-semibold text-lg shadow-lg hover:shadow-xl transform hover:scale-[1.02] transition-all duration-200 flex items-center justify-center"
+          onClick={handleContactClick}
         >
-          Contacter
+          <MessageCircle size={20} className="mr-2" />
+          Contacter le vendeur
+        </button>
+        <button 
+          className="w-full bg-gradient-to-r from-green-500 to-green-600 text-white px-8 py-4 rounded-md font-semibold text-lg shadow-lg hover:shadow-xl transform hover:scale-[1.02] transition-all duration-200 flex items-center justify-center"
+          onClick={() => {
+            if (product.donation) {
+              setModalOpened(true);
+            } else {
+              handleCheckout();
+            }
+          }}
+        >
+          <ShoppingCart size={20} className="mr-2" />
+          Acheter
         </button>
       </div>
-
-      {/* Footer */}
-      <div className="flex items-center justify-around p-4 border-t">
-        <button className="flex flex-col items-center">
-          <Bookmark className="w-6 h-6 text-gray-500" />
-        </button>
-        <button className="flex flex-col items-center">
-          <Share2 className="w-6 h-6 text-gray-500" />
-        </button>
-        <button className="flex flex-col items-center">
-          <ShoppingCart className="w-6 h-6 text-gray-500" />
-        </button>
-      </div>
+      <Modal
+        isOpen={modalOpened}
+        onClose={() => setModalOpened(false)}
+        title="Vous vous appréter à acheter ce produit. Veuillez confirmer votre intention"
+      >
+      </Modal>
     </div>
   );
 };

@@ -1,62 +1,58 @@
 import * as React from "react";
 import { useLocation, useNavigate } from "react-router";
-import Box from "@mui/material/Box";
-import BottomNavigation from "@mui/material/BottomNavigation";
-import BottomNavigationAction from "@mui/material/BottomNavigationAction";
-
-import "./Navbar.css";
-import "/assets/user.svg" 
+import { Home, Search, Plus, MessageCircle, User } from 'lucide-react';
 
 const Navbar = () => {
   const location = useLocation(); 
   const navigate = useNavigate();
   const [value, setValue] = React.useState(location.pathname);
 
-  const getIcon = (path, defaultIcon, activeIcon) => {
-    return location.pathname === path ? (
-      <img src={activeIcon} alt={path} className="navbar-icon" />
-    ) : (
-      <img src={defaultIcon} alt={path} className="navbar-icon" />
-    );
+  const navItems = [
+    { label: "Accueil", value: "/home", icon: Home },
+    { label: "Parcourir", value: "/search", icon: Search },
+    { label: "Publier", value: "/new-product", icon: Plus },
+    { label: "Messages", value: "/chats", icon: MessageCircle },
+    { label: "Profil", value: "/account", icon: User }
+  ];
+
+  const handleNavigation = (newValue) => {
+    setValue(newValue);
+    navigate(newValue);
   };
 
   return (
-    <Box className="navbar-container">
-      <BottomNavigation
-        value={value}
-        onChange={(event, newValue) => {
-          setValue(newValue);
-          navigate(newValue);
-        }}
-        showLabels
-      >
-        <BottomNavigationAction
-          label="Accueil"
-          value="/home"
-          icon={getIcon("/home", "../../../assets/home.svg", "../../../assets/home-active.svg")}
-        />
-        <BottomNavigationAction
-          label="Parcourir"
-          value="/search"
-          icon={getIcon("/search", "/assets/search.svg", "/assets/search-active.svg")}
-        />
-        <BottomNavigationAction
-          label="Publier"
-          value="/new-product"
-          icon={getIcon("/add", "/assets/add.svg", "/assets/add-active.svg")}
-        />
-        <BottomNavigationAction
-          label="Message"
-          value="/message"
-          icon={getIcon("/message", "/assets/message.svg", "/assets/message-active.svg")}
-        />
-        <BottomNavigationAction
-          label="Profil"
-          value="/account"
-          icon={getIcon("/account", "/assets/user.svg", "/assets/user-active.svg")}
-        />
-      </BottomNavigation>
-    </Box>
+    <div className="fixed bottom-0 left-0 right-0 z-500 bg-white border-t border-gray-100 px-2 py-1">
+      <div className="flex items-center justify-around">
+        {navItems.map((item) => {
+          const isActive = location.pathname === item.value;
+          const Icon = item.icon;
+          
+          return (
+            <button
+              key={item.value}
+              onClick={() => handleNavigation(item.value)}
+              className="flex flex-col items-center p-2 transition-colors duration-200"
+            >
+              <Icon 
+                size={20} 
+                className={`mb-1 transition-colors duration-200 ${
+                  isActive ? 'text-green-500' : 'text-gray-400'
+                }`}
+              />
+              <span className={`text-xs transition-colors duration-200 ${
+                isActive ? 'text-green-500 font-medium' : 'text-gray-400'
+              }`}>
+                {item.label}
+              </span>
+
+              {isActive && (
+                <div className="w-1 h-1 bg-green-500 rounded-full mt-1"></div>
+              )}
+            </button>
+          );
+        })}
+      </div>
+    </div>
   );
 };
 

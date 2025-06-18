@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { useForm } from '@tanstack/react-form';
 import { MapPin, Camera, ArrowRight, ArrowLeft } from 'lucide-react';
-import Navbar from "../components/common/navbar/Navbar";
-import ProductService from '../services/ProductService';
+import Navbar from "../../components/common/navbar/Navbar";
+import ProductService from '../../services/ProductService';
 
 export default function ProductNew() {
   const [step, setStep] = useState(1);
@@ -42,12 +42,13 @@ export default function ProductNew() {
       });
 
       const res = await ProductService.createProduct(formData);
+      console.log('Response from createProduct:', res);
 
-      if (res.status !== 200) {
+      if (res.status === 200 || res.status === 201) {
         alert('Nouveau produit crée avec succès');
         window.location.href = '/home';
       } else {
-        console.log('Annonce créée avec succès:', res.data);
+        console.log('Erreur lors de la création', res.error);
         alert(res.message);
         form.reset();
         setStep(1);
@@ -77,7 +78,7 @@ export default function ProductNew() {
   };
 
   return (
-    <div className="max-w-md mx-auto h-screen bg-white rounded-lg shadow-lg overflow-hidden">
+    <div className="max-w-md mx-auto h-full bg-white rounded-lg shadow-lg overflow-hidden">
       {/* Header */}
       <div className="p-4 border-b">
         <div className="text-center text-lg font-medium">
@@ -376,7 +377,6 @@ export default function ProductNew() {
           </div>
         </form>
       </div>
-      <Navbar />
     </div>
   );
 }

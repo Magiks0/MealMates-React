@@ -5,18 +5,27 @@ const API_URL = import.meta.env.VITE_API_URL;
 const TOKEN_KEY = 'token';
 
 const isTokenExpired = (token) => {
+  if (!token) return true;
   const decodedToken = jwtDecode(token);
   const currentTime = Date.now() / 1000;
   return decodedToken.exp < currentTime;
 };
 
 const isAuthenticated = () => {
-  if(isTokenExpired(localStorage.getItem(TOKEN_KEY))) {
+  const token = localStorage.getItem(TOKEN_KEY);
+  if (!token) return false;
+
+  try {
+    if (isTokenExpired(token)) {
+      localStorage.removeItem(TOKEN_KEY);
+      return false;
+    }
+    return true;
+  } catch (e) {
+    console.error("Token is invalid:", e);
     localStorage.removeItem(TOKEN_KEY);
     return false;
   }
-
-  return localStorage.getItem(TOKEN_KEY) !== null;
 };
 
 const getToken = () => {
@@ -33,19 +42,22 @@ async function register({ username, email, password }) {
 }
 
 async function login({ username, password }) {
-  console.log(API_URL);
-  const res = await axios.post(`${API_URL}/login`, { username, password }, {
-    headers: {
-      "Content-Type": "application/json",
-      // 'Access-Control-Allow-Origin': 'http://localhost:5173/login'
+  try {
+    const res = await axios.post(`${API_URL}/login`, { username, password }, {
+      headers: {
+        "Content-Type": "application/json",
+      }
+    });
+
+    if (res.data.token) {
+      localStorage.setItem(TOKEN_KEY, res.data.token);
     }
-  });
-  
-  if (res.data.token) {
-    localStorage.setItem(TOKEN_KEY, res.data.token);
+
+    return res.data;
+  } catch (error) {
+    console.error("Login error:", error.response?.data || error.message);
+    throw error;
   }
-  
-  return res.data;
 }
 
 async function googleLogin(token) {
@@ -67,9 +79,6 @@ export default {
   register,
   login,
   googleLogin,
-  logout,
-  isAuthenticated,
-  getToken,
   logout,
   isAuthenticated,
   getToken,

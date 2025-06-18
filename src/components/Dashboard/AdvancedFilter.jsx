@@ -16,7 +16,8 @@ const AdvancedFilter = ({ isOpen, onClose }) => {
   };
 
   const handleReset = () => {
-    setFilters({ minPrice: '', maxPrice: '', address: '', category: '' });
+    setFilters({ minPrice: '', maxPrice: '', address: '', category: '', peremptionDate: '', dietetic: '' });
+    setSelectedTypes([]);
     setParams({});
   };
 
@@ -37,7 +38,7 @@ const AdvancedFilter = ({ isOpen, onClose }) => {
     if (filters.maxPrice) newParams.set("maxPrice", filters.maxPrice);
     if (filters.address) newParams.set("address", filters.address);
     if (filters.peremptionDate) newParams.set("peremptionDate", filters.peremptionDate);
-    if (filters.dietetic) newParams.set("dietetic", filters.dietetic);
+    if (filters.dietaries) newParams.set("dietary", filters.dietaries);
   
     if (selectedTypes.length > 0) {
       newParams.set("types", selectedTypes.join(","));
@@ -47,38 +48,28 @@ const AdvancedFilter = ({ isOpen, onClose }) => {
   };
   
   useEffect(() => {
-      async function fetchDietaries() {
-        try {
-          const response = await fetch(`${API_URL}/dietaries`);
-          if (!response.ok) {
-            throw new Error(`Erreur HTTP: ${response.status}`);
-          }
-          const data = await response.json();
-          setDietaries(data);
-        } catch (err) {
-          setError(err.message);
-        }
+    async function fetchDietaries() {
+      try {
+        const data = await getDietaries();
+        setDietaries(data);
+      } catch (err) {
+        setError(err.message);
       }
+    }
+    fetchDietaries();
+  }, []);
   
-      fetchDietaries();
-    }, [API_URL]);
-
-    useEffect(() => {
-      async function fetchTypes() {
-        try {
-          const response = await fetch(`${API_URL}/types`);
-          if (!response.ok) {
-            throw new Error(`Erreur HTTP: ${response.status}`);
-          }
-          const data = await response.json();
-          setTypes(data);
-        } catch (err) {
-          setError(err.message);
-        }
+  useEffect(() => {
+    async function fetchTypes() {
+      try {
+        const data = await getTypes();
+        setTypes(data);
+      } catch (err) {
+        setError(err.message);
       }
-  
-      fetchTypes();
-    }, [API_URL]);
+    }
+    fetchTypes();
+  }, []);
 
   return (
     <form
@@ -136,7 +127,7 @@ const AdvancedFilter = ({ isOpen, onClose }) => {
         </div>
 
         <div className="space-y-2">
-          <label className="text-sm font-medium text-gray-500 uppercase tracking-wider">Date de péremption</label>
+          <label className="text-sm font-medium text-gray-500 uppercase tracking-wider">Périme après</label>
           <input
             type="date"
             name="peremptionDate"
@@ -150,15 +141,15 @@ const AdvancedFilter = ({ isOpen, onClose }) => {
           <label className="text-sm font-medium text-gray-500 uppercase tracking-wider">Régime alimentaire</label>
           <div className="relative">
             <select
-              name="dietetic"
-              value={filters.category}
+              name="dietaries"
+              value={filters.dietaries}
               onChange={handleChange}
               className="w-full p-3 border-0 bg-gray-50 rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none appearance-none transition-all pr-10"
             >
               <option value="">Tous les régimes</option>
-              {dietaries.map((dietetic) => (
-                <option key={dietetic.id} value={dietetic.name}>
-                  {dietetic.name}
+              {dietaries.map((dietary) => (
+                <option key={dietary.id} value={dietary.name}>
+                  {dietary.name}
                 </option>
               ))}
             </select>
