@@ -66,25 +66,23 @@ const Map = () => {
     try {
       setLoading(true);
       console.log(`Recherche de produits près de [${latitude}, ${longitude}] dans un rayon de ${radius || searchRadius}km`);
+      let lat = latitude;
+      let lng = longitude;
+      if (userPosition && userPosition.length === 2) {
+        lat = userPosition[0];
+        lng = userPosition[1];
+      }
+      console.log(`Recherche de produits près de [${latitude}, ${longitude}] dans un rayon de ${radius || searchRadius}km`);
+
+      const data = await productService.getNearbyProducts(lat, lng, radius || searchRadius);
       
-      // Utilisation de la méthode spécifique pour la recherche géographique
-      const data = await productService.getNearbyProducts(latitude, longitude, radius || searchRadius);
-      
-      console.log(`${data.length} produits trouvés dans le rayon`);
+      console.log(data);
       setProducts(data);
       setLoading(false);
-    } catch (err) {
-      // Si la méthode géospatiale échoue, on revient à la méthode standard
-      try {
-        const queryParams = `?latitude=${latitude}&longitude=${longitude}&radius=${radius || searchRadius}`;
-        const data = await productService.getFilteredProducts(queryParams);
-        setProducts(data);
-        setLoading(false);
-      } catch (fallbackErr) {
-        console.error("Erreur lors de la récupération des produits:", err);
-        setError("Impossible de charger les produits");
-        setLoading(false);
-      }
+    }catch (err) {
+      console.error("Erreur lors de la récupération des produits:", err);
+      setError("Impossible de charger les produits");
+      setLoading(false);
     }
   };
 
@@ -124,7 +122,8 @@ const Map = () => {
     console.log("Adresse sélectionnée:", address);
     
     setSearchedLocation(address);
-    
+
+    setUserPosition([address.latitude, address.longitude, searchRadius]);
     setMapCenter([address.latitude, address.longitude]);
     
     fetchProducts(address.latitude, address.longitude, searchRadius);
@@ -242,39 +241,63 @@ const Map = () => {
         )}
 
         <ZoomControl position="bottomright" />
-        
         {showModal && selectedMarker && (
-          <div id="modal" className="flex bg-white top-145 mx-5 z-1000 relative rounded-lg drop-shadow-lg">
-            <div className="relative w-[40%] h-40 rounded-l-lg overflow-hidden">
-              <button 
-                className="absolute top-2 left-2 bg-red-500 text-white w-6 h-6 flex justify-center items-center rounded-full"
-                onClick={closeModal}
-              >
-                X
+          <div
+            className="fixed inset-0 z-[2000] flex items-end justify-center bg-opacity-40 mb-30 px-4"
+            onClick={() => {
+              window.location.href = `/product/${selectedMarker.id}`;
+            }}
+            style={{ cursor: "pointer" }}
+          >
+            <div
+              className="bg-white rounded-lg shadow-lg w-full max-w-xl relative animate-fade-in mx-auto"
+              style={{
+                minWidth: 0,
+                width: "100%",
+                maxWidth: "600px",
+                marginLeft: "auto",
+                marginRight: "auto",
+              }}
+              onClick={e => e.stopPropagation()}
+            >
+            <button className="hidden md:flex absolute top-3 left-3 bg-white w-9 h-9 items-center justify-center rounded-full shadow hover:bg-gray-100 transition z-10" aria-label="Like">
+          <img className="w-7 h-7" src="../assets/like.svg" alt="like-button" />
               </button>
-              <img
-                src={selectedMarker.image}
-                alt={selectedMarker.name}
-                className="w-full h-full object-cover rounded-l-lg"
-              />
-            </div>
-
-            <div className="flex flex-col justify-between w-[60%] p-4">
-              <div className="flex justify-between items-center">
-                <h3>{selectedMarker.name}</h3>
-                <img className="w-7 h-7" src="../assets/like.svg" alt="like-button" />
+              <button
+                className="absolute top-3 right-3 bg-red-500 text-white w-7 h-7 flex items-center justify-center rounded-full hover:bg-red-600 transition"
+                onClick={closeModal}
+                aria-label="Fermer"
+              >
+          <span className="text-lg font-bold">×</span>
+              </button>
+              <div className="flex flex-col md:flex-row">
+          <div className="md:w-2/5 w-full h-40 md:h-auto rounded-t-lg md:rounded-l-lg md:rounded-tr-none overflow-hidden flex-shrink-0">
+            <img
+              src={selectedMarker.image}
+              alt={selectedMarker.name}
+              className="w-full h-full object-cover"
+            />
+          </div>
+          <div className="flex-1 p-4 flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <h3 className="text-lg font-semibold">{selectedMarker.name}</h3>
+                <img className="w-7 h-7 md:hidden" src="../assets/like.svg" alt="like-button" />
               </div>
-              <p className="text-sm mt-1 text-gray-700 line-clamp-2">{selectedMarker.description}</p>
-              <div className="flex justify-between items-center">
-                <div>
-                  <p className="text-[#777777]">{selectedMarker.date}</p>
-                  <h5 className="font-bold">{selectedMarker.price}</h5>
-                  <p className="text-sm text-gray-600">{selectedMarker.type}</p>
-                </div>
-                <div className="flex items-center">
-                  <img src="../assets/star.svg" alt="notation" />
-                  <h5>{selectedMarker.rating}</h5>
-                </div>
+              <p className="text-sm text-gray-700 mb-2 line-clamp-2">{selectedMarker.description}</p>
+            </div>
+            <div className="flex items-center justify-between mt-2">
+              <div>
+                <p className="text-xs text-gray-500">{selectedMarker.date}</p>
+                <h5 className="font-bold text-[#009B6A]">{selectedMarker.price}</h5>
+                <p className="text-xs text-gray-600">{selectedMarker.type}</p>
+              </div>
+              <div className="flex items-center gap-1">
+                <img src="../assets/star.svg" alt="notation" className="w-5 h-5" />
+                <span className="font-medium">{selectedMarker.rating}</span>
+              </div>
+            </div>
+          </div>
               </div>
             </div>
           </div>
