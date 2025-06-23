@@ -65,22 +65,18 @@ const Map = () => {
   const fetchProducts = async (latitude, longitude, radius) => {
     try {
       setLoading(true);
-      console.log(`Recherche de produits près de [${latitude}, ${longitude}] dans un rayon de ${radius || searchRadius}km`);
       let lat = latitude;
       let lng = longitude;
       if (userPosition && userPosition.length === 2) {
         lat = userPosition[0];
         lng = userPosition[1];
       }
-      console.log(`Recherche de produits près de [${latitude}, ${longitude}] dans un rayon de ${radius || searchRadius}km`);
 
       const data = await productService.getNearbyProducts(lat, lng, radius || searchRadius);
       
-      console.log(data);
       setProducts(data);
       setLoading(false);
     }catch (err) {
-      console.error("Erreur lors de la récupération des produits:", err);
       setError("Impossible de charger les produits");
       setLoading(false);
     }
@@ -118,9 +114,7 @@ const Map = () => {
     setShowModal(false);
   };
   
-  const handleSelectAddress = (address) => {
-    console.log("Adresse sélectionnée:", address);
-    
+  const handleSelectAddress = (address) => {    
     setSearchedLocation(address);
 
     setUserPosition([address.latitude, address.longitude, searchRadius]);

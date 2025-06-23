@@ -35,9 +35,6 @@ const ProfilePage = () => {
       email: user?.email ?? "",
       address: user?.address ?? "",
     },
-    onSubmit: async ({ value }) => {
-      console.log(value);
-    },
     validators: {
       onChange: z.object({
         username: z.string().min(1, "Username is required"),
