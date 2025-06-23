@@ -34,7 +34,7 @@ export default function Dashboard() {
         ]);
 
         setRecomendedProducts(filtered);
-        setLastChanceProducts(lastChance);
+        setLastChanceProducts(lastChance);lm:! 
         setRecentProducts(recent);
       } catch (error) {
         console.error("Erreur :", error);
