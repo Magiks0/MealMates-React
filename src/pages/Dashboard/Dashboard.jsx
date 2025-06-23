@@ -1,10 +1,13 @@
-import React, { useEffect, useState } from 'react';
-import { MapPin } from 'lucide-react';
-import AdvancedFilter from '../../components/Dashboard/AdvancedFilter';
-import { useSearchParams } from 'react-router';
-import ProductSlider from '../../components/Dashboard/ProductSlider';
-import ProductCard from '../../components/common/ProductCard'; 
-import ProductService from '../../services/ProductService';
+import React, { useEffect, useState } from "react";
+import { MapPin, Bookmark, BookmarkPlus } from "lucide-react";
+import AdvancedFilter from "../../components/Dashboard/AdvancedFilter";
+import { useSearchParams } from "react-router";
+import ProductSlider from "../../components/Dashboard/ProductSlider";
+import ProductCard from "../../components/common/ProductCard";
+import ProductService from "../../services/ProductService";
+import SavedSearches from "../../components/Dashboard/SavedSearches";
+import { listSavedSearches } from "../../services/SavedSearchService";
+import { buildSearchParams } from "../../utils/cleanParams";
 
 export default function Dashboard() {
   const [products, setProducts] = useState([]);
@@ -13,6 +16,13 @@ export default function Dashboard() {
   const [recomendedProducts, setRecomendedProducts] = useState([]);
   const [filterOpen, setFilterOpen] = useState(false);
   const [filters, setFilters] = useSearchParams();
+  const [searchText, setSearchText] = useState(filters.get("keyword") ?? "");
+  const [savedSearches, setSavedSearches] = useState([]);
+  useEffect(() => {
+    fetchSavedSearches();
+  }, []);
+
+  const [showSavedList, setShowSavedList] = useState(false);
 
   useEffect(() => {
     const load = async () => {
@@ -27,14 +37,36 @@ export default function Dashboard() {
         setLastChanceProducts(lastChance);
         setRecentProducts(recent);
       } catch (error) {
-        console.error('Erreur :', error);
+        console.error("Erreur :", error);
       }
     };
 
     load();
   }, [filters]);
 
-  const hasActiveFilters = filters.toString() !== '';
+  function handleShowSavedSearches() {
+    setShowSavedList((open) => {
+      if (!open) fetchSavedSearches();
+      return !open;
+    });
+  }
+
+  const hasActiveFilters = filters.toString() !== "";
+
+  const isCurrentSearchSaved = savedSearches.some(
+    (s) =>
+      JSON.stringify(s.criteria) ===
+      JSON.stringify(Object.fromEntries([...filters]))
+  );
+
+  async function fetchSavedSearches() {
+    try {
+      const data = await listSavedSearches();
+      setSavedSearches(data);
+    } catch (e) {
+      console.error("Erreur chargement recherches :", e);
+    }
+  }
 
   return (
     <div className="relative min-h-screen bg-gray-50">
@@ -46,13 +78,26 @@ export default function Dashboard() {
             <div className="font-medium">10 Rue de la Paix, Paris</div>
           </div>
           <div className="flex items-center space-x-1">
-            <button
-              onClick={() => setFilterOpen(true)}
-              className="p-2 text-white"
-              aria-label="Filtres avancés"
-            >
-              <img src="/assets/filter-icon.png" alt="filter-icon" />
-            </button>
+            <div className="flex items-center space-x-1">
+              <button
+                onClick={() => setFilterOpen(true)}
+                className="p-2 text-white"
+                aria-label="Filtres avancés"
+              >
+                <img src="/assets/filter-icon.png" alt="filter-icon" />
+              </button>
+              <SavedSearches
+                filters={filters}
+                setFilters={setFilters}
+                searchText={searchText}
+                setSearchText={setSearchText}
+                savedSearches={savedSearches}
+                fetchSavedSearches={fetchSavedSearches}
+                showSavedList={showSavedList}
+                setShowSavedList={setShowSavedList}
+                hasActiveFilters={hasActiveFilters}
+              />
+            </div>
           </div>
         </div>
 
@@ -60,11 +105,31 @@ export default function Dashboard() {
           <div className="relative">
             <input
               type="text"
+              value={searchText}
+              onChange={(e) => setSearchText(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  const next = buildSearchParams(filters, {
+                    keyword: searchText.trim() || null,
+                  });
+                  setFilters(next);
+                }
+              }}
               placeholder="Rechercher..."
               className="w-10/12 p-2 pl-9 border rounded-md bg-gray-100"
             />
-            <svg className="w-5 h-5 text-gray-400 absolute left-2 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            <svg
+              className="w-5 h-5 text-gray-400 absolute left-2 top-2.5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              />
             </svg>
           </div>
         </div>
@@ -80,23 +145,35 @@ export default function Dashboard() {
 
       {/* Contenu conditionnel */}
       {hasActiveFilters ? (
-       <div className="p-4">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {recomendedProducts.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
+        <div className="p-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {recomendedProducts.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
         </div>
-      </div>
       ) : (
         <>
-          <ProductSlider sectionTitle="Nos recommendations" products={recomendedProducts} />
-          <ProductSlider sectionTitle="Dernières chances !" products={lastChanceProducts} />
-          <ProductSlider sectionTitle="Récemment ajoutés" products={recentProducts} />
+          <ProductSlider
+            sectionTitle="Nos recommendations"
+            products={recomendedProducts}
+          />
+          <ProductSlider
+            sectionTitle="Dernières chances !"
+            products={lastChanceProducts}
+          />
+          <ProductSlider
+            sectionTitle="Récemment ajoutés"
+            products={recentProducts}
+          />
         </>
       )}
 
       {/* Filtres avancés */}
-      <AdvancedFilter isOpen={filterOpen} onClose={() => setFilterOpen(false)} />
+      <AdvancedFilter
+        isOpen={filterOpen}
+        onClose={() => setFilterOpen(false)}
+      />
       {filterOpen && (
         <div
           className="fixed inset-0 bg-black opacity-20 z-40"
