@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
-import chatService from '../../services/ChatServices';
+import ChatService from '../../services/ChatServices';
 import Navbar from '../../components/common/navbar/Navbar';
 
 export default function MessagesList() {
@@ -14,7 +14,7 @@ export default function MessagesList() {
   useEffect(() => {
     const fetchChats = async () => {
       try {
-        const data = await chatService.getChats();
+        const data = await ChatService.getChats();
         setChats(data);
         setLoading(false);
       } catch (err) {
@@ -82,7 +82,7 @@ function MessageItem({ name, message, time, avatarSrc, onClick }) {
       <div className="w-12 h-12 bg-gray-300 rounded-full overflow-hidden mr-3 flex-shrink-0">
         {avatarSrc ? 
           <img src={avatarSrc} alt={name} className="w-full h-full object-cover" /> :
-          <div className="w-full h-full flex items-center justify-center bg-blue-500 text-white text-xl font-bold">
+          <div className="w-full h-full flex items-center justify-center bg-secondary text-white text-xl font-bold">
             {name.charAt(0).toUpperCase()}
           </div>
         }

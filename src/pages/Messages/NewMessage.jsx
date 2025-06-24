@@ -1,7 +1,7 @@
 import { useLocation, useNavigate } from 'react-router';
 import { useState } from 'react';
 import { ChevronRight, ArrowLeft } from 'lucide-react';
-import chatService from '../../services/ChatServices';
+import ChatService from '../../services/ChatServices';
 
 export default function NewMessage() {
   const { state } = useLocation();
@@ -18,11 +18,12 @@ export default function NewMessage() {
 
     try {
       setLoading(true);
-      const { chatId } = await chatService.createChatWithMessage({
+      const chatId = await ChatService.createChatWithMessage({
         productId: product.id,
         userId: product.user.id,
         message,
       });
+      console.log('Conversation créée avec succès', chatId);
       navigate(`/chats/${chatId}`);
     } catch (err) {
       console.error(err);

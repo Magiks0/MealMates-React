@@ -8,20 +8,32 @@ function getAuthHeaders() {
   return token ? { Authorization: `Bearer ${token}` } : {};
 }
 
-const PurchaseService = {
-  getPurchaseById(purchaseId) {
+const OrderService = {
+  getOrderById(orderId) {
     return axios
-      .get(`${API_URL}/purchases/${purchaseId}`, {
+      .get(`${API_URL}/orders/${orderId}`, {
         headers: {
           ...getAuthHeaders(),
         },
       })
       .then((res) => res.data)
       .catch((err) => {
-        console.error('Erreur getPurchaseById :', err);
+        throw err;
+      });
+  }, 
+
+  getOrderByUserAndToken(userId, qrCodeToken) {
+    return axios
+      .get(`${API_URL}/orders/${userId}/${qrCodeToken}`, {
+        headers: {
+          ...getAuthHeaders(),
+        },
+      })
+      .then((res) => res.data)
+      .catch((err) => {
         throw err;
       });
   }, 
 }
 
-export default PurchaseService;
+export default OrderService;

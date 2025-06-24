@@ -19,6 +19,7 @@ import Message from './pages/Messages/Message.jsx';
 import NewMessage from './pages/Messages/NewMessage.jsx';
 import MainLayout from './Layouts/MainLayout.jsx';
 import PaymentSuccessPage from './pages/Stripe/success.jsx';
+import ValidatePickup from './pages/Product/ValidatePickup.jsx';
 
 export default function App() {
   return (
@@ -44,6 +45,7 @@ export default function App() {
           <Route path="/account/availability" element={<Availability />} />
           <Route path="/checkout/success/:id" element={<PaymentSuccessPage />} />
           <Route path="/search" element={<Map />} />
+          <Route path='/validate-pickup/:qrCodeToken' element={<ValidatePickup />} />
         </Route>
       </Route>
     </Routes>
