@@ -23,7 +23,6 @@ export default function NewMessage() {
         userId: product.user.id,
         message,
       });
-      console.log('Conversation créée avec succès', chatId);
       navigate(`/chats/${chatId}`);
     } catch (err) {
       console.error(err);

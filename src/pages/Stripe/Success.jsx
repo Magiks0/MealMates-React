@@ -33,7 +33,7 @@ const PaymentSuccessPage = () => {
       clearTimeout(timer1);
       clearTimeout(timer2);
     };
-  }, [params.id]);
+  }, [params]);
 
   if (loading) {
     return (

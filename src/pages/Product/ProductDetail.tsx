@@ -5,6 +5,7 @@ import ProductService from '../../services/ProductService';
 import ChatService from '../../services/ChatServices';
 import UserService from '../../services/UserService';
 import Modal from '../../components/common/Modal';
+import BuyingButton from '../../components/common/Product/BuyingButton';
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -53,18 +54,6 @@ const ProductDetail = () => {
     } catch (error) {
       console.error('Erreur lors de la vérification du chat :', error);
       alert('Impossible de vérifier la conversation. Veuillez réessayer.');
-    }
-  };
-
-  const handleCheckout = async () => {
-    try {
-      const { url } = await ProductService.goToCheckout(product.id);
-      if (url) {
-        window.location.href = url;
-      }
-    } catch (error) {
-      console.error(error);
-      alert('Une erreur est survenue lors du processus de paiement. Veuillez réessayer plus tard.');
     }
   };
 
@@ -228,21 +217,15 @@ const ProductDetail = () => {
 
       <div className="bg-white border-t border-gray-200 p-4 space-y-3 flex flex-col  items  -center">
         <button 
-          className="w-full bg-gradient-to-r from-green-500 to-green-600 text-white px-8 py-4 rounded-md font-semibold text-lg shadow-lg hover:shadow-xl transform hover:scale-[1.02] transition-all duration-200 flex items-center justify-center"
+          className="w-full bg-secondary text-white px-8 py-4 rounded-md font-semibold text-lg shadow-lg hover:shadow-xl transform hover:scale-[1.02] transition-all duration-200 flex items-center justify-center"
           onClick={handleContactClick}
         >
           <MessageCircle size={20} className="mr-2" />
           Contacter le vendeur
         </button>
-        <button 
-          className="w-full bg-gradient-to-r from-green-500 to-green-600 text-white px-8 py-4 rounded-md font-semibold text-lg shadow-lg hover:shadow-xl transform hover:scale-[1.02] transition-all duration-200 flex items-center justify-center"
-          onClick={() => {
-              handleCheckout();
-          }}
-        >
-          <ShoppingCart size={20} className="mr-2" />
-          Acheter
-        </button>
+        { product.isBought && (
+          <BuyingButton productId={product.id} /> 
+        )}
       </div>
     </div>
   );

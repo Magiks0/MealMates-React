@@ -34,28 +34,25 @@ export default function ValidatePickup() {
                     const response = await OrderService.getOrderByUserAndToken(user.id, qrCodeToken);
                     setOrder(response);
                 } catch (err) {
-                    setError('Erreur lors du chargement de la commande : ' + (err.message || ''));
-                    console.error(err);
+                    setError(err.message);
                 } finally {
                     setLoading(false);
                 }
             };
             fetchOrder();
-        } else if (!user && !loading && !error) {
-            console.log("Utilisateur non chargé, attente ou redirection.");
         }
-    }, [qrCodeToken, user, loading, error, navigate]);
+    }, [qrCodeToken, user]);
 
     const handleConfirmPickup = async () => {
         setLoading(true);
         setError(null);
         try {
-            const response = await OrderService.confirmPickup(order.id); 
-            
-            alert(response.message || 'Récupération confirmée avec succès !');
-            navigate('/home');
+            const response = await OrderService.confirmPickup(qrCodeToken); 
+            if (response) {
+                navigate('/home');
+            }
         } catch (err) {
-            setError('Échec de la confirmation : ' + (err.response?.data?.message || err.message || ''));
+            setError('Échec de la confirmation : ' +  err.message );
             console.error(err);
         } finally {
             setLoading(false);
@@ -137,7 +134,7 @@ export default function ValidatePickup() {
                 </div>
 
                 <div className="mt-8">
-                    {user.id === order.buyer.id ? (
+                    {user.id === order.buyer.id && (
                         <button 
                             onClick={handleConfirmPickup}
                             disabled={loading}
@@ -147,8 +144,6 @@ export default function ValidatePickup() {
                         >
                             {loading ? 'Confirmation en cours...' : 'Confirmer la récupération'}
                         </button>
-                    ) : (
-                        <p className="text-center text-red-500 font-medium">Vous n'êtes pas autorisé à confirmer ce retrait.</p>
                     )}
                     
                     <button 

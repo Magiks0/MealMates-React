@@ -51,7 +51,7 @@ const ChatService = {
         ...getBearerToken(),
       },
     })
-      .then((res) => {console.log('Chat récupéré:', res.data); return res.data;})
+      .then((res) => {return res.data;})
       .catch((err) => {
         console.error(`Erreur lors de la récupération du chat ${chatId}:`, err);
         throw err;

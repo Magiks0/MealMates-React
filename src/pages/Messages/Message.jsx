@@ -1,8 +1,9 @@
 import { useParams, useNavigate } from 'react-router';
 import { useState, useEffect, useRef } from 'react';
-import { MoreVertical, Check, ChevronRight, ArrowLeft } from 'lucide-react';
+import { MoreVertical, Check, ChevronRight, ArrowLeft, CheckCircle, ShoppingCart } from 'lucide-react';
 import {QRCodeSVG} from 'qrcode.react';
 import ChatService from '../../services/ChatServices';
+import BuyingButton from '../../components/common/Product/BuyingButton';
 
 export default function Message() {
   const { chatId } = useParams();
@@ -23,7 +24,6 @@ export default function Message() {
     const fetchChat = async () => {
       try {
         setLoading(true);
-        console.log('Fetching chat with ID:', chatId);
         const data = await ChatService.getChatByID(chatId);
         setChat(data);
         
@@ -120,18 +120,20 @@ export default function Message() {
         </button>
       </div>
 
-      <div className="flex items-center p-3 bg-gray-50 border-b border-gray-200 cursor-pointer hover:bg-gray-100 transition-colors" onClick={() => navigate(`/product/${chat.product}`)}> {/* Utilisation de chat.product tel quel */}
+      <div className="flex items-center p-3 bg-gray-50 border-b border-gray-200 cursor-pointer hover:bg-gray-100 transition-colors"> 
         <div className="w-12 h-12 flex-shrink-0 bg-gray-200 rounded-md mr-3 shadow-sm overflow-hidden">
           <img 
             src={`${IMG_URL}${chat.productFile}`}
             alt="Product" 
             className="w-full h-full object-cover rounded-md" />
         </div>
-        <div className="flex-1">
+        <div className="flex-1" onClick={() => navigate(`/product/${chat.productId}`)}>
           <div className="text-md font-semibold text-gray-800">{chat.productName}</div>
           <div className="text-sm text-gray-600 font-medium">{chat.productPrice == 0 ? 'Don' : `${chat.productPrice}€`}</div>
         </div>
-        <ChevronRight size={20} className="text-gray-400 ml-2" />
+        {chat.productStatus && (
+          <BuyingButton productId={chat.productId} />
+        )}
       </div>
 
       <div className="flex-1 overflow-y-auto p-4 bg-gray-100 flex flex-col space-y-3"> {/* Utilise space-y pour l'espacement */}
@@ -154,7 +156,7 @@ export default function Message() {
             </div>
           ))}
 
-          {chat.linkedOrder &&
+          {chat.linkedOrder && chat.linkedOrder.status === 'awaiting_pickup' ?
            (
               <div className="bg-green-50 border border-green-200 text-green-800 rounded-lg p-3 my-2 shadow-sm text-center">
                   <div className="flex items-center mb-2 justify-center">
@@ -170,6 +172,12 @@ export default function Message() {
                       <QRCodeSVG value={PICKUP_PAGE} />
                   </div>
               </div>
+          ) : (chat.linkedOrder && chat.linkedOrder.status === 'completed') && (
+              <div className="bg-green-100 border border-green-400 text-green-800 rounded-lg p-6 my-4 shadow-md text-center">
+                <CheckCircle size={64} className="text-green-600 mx-auto mb-4" />
+                <h2 className="text-2xl font-bold mb-2">Commande Récupérée avec Succès !</h2>
+                <p className="text-gray-700">Merci d'avoir validé le retrait pour "{chat.productName}".</p>
+            </div>
           )}
       </div>
 

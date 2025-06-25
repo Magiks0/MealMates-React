@@ -65,12 +65,10 @@ const Map = () => {
   const fetchProducts = async (latitude, longitude, radius) => {
     try {
       setLoading(true);
-      console.log(`Recherche de produits près de [${latitude}, ${longitude}] dans un rayon de ${radius || searchRadius}km`);
       
       // Utilisation de la méthode spécifique pour la recherche géographique
       const data = await productService.getNearbyProducts(latitude, longitude, radius || searchRadius);
       
-      console.log(`${data.length} produits trouvés dans le rayon`);
       setProducts(data);
       setLoading(false);
     } catch (err) {
@@ -81,7 +79,6 @@ const Map = () => {
         setProducts(data);
         setLoading(false);
       } catch (fallbackErr) {
-        console.error("Erreur lors de la récupération des produits:", err);
         setError("Impossible de charger les produits");
         setLoading(false);
       }
@@ -121,7 +118,6 @@ const Map = () => {
   };
   
   const handleSelectAddress = (address) => {
-    console.log("Adresse sélectionnée:", address);
     
     setSearchedLocation(address);
     
@@ -290,8 +286,6 @@ const Map = () => {
       >
         <i className={`fa-solid fa-location-crosshairs ${isLocating ? 'animate-pulse' : ''}`}></i>
       </button>
-      
-      <Navbar />
     </div>
   );
 };

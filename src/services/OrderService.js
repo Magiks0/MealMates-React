@@ -33,7 +33,23 @@ const OrderService = {
       .catch((err) => {
         throw err;
       });
-  }, 
+  },
+
+  confirmPickup(qrCodeToken) {
+    return axios
+      .get(
+        `${API_URL}/order/validate-pickup/${qrCodeToken}`,
+        {
+          headers: {
+            ...getAuthHeaders(),
+          },
+        }
+      )
+      .then((res) => res.data)
+      .catch((err) => {
+        throw err;
+      });
+  },
 }
 
 export default OrderService;

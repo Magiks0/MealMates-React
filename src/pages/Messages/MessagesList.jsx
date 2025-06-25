@@ -70,8 +70,6 @@ export default function MessagesList() {
           ))
         )}
       </div>
-      
-      <Navbar />
     </div>
   );
 }
