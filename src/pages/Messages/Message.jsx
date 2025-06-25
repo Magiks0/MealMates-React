@@ -1,16 +1,14 @@
 import { useParams, useNavigate } from 'react-router';
 import { useState, useEffect, useRef } from 'react';
-import { MoreVertical, Check, ChevronRight, ArrowLeft } from 'lucide-react';
-import chatService from '../../services/ChatServices';
+import { MoreVertical, Check, ChevronRight, ArrowLeft, CheckCircle, ShoppingCart } from 'lucide-react';
+import {QRCodeSVG} from 'qrcode.react';
+import ChatService from '../../services/ChatServices';
+import BuyingButton from '../../components/common/Product/BuyingButton';
 
 export default function Message() {
   const { chatId } = useParams();
   const [newMessage, setNewMessage] = useState('');
-  const [chat, setChat] = useState({
-    otherUser: { username: '', memberSince: '', transactionCount: 0 },
-    product: '',
-    messages: []
-  });
+  const [chat, setChat] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [lastMessageId, setLastMessageId] = useState(null);
@@ -20,15 +18,15 @@ export default function Message() {
 
   const POLLING_INTERVAL = 1000;
   const IMG_URL = import.meta.env.VITE_IMG_URL;
+  const PICKUP_PAGE = import.meta.env.VITE_VALIDATE_PICKUP_DOMAIN;
 
   useEffect(() => {
     const fetchChat = async () => {
       try {
         setLoading(true);
-        const data = await chatService.getChat(chatId);
+        const data = await ChatService.getChatByID(chatId);
         setChat(data);
         
-        // Set the last message ID for polling
         if (data.messages && data.messages.length > 0) {
           setLastMessageId(data.messages[data.messages.length - 1].id);
         }
@@ -44,13 +42,12 @@ export default function Message() {
     fetchChat();
   }, [chatId]);
 
-  // Setup polling for new messages
   useEffect(() => {
     if (!chatId || !lastMessageId) return;
     
     const pollNewMessages = async () => {
       try {
-        const newMessages = await chatService.getMessages(chatId, lastMessageId);
+        const newMessages = await ChatService.getMessages(chatId, lastMessageId);
         
         if (newMessages && newMessages.length > 0) {
           setChat(prevChat => ({
@@ -58,7 +55,6 @@ export default function Message() {
             messages: [...prevChat.messages, ...newMessages]
           }));
           
-          // Update last message ID
           setLastMessageId(newMessages[newMessages.length - 1].id);
         }
       } catch (err) {
@@ -66,14 +62,11 @@ export default function Message() {
       }
     };
 
-    // Set up polling interval
     const intervalId = setInterval(pollNewMessages, POLLING_INTERVAL);
     
-    // Clean up interval on component unmount
     return () => clearInterval(intervalId);
   }, [chatId, lastMessageId]);
 
-  // Scroll to bottom when new messages arrive
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [chat.messages]);
@@ -84,7 +77,7 @@ export default function Message() {
 
     setIsSending(true);
     try {
-      const sentMessage = await chatService.sendMessage(chatId, newMessage);
+      const sentMessage = await ChatService.sendMessage(chatId, newMessage);
 
       setChat(prevChat => ({
         ...prevChat,
@@ -110,101 +103,101 @@ export default function Message() {
   }
 
   return (
-    <div className="w-full max-w-2xl mx-auto bg-white rounded-lg overflow-hidden shadow-md flex flex-col h-full">
+    <div className="w-full max-w-lg mx-auto bg-white rounded-lg shadow-xl flex flex-col h-full">
       {/* Header */}
-      <div className="bg-white p-4 border-b flex justify-between items-center">
+      <div className="bg-secondary text-white p-4 border-b border-green-700 flex justify-between items-center shadow-md">
         <div className="flex items-center">
-          <button onClick={() => navigate(-1)} className="p-1">
+          <button onClick={() => navigate(-1)} className="p-1 text-white hover:bg-primary rounded-full transition-colors">
             <ArrowLeft size={24} />
           </button>
-          <div className="bg-green-600 w-8 h-8 rounded-full flex items-center justify-center text-white font-bold mr-2">
+          <div className="bg-secondary w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-lg mx-3 shadow-inner border-2"> {/* Taille plus grande, ombre interne */}
             {chat.otherUser.username.charAt(0)}
           </div>
-          <span className="font-semibold">{chat.otherUser.username}</span>
+          <span className="font-semibold text-lg">{chat.otherUser.username}</span>
         </div>
-        <button>
+        <button className="text-white hover:bg-secondary rounded-full p-1 transition-colors">
           <MoreVertical size={20} />
         </button>
       </div>
 
-      {/* Product info */}
-      <div className="flex items-center p-2 bg-gray-50 border-b" onClick={() => navigate(`/product/${chat.productId}`)}>
-        <div className="w-8 h-8 bg-red-100 rounded mr-2">
+      <div className="flex items-center p-3 bg-gray-50 border-b border-gray-200 cursor-pointer hover:bg-gray-100 transition-colors"> 
+        <div className="w-12 h-12 flex-shrink-0 bg-gray-200 rounded-md mr-3 shadow-sm overflow-hidden">
           <img 
             src={`${IMG_URL}${chat.productFile}`}
             alt="Product" 
-            className="w-full h-full object-cover rounded" />
+            className="w-full h-full object-cover rounded-md" />
         </div>
-        <div>
-          <div className="text-sm font-medium">{chat.productName}</div>
-          <div className="text-xs text-gray-500">{chat.productPrice == 0 ? 'Don' : `${chat.productPrice}€`}</div>
+        <div className="flex-1" onClick={() => navigate(`/product/${chat.productId}`)}>
+          <div className="text-md font-semibold text-gray-800">{chat.productName}</div>
+          <div className="text-sm text-gray-600 font-medium">{chat.productPrice == 0 ? 'Don' : `${chat.productPrice}€`}</div>
         </div>
-      </div>
-
-      {/* User info */}
-      <div className="bg-blue-50 p-3 border-b text-sm">
-        <div className="flex items-center mb-1">
-          <span>Membre depuis le {chat.otherUser.createdAt}</span>
-        </div>
-        <div className="flex items-center">
-          <span>{chat.otherUser.transactionCount} transactions effectuées</span>
-        </div>
-      </div>
-
-      {/* Messages */}
-      <div className="flex-1 overflow-auto p-3 bg-gray-50 flex flex-col">
-        <div className="text-xs text-gray-500 mb-2">Historique</div>
-
-        {/* Message list */}
-        {chat.messages.map((message, index) => (
-          <div 
-            key={message.id || index} 
-            className={`rounded-lg p-3 mb-3 shadow-sm ${
-              message.isFromCurrentUser ? 'bg-green-50 ml-auto' : 'bg-white'
-            }`}
-            style={{ maxWidth: '80%' }}
-          >
-            <p>{message.content}</p>
-            <div className="text-xs text-gray-400 text-right mt-1">
-              {new Date(message.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-            </div>
-          </div>
-        ))}
-
-        {/* System messages can be added conditionally */}
-        {chat.hasSystemMessage && (
-          <div className="bg-green-50 rounded-lg p-3 border border-green-100">
-            <div className="flex items-start mb-2">
-              <Check size={16} className="text-green-600 mr-1 mt-1" />
-              <span className="font-semibold text-green-800">Bonne nouvelle !</span>
-            </div>
-            <p className="mb-2">
-              {chat.otherUser.username} a effectué un achat de <span className="font-bold">{chat.productPrice}</span> pour votre produit "<span className="italic">{chat.productName}</span>".
-            </p>
-            <p className="mb-3">Faites scanner ce QR pour valider la transaction.</p>
-            <div className="flex justify-center">
-              <img src="/api/placeholder/100/100" alt="QR Code" className="w-24 h-24" />
-            </div>
-          </div>
+        {chat.productStatus && (
+          <BuyingButton productId={chat.productId} />
         )}
+      </div>
 
-        {/* Element for scrolling to bottom */}
-        <div ref={messagesEndRef} />
+      <div className="flex-1 overflow-y-auto p-4 bg-gray-100 flex flex-col space-y-3"> {/* Utilise space-y pour l'espacement */}
+        <div className="text-xs text-gray-500 text-center mb-2">Historique</div>
+          {chat.messages.map((message, index) => (
+            <div 
+              key={message.id || index} 
+              className={`rounded-xl p-3 shadow-md relative group ${
+                message.isFromCurrentUser ? 'bg-secondary text-white ml-auto rounded-br-none' : 'bg-white text-gray-800 mr-auto rounded-bl-none' // Coins spécifiques
+              }`}
+              style={{ maxWidth: '85%' }}
+            >
+              <p className="text-sm break-words">{message.content}</p> 
+              <div className={`text-xs mt-1 ${message.isFromCurrentUser ? 'text-green-200 text-right' : 'text-gray-500 text-right'}`}>
+                {new Date(message.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+              </div>
+              <div className={`absolute w-3 h-3 transform rotate-45 ${
+                  message.isFromCurrentUser ? 'bg-secondary -right-1 bottom-1' : 'bg-white -left-1 bottom-1'
+              }`}></div>
+            </div>
+          ))}
+
+          {chat.linkedOrder && chat.linkedOrder.status === 'awaiting_pickup' ?
+           (
+              <div className="bg-green-50 border border-green-200 text-green-800 rounded-lg p-3 my-2 shadow-sm text-center">
+                  <div className="flex items-center mb-2 justify-center">
+                      <span className="font-semibold text-lg">✅ Bonne nouvelle !</span>
+                  </div>
+                  <p className="mb-3 text-sm text-left">
+                      {chat.linkedOrder.buyer} a effectué un achat de {chat.productPrice}€ pour votre produit "{chat.productName}".
+                  </p>
+                  <p className="mb-3 text-sm text-left">
+                      Faites scanner ce QR pour valider la transaction.
+                  </p>
+                  <div className="flex justify-center p-2 rounded-md">
+                      <QRCodeSVG value={PICKUP_PAGE} />
+                  </div>
+              </div>
+          ) : (chat.linkedOrder && chat.linkedOrder.status === 'completed') && (
+              <div className="bg-green-100 border border-green-400 text-green-800 rounded-lg p-6 my-4 shadow-md text-center">
+                <CheckCircle size={64} className="text-green-600 mx-auto mb-4" />
+                <h2 className="text-2xl font-bold mb-2">Commande Récupérée avec Succès !</h2>
+                <p className="text-gray-700">Merci d'avoir validé le retrait pour "{chat.productName}".</p>
+            </div>
+          )}
       </div>
 
       {/* Input */}
-      <div className="p-2 flex">
+      <div className="p-3 bg-white border-t border-gray-200 flex items-center shadow-lg">
         <input 
           type="text" 
           placeholder="Écrire un message..." 
-          className="flex-1 border rounded-lg p-2 mr-2 focus:outline-none focus:ring-1 focus:ring-green-500"
+          className="flex-1 border border-gray-300 rounded-full py-2 px-4 mr-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200"
           value={newMessage}
           onChange={(e) => setNewMessage(e.target.value)}
           onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+          disabled={isSending}
         />
         <button 
-          className="bg-green-600 text-white p-2 rounded-lg"
+          className={`bg-secondary text-white p-3 rounded-full flex items-center justify-center transition-colors duration-200 ${
+            isSending ? 'opacity-60 cursor-not-allowed' : 'hover:bg-primary'
+          }`}
           onClick={handleSendMessage}
+          disabled={isSending}
         >
           <ChevronRight size={20} />
         </button>

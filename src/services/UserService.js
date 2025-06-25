@@ -1,22 +1,26 @@
 import axios from 'axios';
 
 const API_URL = import.meta.env.VITE_API_URL;
-const TOKEN = localStorage.getItem('token');
 
-async function getCurrentUser() {
-  try {
-    const res = await axios.get(`${API_URL}/user/profile`, {
-      headers: {
-        Authorization: `Bearer ${TOKEN}`,
-      },
-    });
-    return res.data;
-  } catch (err) {
-    console.error("Error fetching current user:", err);
-    return null;
-  }
+function getAuthHeaders() {
+  const token = localStorage.getItem('token');
+  return token ? { Authorization: `Bearer ${token}` } : {};
 }
 
-export default {
-    getCurrentUser,
+const UserService = {
+  getCurrentUser() {
+    return axios
+      .get(`${API_URL}/user/profile`, {
+        headers: {
+          ...getAuthHeaders(),
+        },
+      })
+      .then((res) => res.data)
+      .catch((err) => {
+        console.error("Error fetching current user:", err);
+        throw err;
+      });
+  },
 }
+
+export default UserService;
