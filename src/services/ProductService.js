@@ -115,7 +115,22 @@ const ProductService = {
 
   getNearbyProducts(latitude, longitude, radius = 10) {
     return getFilteredProducts(`latitude=${latitude}&longitude=${longitude}&radius=${radius}`);
-  } 
+  },
+
+  getUserProducts() {
+    return axios.get(`${API_URL}/product/my-ads`, {
+      headers: {
+        ...getAuthHeaders(),
+      },
+    })
+    .then(res => {
+        return res.data;
+    })
+    .catch(err => {
+        console.error("Error getUserProducts :", err);
+        return [];
+    });
+  }
 
 };
 
