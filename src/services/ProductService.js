@@ -72,6 +72,7 @@ const ProductService = {
     },
 
     createProduct(formData) {
+    console.log('Creating product with formData:', formData);
     return axios
       .post(`${API_URL}/product/new`, formData, {
         headers: {
@@ -84,6 +85,20 @@ const ProductService = {
         throw error;
       });
   },
+
+  getNearbyProducts(latitude, longitude, radius) {
+
+    return axios
+      .get(`${API_URL}/products/nearby?latitude=${latitude}&longitude=${longitude}&radius=${radius}`, {
+        headers: {
+          ...getAuthHeaders(),
+        },
+      })
+      .then((res) => res.data)
+      .catch((err) => {
+        console.error('Erreur getNearbyProducts :', err);
+        throw err;
+      });  },
 
   getFilteredProducts(filters) {
     return axios
@@ -112,10 +127,6 @@ const ProductService = {
         throw err;
     });
   },
-
-  getNearbyProducts(latitude, longitude, radius = 10) {
-    return getFilteredProducts(`latitude=${latitude}&longitude=${longitude}&radius=${radius}`);
-  } 
 
 };
 
