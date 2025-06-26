@@ -11,7 +11,8 @@ import Preference from "./pages/Preference/Preference.jsx";
 import Availability from "./pages/Availability/Availability.jsx";
 import ProductNew from "./pages/Product/ProductNew.jsx";
 import ProductDetail from "./pages/Product/ProductDetail.jsx";
-import Map from "./pages/Search/Map.tsx";
+import Map from "./pages/Search/Map.jsx";
+import MyAds from "./pages/MyAds/MyAds.jsx";
 import ProtectedRoute from './components/Security/ProtectedRoutes';
 import "./index.css";
 import MessagesList from './pages/Messages/MessagesList.jsx';
@@ -46,6 +47,7 @@ export default function App() {
           <Route path="/checkout/success/:id" element={<PaymentSuccessPage />} />
           <Route path="/search" element={<Map />} />
           <Route path='/validate-pickup/:qrCodeToken' element={<ValidatePickup />} />
+          <Route path="/my-ads" element={<MyAds />} />
         </Route>
       </Route>
     </Routes>
