@@ -1,4 +1,4 @@
-  import { useEffect, useState } from 'react';
+  import { useEffect, useState, useRef } from 'react';
   import { useForm } from '@tanstack/react-form';
   import { MapPin, Camera, ArrowRight, ArrowLeft, X, CheckCircle, Package, Calendar, Tag, DollarSign, Heart, Image, Home, Check } from 'lucide-react'; // Ajout d'icônes pertinentes
   import ProductService from '../../services/ProductService';
