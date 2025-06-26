@@ -19,7 +19,7 @@ import MessagesList from './pages/Messages/MessagesList.jsx';
 import Message from './pages/Messages/Message.jsx';
 import NewMessage from './pages/Messages/NewMessage.jsx';
 import MainLayout from './Layouts/MainLayout.jsx';
-import PaymentSuccessPage from './pages/Stripe/success.jsx';
+import PaymentSuccessPage from './pages/Stripe/Success.jsx';
 import ValidatePickup from './pages/Product/ValidatePickup.jsx';
 
 export default function App() {
