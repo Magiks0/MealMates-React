@@ -1,13 +1,25 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useForm } from '@tanstack/react-form';
 import { MapPin, Camera, ArrowRight, ArrowLeft } from 'lucide-react';
-import Navbar from "../../components/common/navbar/Navbar";
 import ProductService from '../../services/ProductService';
 
 export default function ProductNew() {
   const [step, setStep] = useState(1);
   const totalSteps = 5;
   const [selectedImages, setSelectedImages] = useState([]);
+  
+  // États pour la gestion de la carte et de la recherche d'adresses
+  const [searchTerm, setSearchTerm] = useState('');
+  const [suggestions, setSuggestions] = useState([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [selectedLocation, setSelectedLocation] = useState(null);
+  const mapRef = useRef(null);
+  const leafletMapRef = useRef(null);
+  const markerRef = useRef(null);
+  const userMarkerRef = useRef(null);
+
+  // TODO: Récupérer l'adresse de l'utilisateur depuis son profil
+  // const userAddress = "Adresse depuis le profil"; // À remplacer par l'appel API réel
 
   const form = useForm({
     defaultValues: {
@@ -37,15 +49,14 @@ export default function ProductNew() {
       formData.append('collection_date', value.collectionDate);
       formData.append('location', JSON.stringify(value.location));
 
-      value.files.forEach((file) => {
-        formData.append('files[]', file);
+      value.files.forEach((file, index) => {
+        formData.append(`files[${index}]`, file);
       });
 
       const res = await ProductService.createProduct(formData);
 
-      if (res.status === 200 || res.status === 201) {
-        alert('Nouveau produit crée avec succès');
-        window.location.href = '/home';
+      if (res.status !== 200) {
+        alert(`Erreur lors de la création: ${res.status} - ${res.statusText}`);
       } else {
         alert(res.message);
         form.reset();
@@ -54,6 +65,128 @@ export default function ProductNew() {
       }
     },
   });
+
+  useEffect(() => {
+    if (step === 4) {
+      if (!document.getElementById('leaflet-css')) {
+        const link = document.createElement('link');
+        link.id = 'leaflet-css';
+        link.rel = 'stylesheet';
+        link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
+        document.head.appendChild(link);
+      }
+
+      if (!window.L) {
+        const script = document.createElement('script');
+        script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+        script.async = true;
+        document.body.appendChild(script);
+      }
+    }
+  }, [step]);
+
+  useEffect(() => {
+    if (step === 4 && !leafletMapRef.current && mapRef.current && window.L) {
+      leafletMapRef.current = window.L.map(mapRef.current).setView([48.8566, 2.3522], 5);
+
+      window.L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors'
+      }).addTo(leafletMapRef.current);
+
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const { latitude, longitude } = position.coords;
+            leafletMapRef.current.setView([latitude, longitude], 12);
+            
+            const userIcon = window.L.divIcon({
+              html: '<div style="background-color: #4285F4; width: 20px; height: 20px; border-radius: 50%; border: 3px solid white; box-shadow: 0 1px 4px rgba(0,0,0,0.3);"></div>',
+              iconSize: [20, 20],
+              className: 'user-location-marker'
+            });
+            
+            userMarkerRef.current = window.L.marker([latitude, longitude], { icon: userIcon })
+              .addTo(leafletMapRef.current)
+              .bindPopup("Votre position actuelle");
+          },
+          (error) => {
+            console.log("Géolocalisation refusée ou indisponible:", error);
+          }
+        );
+      }
+    }
+
+    return () => {
+      if (step !== 4 && leafletMapRef.current) {
+        leafletMapRef.current.remove();
+        leafletMapRef.current = null;
+        userMarkerRef.current = null;
+        markerRef.current = null;
+      }
+    };
+  }, [step]);
+
+  useEffect(() => {
+    if (step !== 4) return;
+
+    const searchAddresses = async () => {
+      if (searchTerm.length < 3) {
+        setSuggestions([]);
+        return;
+      }
+
+      try {
+        const response = await fetch(
+          `https://api-adresse.data.gouv.fr/search/?q=${encodeURIComponent(searchTerm)}&limit=5`
+        );
+        const data = await response.json();
+        setSuggestions(data.features || []);
+      } catch (error) {
+        console.error('Erreur lors de la recherche d\'adresses:', error);
+        setSuggestions([]);
+      }
+    };
+
+    const debounceTimer = setTimeout(searchAddresses, 300);
+    return () => clearTimeout(debounceTimer);
+  }, [searchTerm, step]);
+
+  const handleAddressSelect = (feature) => {
+    const address = feature.properties.label;
+    const coordinates = feature.geometry.coordinates;
+    
+    setSearchTerm(address);
+    setShowSuggestions(false);
+    setSelectedLocation({
+      address,
+      coordinates: {
+        lat: coordinates[1],
+        lng: coordinates[0]
+      }
+    });
+
+    form.setFieldValue('location', {
+      address,
+      coordinates: {
+        lat: coordinates[1],
+        lng: coordinates[0]
+      }
+    });
+
+    if (leafletMapRef.current && window.L) {
+      leafletMapRef.current.setView([coordinates[1], coordinates[0]], 13);
+      
+      if (markerRef.current) {
+        markerRef.current.remove();
+      }
+      
+      markerRef.current = window.L.marker([coordinates[1], coordinates[0]])
+        .addTo(leafletMapRef.current)
+        .bindPopup(address)
+        .openPopup();
+    }
+
+  };
 
   const nextStep = () => setStep((s) => s + 1);
   const prevStep = () => setStep((s) => s - 1);
@@ -76,7 +209,7 @@ export default function ProductNew() {
   };
 
   return (
-    <div className="max-w-md mx-auto h-full bg-white rounded-lg shadow-lg overflow-hidden">
+    <div className="max-w-md mx-auto h-screen bg-white rounded-lg shadow-lg overflow-hidden">
       {/* Header */}
       <div className="p-4 border-b">
         <div className="text-center text-lg font-medium">
@@ -97,7 +230,7 @@ export default function ProductNew() {
             if (step < totalSteps) {
               nextStep();
             } else {
-              form.handleSubmit();  // Appel direct de form.handleSubmit()
+              form.handleSubmit();
             }
           }}
           className="space-y-4"
@@ -106,7 +239,7 @@ export default function ProductNew() {
           {step === 1 && (
             <>
              <h2 className='font-bold text-xl'>Décrivez votre Produit</h2>
-             <p className='text-gray-500 text-sm mb-2'>Mettez en avant votre produit ! Plus il y a de détails, plus votre annonce sera de qualité. Détaillez ici ce qui a de l’importance </p>
+             <p className='text-gray-500 text-sm mb-2'>Mettez en avant votre produit ! Plus il y a de détails, plus votre annonce sera de qualité. Détaillez ici ce qui a de l'importance </p>
               <div className="mb-6">
                 <h2 className="font-bold mb-1">Quel est le titre de votre annonce ?</h2>
                 <form.Field name="title">
@@ -144,7 +277,7 @@ export default function ProductNew() {
           {step === 2 && (
             <>
               <h2 className="font-bold mb-1 text-xl">Détaillez le produit</h2>
-              <p className="text-gray-500 text-sm mb-2">Précisez les caractéristiques de votre produit pour aider les acheteurs à faire leur choix. Catégorie, régime alimentaire, allergènes… Plus vous fournissez d’informations, plus votre annonce sera pertinente !</p>
+              <p className="text-gray-500 text-sm mb-2">Précisez les caractéristiques de votre produit pour aider les acheteurs à faire leur choix. Catégorie, régime alimentaire, allergènes… Plus vous fournissez d'informations, plus votre annonce sera pertinente !</p>
               <div className="mb-6">
                     <h2 className="font-bold mb-1">Choisissez une catégorie correspondant à votre produit</h2>
                     <form.Field name="category">
@@ -263,7 +396,6 @@ export default function ProductNew() {
                           <label className="aspect-square border border-gray-300 rounded-lg flex flex-col items-center justify-center cursor-pointer bg-gray-100">
                             <Camera size={24} className="text-gray-400 mb-1" />
                             <input
-                              name='files[]'
                               type="file"
                               multiple
                               accept="image/*"
@@ -299,32 +431,65 @@ export default function ProductNew() {
             </div>
           )}
 
-          {/* Step 4: Location */}
+          {/* Step 4: Location - NOUVELLE VERSION AVEC MAP ET RECHERCHE */}
           {step === 4 && (
             <div className="mb-6">
               <h2 className="font-bold mb-1">Où se trouve votre produit ?</h2>
-              <div className="mb-4">
-                <form.Field name="location.address">
-                  {(field) => (
-                    <input
-                      type="text"
-                      placeholder="Adresse"
-                      value={field.state.value}
-                      onChange={(e) => field.handleChange(e.target.value)}
-                      className="w-full p-3 border border-gray-300 rounded-lg"
-                    />
-                  )}
-                </form.Field>
-              </div>
               
-              <div className="aspect-video bg-gray-200 rounded-lg mb-4 overflow-hidden">
-                {/* Map placeholder - in a real app you would integrate a map component here */}
-                <div className="w-full h-full bg-green-100 flex items-center justify-center">
-                  <div className="text-center text-gray-500">
-                    <MapPin size={30} className="mx-auto mb-2 text-green-500" />
-                    <span>Carte interactive</span>
+              {/* Barre de recherche avec autocomplétion */}
+              <div className="mb-4 relative">
+                <input
+                  type="text"
+                  placeholder="Rechercher une adresse..."
+                  value={searchTerm}
+                  onChange={(e) => {
+                    setSearchTerm(e.target.value);
+                    setShowSuggestions(true);
+                  }}
+                  onFocus={() => setShowSuggestions(true)}
+                  className="w-full p-3 border border-gray-300 rounded-lg pr-10"
+                />
+                <MapPin className="absolute right-3 top-3.5 text-gray-400" size={20} />
+                
+                {/* Liste des suggestions */}
+                {showSuggestions && suggestions.length > 0 && (
+                  <div className="absolute w-full bg-white border border-gray-300 rounded-lg mt-1 shadow-lg z-10 max-h-60 overflow-y-auto">
+                    {suggestions.map((feature, index) => (
+                      <div
+                        key={index}
+                        onClick={() => handleAddressSelect(feature)}
+                        className="p-3 hover:bg-gray-100 cursor-pointer border-b last:border-b-0"
+                      >
+                        <div className="font-medium text-sm">{feature.properties.label}</div>
+                        <div className="text-xs text-gray-500">
+                          {feature.properties.context}
+                        </div>
+                      </div>
+                    ))}
                   </div>
+                )}
+              </div>
+
+              {/* Adresse sélectionnée */}
+              {selectedLocation && (
+                <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg">
+                  <p className="text-sm text-green-800">
+                    <span className="font-medium">Adresse sélectionnée:</span> {selectedLocation.address}
+                  </p>
                 </div>
+              )}
+              
+              {/* Carte */}
+              <div className="aspect-video bg-gray-200 rounded-lg overflow-hidden relative">
+                <div ref={mapRef} className="w-full h-full" />
+                {!leafletMapRef.current && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
+                    <div className="text-center">
+                      <MapPin className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+                      <p className="text-sm text-gray-500">Chargement de la carte...</p>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           )}

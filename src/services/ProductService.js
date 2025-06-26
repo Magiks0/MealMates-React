@@ -72,6 +72,7 @@ const ProductService = {
     },
 
     createProduct(formData) {
+    console.log('Creating product with formData:', formData);
     return axios
       .post(`${API_URL}/product/new`, formData, {
         headers: {
