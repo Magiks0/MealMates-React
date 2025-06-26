@@ -307,8 +307,6 @@ const Map = () => {
       >
         <i className={`fa-solid fa-location-crosshairs ${isLocating ? 'animate-pulse' : ''}`}></i>
       </button>
-      
-      <Navbar />
     </div>
   );
 };

@@ -2,9 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { Star, Bookmark, Share2, ShoppingCart, ArrowLeft, Heart, MessageCircle, User, MapPin, Eye, Clock, Shield, Camera } from 'lucide-react';
 import { useParams, useNavigate } from 'react-router';
 import ProductService from '../../services/ProductService';
-import chatService from '../../services/ChatServices';
+import ChatService from '../../services/ChatServices';
 import UserService from '../../services/UserService';
 import Modal from '../../components/common/Modal';
+import BuyingButton from '../../components/common/Product/BuyingButton';
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -34,7 +35,6 @@ const ProductDetail = () => {
         setProduct(response);
         setLoading(false);
       } catch (err) {
-        setError('Erreur lors du chargement du produit');
         setLoading(false);
         console.error('Error fetching product details:', err);
       }
@@ -45,7 +45,7 @@ const ProductDetail = () => {
 
   const handleContactClick = async () => {
     try {
-      const { exists, chatId } = await chatService.checkChatExistence(user.id, product.id);
+      const { exists, chatId } = await ChatService.checkChatExistence(user.id, product.id);
       if (exists) {
         navigate(`/chats/${chatId}`);
       } else {
@@ -54,18 +54,6 @@ const ProductDetail = () => {
     } catch (error) {
       console.error('Erreur lors de la vérification du chat :', error);
       alert('Impossible de vérifier la conversation. Veuillez réessayer.');
-    }
-  };
-
-  const handleCheckout = async () => {
-    try {
-      const { url } = await ProductService.goToCheckout(product.id);
-      if (url) {
-        window.location.href = url;
-      }
-    } catch (error) {
-      console.error(error);
-      alert('Une erreur est survenue lors du processus de paiement. Veuillez réessayer plus tard.');
     }
   };
 
@@ -153,16 +141,18 @@ const ProductDetail = () => {
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <h1 className="text-2xl font-bold text-gray-900 flex-1 mr-4">{product.title}</h1>
-              <div className="flex items-center space-x-2 text-sm text-gray-500">
-                <Eye size={16} />
-                <span>127</span>
-              </div>
             </div>
             <div className="flex items-center justify-between">
               <p className="text-3xl font-bold text-green-600">{product.price === 0 ? 'Don' : `${product.price} €`}</p>
               <div className="flex items-center space-x-2 text-sm text-gray-500">
                 <Clock size={16} />
-                <span>Il y a 2 jours</span>
+                <span>
+                  Périme le : {new Date(product.peremptionDate).toLocaleDateString('fr-FR', {
+                    day: '2-digit',
+                    month: 'long',
+                    year: 'numeric',
+                  })}
+                </span>
               </div>
             </div>
           </div>
@@ -172,7 +162,7 @@ const ProductDetail = () => {
               <User size={18} className="mr-2" />
               Vendeur
             </h2>
-            <div className="flex items-center justify-between">
+            <div className="flex items-end justify-between">
               <div className="flex items-center">
                 <div className="relative">
                   <div className="w-12 h-12 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center mr-3 shadow-lg">
@@ -186,16 +176,10 @@ const ProductDetail = () => {
                       <User className="h-6 w-6 text-white" />
                     )}
                   </div>
-                  <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 border-2 border-white rounded-full"></div>
                 </div>
                 <div>
                   <div className="flex items-center">
-                    <span className="font-semibold text-gray-900">{product.user?.username || "Vendeur inconnu"}</span>
-                    <div className="ml-2 w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center">
-                      <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                      </svg>
-                    </div>
+                    <span className="font-semibold text-gray-900">{product.user?.username}</span>
                   </div>
                   <div className="flex items-center text-sm text-gray-500">
                     <MapPin size={14} className="mr-1" />
@@ -208,7 +192,6 @@ const ProductDetail = () => {
                   <span className="mr-1">{product.user?.note || "4.8"}</span>
                   <Star className="w-5 h-5 fill-current" />
                 </div>
-                <p className="text-xs text-gray-500">125 avis</p>
               </div>
             </div>
           </div>
@@ -234,32 +217,16 @@ const ProductDetail = () => {
 
       <div className="bg-white border-t border-gray-200 p-4 space-y-3 flex flex-col  items  -center">
         <button 
-          className="w-full bg-gradient-to-r from-green-500 to-green-600 text-white px-8 py-4 rounded-md font-semibold text-lg shadow-lg hover:shadow-xl transform hover:scale-[1.02] transition-all duration-200 flex items-center justify-center"
+          className="w-full bg-secondary text-white px-8 py-4 rounded-md font-semibold text-lg shadow-lg hover:shadow-xl transform hover:scale-[1.02] transition-all duration-200 flex items-center justify-center"
           onClick={handleContactClick}
         >
           <MessageCircle size={20} className="mr-2" />
           Contacter le vendeur
         </button>
-        <button 
-          className="w-full bg-gradient-to-r from-green-500 to-green-600 text-white px-8 py-4 rounded-md font-semibold text-lg shadow-lg hover:shadow-xl transform hover:scale-[1.02] transition-all duration-200 flex items-center justify-center"
-          onClick={() => {
-            if (product.donation) {
-              setModalOpened(true);
-            } else {
-              handleCheckout();
-            }
-          }}
-        >
-          <ShoppingCart size={20} className="mr-2" />
-          Acheter
-        </button>
+        { product.isBought && (
+          <BuyingButton productId={product.id} /> 
+        )}
       </div>
-      <Modal
-        isOpen={modalOpened}
-        onClose={() => setModalOpened(false)}
-        title="Vous vous appréter à acheter ce produit. Veuillez confirmer votre intention"
-      >
-      </Modal>
     </div>
   );
 };

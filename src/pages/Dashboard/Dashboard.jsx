@@ -37,9 +37,9 @@ export default function Dashboard() {
   const hasActiveFilters = filters.toString() !== '';
 
   return (
-    <div className="relative min-h-screen bg-gray-50">
+    <div className="h-full flex flex-col bg-gray-50">
       {/* Header */}
-      <div className="sticky top-0 bg-white shadow-sm z-10 px-4">
+      <div className="bg-white shadow-sm z-10 px-4 flex-shrink-0">
         <div className="px-4 py-3 flex items-center justify-between">
           <div className="flex items-center">
             <MapPin className="w-5 h-5 text-gray-500 mr-2" />
@@ -78,22 +78,25 @@ export default function Dashboard() {
         )}
       </div>
 
-      {/* Contenu conditionnel */}
-      {hasActiveFilters ? (
-       <div className="p-4">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {recomendedProducts.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </div>
+      {/* Contenu scrollable */}
+      <div className="flex-1 overflow-y-auto">
+        {/* Contenu conditionnel */}
+        {hasActiveFilters ? (
+          <div className="p-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+              {recomendedProducts.map((product) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
+            </div>
+          </div>
+        ) : (
+          <>
+            <ProductSlider sectionTitle="Nos recommendations" products={recomendedProducts} />
+            <ProductSlider sectionTitle="Dernières chances !" products={lastChanceProducts} />
+            <ProductSlider sectionTitle="Récemment ajoutés" products={recentProducts} />
+          </>
+        )}
       </div>
-      ) : (
-        <>
-          <ProductSlider sectionTitle="Nos recommendations" products={recomendedProducts} />
-          <ProductSlider sectionTitle="Dernières chances !" products={lastChanceProducts} />
-          <ProductSlider sectionTitle="Récemment ajoutés" products={recentProducts} />
-        </>
-      )}
 
       {/* Filtres avancés */}
       <AdvancedFilter isOpen={filterOpen} onClose={() => setFilterOpen(false)} />

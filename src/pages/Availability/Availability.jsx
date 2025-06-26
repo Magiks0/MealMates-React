@@ -4,7 +4,6 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { MobileTimePicker } from "@mui/x-date-pickers";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { TextField , Button } from "@mui/material";
-import Navbar from "../../components/common/navbar/Navbar";
 import { useState } from 'react'
 import { useNavigate } from "react-router";
 
@@ -66,8 +65,6 @@ const Availability = () => {
                     </Button>
                 </div>
             </div>
-
-            <Navbar />
         </div>
     </LocalizationProvider>
   );

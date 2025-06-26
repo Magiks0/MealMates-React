@@ -8,10 +8,6 @@ function getAuthHeaders() {
   return token ? { Authorization: `Bearer ${token}` } : {};
 }
 
-const getToken = () => {
-  return localStorage.getItem('token') || authService.getToken();
-};
-
 const ProductService = {
   getFilteredProducts(filters) {
     return axios
@@ -54,35 +50,36 @@ const ProductService = {
         throw err;
       });
   },
-    goToCheckout(productId) {
-    return axios
-        .post(
-            `${API_URL}/stripe/checkout/${productId}`, {},
-            {
-              headers: {
-                  ...getAuthHeaders(),
-              },
-            }
-        )
-        .then((res) => res.data)
-        .catch((err) => {
-            console.error('Checkout error', err);
-            throw err;
-        });
-    },
 
-    createProduct(formData) {
-    return axios
-      .post(`${API_URL}/product/new`, formData, {
-        headers: {
-          ...getAuthHeaders(),
-        },
-      })
+  goToCheckout(productId) {
+  return axios
+      .post(
+          `${API_URL}/stripe/checkout/${productId}`, {},
+          {
+            headers: {
+                ...getAuthHeaders(),
+            },
+          }
+      )
       .then((res) => res.data)
-      .catch((error) => {
-        console.error('Erreur createProduct :', error.message);
-        throw error;
+      .catch((err) => {
+          console.error('Checkout error', err);
+          throw err;
       });
+  },
+
+  createProduct(formData) {
+  return axios
+    .post(`${API_URL}/product/new`, formData, {
+      headers: {
+        ...getAuthHeaders(),
+      },
+    })
+    .then((res) => res.data)
+    .catch((error) => {
+      console.error('Erreur createProduct :', error.message);
+      throw error;
+    });
   },
 
   getNearbyProducts(latitude, longitude, radius) {

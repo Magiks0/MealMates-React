@@ -11,28 +11,28 @@ const getAuthHeaders = () => {
     : {};
 };
 
-export const getDietaries = async () => {
-  try {
-    const response = await axios.get(`${API_URL}/dietaries`, {
-      headers: {
-        ...getAuthHeaders(),
-      },
-    });
-    return response.data;
-  } catch (error) {
-    throw new Error(error.response?.data?.message || "Erreur fetch dietaries");
-  }
+const DashBoardService = {
+ getDietaries() {
+   return axios.get(`${API_URL}/dietaries`, {
+     headers: {
+       ...getAuthHeaders(),
+     },
+   }).then((res) => res.data)
+     .catch((err) => {  
+      throw new Error(err.response?.data?.message || "Erreur fetch dietaries");
+    })
+ },
+
+ getTypes() {
+   return axios.get(`${API_URL}/types`, {
+     headers: {
+       ...getAuthHeaders(),
+     },
+   }).then((res) => res.data)
+     .catch((err) => {
+      throw new Error(err.response?.data?.message || "Erreur fetch types");
+    })
+ }
 };
 
-export const getTypes = async () => {
-  try {
-    const response = await axios.get(`${API_URL}/types`, {
-      headers: {
-        ...getAuthHeaders(),
-      },
-    });
-    return response.data;
-  } catch (error) {
-    throw new Error(error.response?.data?.message || "Erreur fetch types");
-  }
-};
+export default DashBoardService;

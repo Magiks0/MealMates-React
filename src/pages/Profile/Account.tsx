@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router";
 import authService from "../../services/AuthService";
 import UserService from "../../services/UserService";
-import Navbar from "../../components/common/navbar/Navbar";
 import { User as UserIcon, Heart, CreditCard, Package, Settings, FileText, LogOut } from 'lucide-react';
 
 const Profile = () => {
