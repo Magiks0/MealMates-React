@@ -12,6 +12,7 @@ import Availability from "./pages/Availability/Availability.jsx";
 import ProductNew from "./pages/Product/ProductNew.jsx";
 import ProductDetail from "./pages/Product/ProductDetail.jsx";
 import Map from "./pages/Search/Map.tsx";
+import MyOrders from "./pages/MyOrder/MyOrders.jsx";
 import ProtectedRoute from './components/Security/ProtectedRoutes';
 import "./index.css";
 import MessagesList from './pages/Messages/MessagesList.jsx';
@@ -43,6 +44,7 @@ export default function App() {
           <Route path="/account/preferences" element={<Preference />} />
           <Route path="/account/availability" element={<Availability />} />
           <Route path="/checkout/success/:id" element={<PaymentSuccessPage />} />
+          <Route path="/my-order" element={<MyOrders />} />
           <Route path="/search" element={<Map />} />
         </Route>
       </Route>
