@@ -165,7 +165,7 @@ const Map = () => {
   const radiusCenter = searchedLocation ? [searchedLocation.latitude, searchedLocation.longitude] : userPosition;
 
   return (
-    <div>
+    <div className="h-full w-full flex flex-col">
       <SearchBar 
         onSelectAddress={handleSelectAddress} 
         selectedLocation={searchedLocation}
@@ -177,9 +177,8 @@ const Map = () => {
           fetchProducts(userPosition[0], userPosition[1], searchRadius);
         }}
       />
-      
       <MapContainer
-        style={{ height: "100vh", width: "100%" }}
+        style={{ height: "100%", width: "100%" }}
         center={currentMapCenter}
         zoom={15}
         zoomControl={false}
@@ -237,7 +236,7 @@ const Map = () => {
         <ZoomControl position="bottomright" />
         {showModal && selectedMarker && (
           <div
-            className="fixed inset-0 z-[2000] flex items-end justify-center bg-opacity-40 mb-30 px-4"
+            className="fixed bottom-0 z-[2000] flex items-end justify-center bg-opacity-40 mb-30 px-4 h-auto w-full"
             onClick={() => {
               window.location.href = `/product/${selectedMarker.id}`;
             }}

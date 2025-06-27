@@ -103,7 +103,7 @@ export default function Message() {
   }
 
   return (
-    <div className="w-full max-w-lg mx-auto bg-white rounded-lg shadow-xl flex flex-col h-full">
+    <div className="w-full h-full mx-auto bg-white rounded-lg shadow-xl flex flex-col">
       {/* Header */}
       <div className="bg-secondary text-white p-4 border-b border-green-700 flex justify-between items-center shadow-md">
         <div className="flex items-center">
@@ -169,7 +169,7 @@ export default function Message() {
                       Faites scanner ce QR pour valider la transaction.
                   </p>
                   <div className="flex justify-center p-2 rounded-md">
-                      <QRCodeSVG value={PICKUP_PAGE} />
+                      <QRCodeSVG value={PICKUP_PAGE + chat.linkedOrder.qrCodeToken} />
                   </div>
               </div>
           ) : (chat.linkedOrder && chat.linkedOrder.status === 'completed') && (

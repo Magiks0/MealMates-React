@@ -10,16 +10,13 @@ export default function LandingPage() {
     <>
       <Header />
       <section className='flex flex-col h-1/3 px-4 pt-8 sm:px-16 sm:py-12 sm:gap-6'>
-        <div className='h-auto gap-3 sm:flex'>
+        <div className='flex justify-center h-auto'>
           <div className='relative w-10/11 h-[50vw] sm:w-3/5 sm:h-[30vw]'>
             <div className='img absolute w-[95%] h-11/12 aspect-[1/1] rounded-2xl'>
             </div>
             <div className='absolute bottom-0 right-0 text-xs sm:text-lg md:text-2xl md:p-10 text-white font-extrabold bg-primary p-5 w-3/5 '>
               Rejoins les <span className='text-secondary'>milliers d’utilisateurs</span> pour la lutte anti-gaspi !
             </div>
-          </div>
-          <div className='invisible sm:visible'>
-            S'inscrire
           </div>
         </div>
         <div className='flex justify-center'>

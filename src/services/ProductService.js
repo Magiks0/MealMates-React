@@ -83,7 +83,6 @@ const ProductService = {
   },
 
   getNearbyProducts(latitude, longitude, radius) {
-
     return axios
       .get(`${API_URL}/products/nearby?latitude=${latitude}&longitude=${longitude}&radius=${radius}`, {
         headers: {
@@ -94,23 +93,10 @@ const ProductService = {
       .catch((err) => {
         console.error('Erreur getNearbyProducts :', err);
         throw err;
-      });  },
+      });  
+    },
 
-  getFilteredProducts(filters) {
-    return axios
-      .get(`${API_URL}/products?${filters}`, {
-        headers: {
-          ...getAuthHeaders(),
-        },
-      })
-      .then((res) => res.data)
-      .catch((err) => {
-        console.error('Erreur getFilteredProducts :', err);
-        throw err;
-      });
-  },
-
-  getProductById(productId) {
+    getProductById(productId) {
     return axios
     .get(`${API_URL}/products/${productId}`, {
         headers: {
@@ -122,10 +108,6 @@ const ProductService = {
         console.error('Erreur getProductById :', err);
         throw err;
     });
-  },
-
-  getNearbyProducts(latitude, longitude, radius = 10) {
-    return getFilteredProducts(`latitude=${latitude}&longitude=${longitude}&radius=${radius}`);
   },
 
   getUserProducts() {
@@ -142,7 +124,6 @@ const ProductService = {
         return [];
     });
   }
-
 };
 
 export default ProductService;

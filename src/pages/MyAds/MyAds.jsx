@@ -160,8 +160,6 @@ const MyAds = () => {
                               <div className="absolute right-0 top-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-10 min-w-[120px]">
                                 <button 
                                   onClick={() => {
-                                    // Navigation vers page d'édition (à implémenter)
-                                    console.log('Edit product:', product.id);
                                     setShowMenu(null);
                                   }}
                                   className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"

@@ -13,6 +13,7 @@ export default function Dashboard() {
   const [recomendedProducts, setRecomendedProducts] = useState([]);
   const [filterOpen, setFilterOpen] = useState(false);
   const [filters, setFilters] = useSearchParams();
+  
 
   useEffect(() => {
     const load = async () => {

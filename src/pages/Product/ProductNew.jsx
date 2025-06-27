@@ -21,7 +21,6 @@
   const userMarkerRef = useRef(null);
 
   // TODO: Récupérer l'adresse de l'utilisateur depuis son profil
-  // const userAddress = "Adresse depuis le profil"; // À remplacer par l'appel API réel
     const [selectedFiles, setSelectedFiles] = useState([]);
     const [productTypes, setProductTypes] = useState([]);
     const navigate = useNavigate();
@@ -57,7 +56,7 @@
         value.files.forEach((file) => {
           formData.append(`files[]`, file);
         });
-        
+
         const res = await ProductService.createProduct(formData);
 
         if (res.status === 'success') {
@@ -112,7 +111,7 @@
               .bindPopup("Votre position actuelle");
           },
           (error) => {
-            console.log("Géolocalisation refusée ou indisponible:", error);
+            console.error("Géolocalisation refusée ou indisponible:", error);
           }
         );
       }
@@ -129,8 +128,6 @@
   }, [step]);
 
   useEffect(() => {
-    if (step !== 4) return;
-
     const searchAddresses = async () => {
       if (searchTerm.length < 3) {
         setSuggestions([]);
@@ -149,7 +146,9 @@
       }
     };
 
-    const debounceTimer = setTimeout(searchAddresses, 300);
+    const debounceTimer = setTimeout(() => {
+      searchAddresses();
+    }, 300);
     return () => clearTimeout(debounceTimer);
   }, [searchTerm, step]);
 
@@ -246,7 +245,7 @@
         </div>
 
         {/* Content */}
-        <div className="p-4">
+        <div className="p-4 pb-16">
           <form
             onSubmit={(e) => {
               e.preventDefault();
@@ -474,7 +473,7 @@
 
           {/* Step 4: Location - NOUVELLE VERSION AVEC MAP ET RECHERCHE */}
           {step === 4 && (
-            <div className="mb-6">
+            <div className="mb-6 h-full">
               <h2 className="font-bold mb-1">Où se trouve votre produit ?</h2>
               
               {/* Barre de recherche avec autocomplétion */}
@@ -621,7 +620,6 @@
               </div>
             )}
 
-            {/* Navigation buttons only for steps 1-4 */}
             {step < 5 && (
             <div className="flex justify-between items-center">
               {step > 1 && (
@@ -635,7 +633,7 @@
                 </button>
               )}
 
-              {step < totalSteps - 1 ? (
+              {step < 4 &&   (
                 <button
                     type="button"
                     onClick={nextStep}
@@ -644,7 +642,7 @@
                     Suivant
                     <ArrowRight size={20} className="ml-2" />
                 </button>
-              ) : ( 
+              )} {step === 4 && ( 
                 <button
                     type="submit"
                     className="py-2 px-4 bg-green-500 text-white rounded-lg flex items-center ml-auto"
