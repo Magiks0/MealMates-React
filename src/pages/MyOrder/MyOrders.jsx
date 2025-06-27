@@ -23,7 +23,6 @@ const MyOrders = () => {
     try {
       setLoading(true);
       const data = await PurchaseService.getMyPurchases();
-      console.log('Mes commandes:', data);
       setPurchases(data);
     } catch (err) {
       setError('Erreur lors du chargement des commandes');
