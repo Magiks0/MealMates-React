@@ -11,7 +11,7 @@ function getAuthHeaders() {
 const PurchaseService = {
   getPurchaseById(purchaseId) {
     return axios
-      .get(`${API_URL}/purchases/${purchaseId}`, {
+      .get(`${API_URL}/orders/${purchaseId}`, {
         headers: {
           ...getAuthHeaders(),
         },
@@ -21,7 +21,21 @@ const PurchaseService = {
         console.error('Erreur getPurchaseById :', err);
         throw err;
       });
-  }, 
+  },
+
+  getMyPurchases() {
+    return axios
+      .get(`${API_URL}/my-orders`, {
+        headers: {
+          ...getAuthHeaders(),
+        },
+      })
+      .then((res) => res.data)
+      .catch((err) => {
+        console.error('Erreur getMyPurchases :', err);
+        throw err;
+      });
+  },
 }
 
 export default PurchaseService;
