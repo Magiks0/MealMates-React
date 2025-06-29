@@ -92,7 +92,6 @@ const SearchBar = ({
     
     // Notifier le composant parent de l'adresse sélectionnée
     if (onSelectAddress) {
-      console.log(`Adresse sélectionnée: ${result.label}, Coordonnées: ${result.latitude}, ${result.longitude}`);
       onSelectAddress(result);
     }
   };

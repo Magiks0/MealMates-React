@@ -57,7 +57,7 @@ const ProductCard = ({product}) => {
         
         <div className="flex items-center text-xs text-gray-500 mb-1">
           <MapPin className="w-4 h-4 mr-1" /> 
-          <span>9 rue de Janville, MOUY</span>
+          <span>{product.address.name}</span>
         </div>
       </div>
       

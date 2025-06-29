@@ -63,10 +63,6 @@ async function login({ username, password }) {
 async function googleLogin(token) {
   const res = await axios.post(`${API_URL}/google-login`, { token });
   
-  if (res.data.token) {
-    localStorage.setItem(TOKEN_KEY, res.data.token);
-  }
-  
   return res.data;
 }
 

@@ -89,6 +89,10 @@
   font-weight: bold;
 }
 
+.login-links p {
+  color: #fff;
+}
+
 .login-link a:hover {
   text-decoration: underline;
 }
@@ -203,7 +207,7 @@
   display: flex;             
   align-items: center;      
   margin: 1rem 0;
-  color: #757575; /* Couleur du trait et du texte "Ou" */
+  color: #fff ; /* Couleur du trait et du texte "Ou" */
 }
 
 .separator hr {

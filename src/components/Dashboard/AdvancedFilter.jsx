@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 import { useSearchParams } from 'react-router';
+import DashboardService from '../../services/DashBoardService';
 
 const AdvancedFilter = ({ isOpen, onClose }) => {
   const [filters, setFilters] = useState({});
@@ -19,6 +20,7 @@ const AdvancedFilter = ({ isOpen, onClose }) => {
     setFilters({ minPrice: '', maxPrice: '', address: '', category: '', peremptionDate: '', dietetic: '' });
     setSelectedTypes([]);
     setParams({});
+    onClose();
   };
 
   const handleCheckboxChange = (typeId) => {
@@ -44,13 +46,14 @@ const AdvancedFilter = ({ isOpen, onClose }) => {
       newParams.set("types", selectedTypes.join(","));
     }
  
-    setParams(newParams); 
+    setParams(newParams);
+    onClose();
   };
   
   useEffect(() => {
     async function fetchDietaries() {
       try {
-        const data = await getDietaries();
+        const data = await DashboardService.getDietaries();
         setDietaries(data);
       } catch (err) {
         setError(err.message);
@@ -62,7 +65,7 @@ const AdvancedFilter = ({ isOpen, onClose }) => {
   useEffect(() => {
     async function fetchTypes() {
       try {
-        const data = await getTypes();
+        const data = await DashboardService.getTypes();
         setTypes(data);
       } catch (err) {
         setError(err.message);
@@ -71,11 +74,9 @@ const AdvancedFilter = ({ isOpen, onClose }) => {
     fetchTypes();
   }, []);
 
-  return (
-    <form
-      onSubmit={handleSubmit}
-      className={`fixed top-0 right-0 h-full bg-white w-80 shadow-xl transform transition-transform duration-300 ease-in-out z-402 flex flex-col ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}
-    >
+    return (
+    <div className={`fixed h-full top-0 right-0 bottom-16 bg-white w-80 shadow-xl transform transition-transform duration-300 ease-in-out z-50 flex flex-col ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+      <form onSubmit={handleSubmit} className="h-full flex flex-col">
       <div className="flex items-center justify-between p-5 border-b">
         <h2 className="text-lg font-medium text-gray-800">Filtres</h2>
         <button 
@@ -95,7 +96,7 @@ const AdvancedFilter = ({ isOpen, onClose }) => {
               <input
                 type="number"
                 name="minPrice"
-                value={filters.minPrice}
+                value={filters.minPrice || ''}
                 onChange={handleChange}
                 className="w-full p-3 border-0 bg-gray-50 rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none transition-all"
                 placeholder="Min €"
@@ -105,7 +106,7 @@ const AdvancedFilter = ({ isOpen, onClose }) => {
               <input
                 type="number"
                 name="maxPrice"
-                value={filters.maxPrice}
+                value={filters.maxPrice || ''}
                 onChange={handleChange}
                 className="w-full p-3 border-0 bg-gray-50 rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none transition-all"
                 placeholder="Max €"
@@ -119,7 +120,7 @@ const AdvancedFilter = ({ isOpen, onClose }) => {
           <input
             type="text"
             name="address"
-            value={filters.address}
+            value={filters.address || ''}
             onChange={handleChange}
             className="w-full p-3 border-0 bg-gray-50 rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none transition-all"
             placeholder="Ville, région..."
@@ -131,7 +132,7 @@ const AdvancedFilter = ({ isOpen, onClose }) => {
           <input
             type="date"
             name="peremptionDate"
-            value={filters.peremptionDate}
+            value={filters.peremptionDate || ''}
             onChange={handleChange}
             className="w-full p-3 border-0 bg-gray-50 rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none transition-all"
           />
@@ -141,8 +142,8 @@ const AdvancedFilter = ({ isOpen, onClose }) => {
           <label className="text-sm font-medium text-gray-500 uppercase tracking-wider">Régime alimentaire</label>
           <div className="relative">
             <select
-              name="dietaries"
-              value={filters.dietaries}
+              name="dietetic"
+              value={filters.dietetic || ''}
               onChange={handleChange}
               className="w-full p-3 border-0 bg-gray-50 rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none appearance-none transition-all pr-10"
             >
@@ -172,11 +173,15 @@ const AdvancedFilter = ({ isOpen, onClose }) => {
                     id={`type-${type.id}`}
                     checked={selectedTypes.includes(type.id)}
                     onChange={() => handleCheckboxChange(type.id)}
-                    className="appearance-none w-5 h-5 border border-gray-300 rounded checked:bg-green-500 checked:border-transparent focus:outline-none transition-colors cursor-pointer"
+                    className="w-5 h-5 border border-gray-300 rounded focus:outline-none transition-colors cursor-pointer"
                   />
-                  <svg className="absolute w-3 h-3 text-white pointer-events-none opacity-0 checked:opacity-100" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                    <polyline points="20 6 9 17 4 12"></polyline>
-                  </svg>
+                  {selectedTypes.includes(type.id) && (
+                    <div className="absolute inset-0 bg-green-500 rounded flex items-center justify-center pointer-events-none">
+                      <svg className="w-3 h-3 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                      </svg>
+                    </div>
+                  )}
                 </div>
                 <span className="text-sm text-gray-700 group-hover:text-gray-900 transition-colors">{type.name}</span>
               </label>
@@ -200,7 +205,8 @@ const AdvancedFilter = ({ isOpen, onClose }) => {
           Appliquer
         </button>
       </div>
-    </form>
+      </form>
+    </div>
   );
 };
 
