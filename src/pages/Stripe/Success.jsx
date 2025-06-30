@@ -2,11 +2,13 @@ import { useState, useEffect } from "react";
 import { Check, Home, MessageCircle, Package } from 'lucide-react';
 import { useParams, useNavigate } from "react-router";
 import OrderService from "../../services/OrderService";
+import ChatService from "../../services/ChatServices";
 
 const PaymentSuccessPage = () => {
   const [showAnimation, setShowAnimation] = useState(false);
   const [showContent, setShowContent] = useState(false);
   const [purchase, setPurchase] = useState(null);
+  const [chat, setChat] = useState(null);
   const [loading, setLoading] = useState(true);
 
   const navigate = useNavigate();
@@ -34,6 +36,19 @@ const PaymentSuccessPage = () => {
       clearTimeout(timer2);
     };
   }, [params]);
+
+  useEffect(() => {
+    const fetchChat = async () => {
+      try {
+        const chatData = await ChatService.getChatByProductIdAndUsers(purchase.buyer.id, purchase.seller.id, purchase.product.id);
+        setChat(chatData);
+      } catch(err) {
+        console.error('Erreur lors de la récupéeration du chat: ', err)
+      }
+    }
+
+    fetchChat();
+  }, [purchase]);
 
   if (loading) {
     return (
@@ -84,13 +99,12 @@ const PaymentSuccessPage = () => {
           <p className="text-gray-600 text-lg mb-2">Votre transaction a été effectuée avec succès</p>
 
           <div className="bg-white rounded-lg p-6 shadow-sm mb-8 text-left max-w-sm">
+             <div className="flex justify-between items-center mb-3">
+              <span className="font-semibold text-gray-900 m-auto">{purchase.product.title}</span>
+            </div>
             <div className="flex justify-between items-center mb-3">
               <span className="text-gray-600">Montant</span>
               <span className="font-semibold text-gray-900">{purchase.product.price} €</span>
-            </div>
-            <div className="flex justify-between items-center mb-3">
-              <span className="text-gray-600">Transaction ID</span>
-              <span className="font-mono text-sm text-gray-900">#TXN{purchase.id}</span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-gray-600">Date</span>
@@ -120,7 +134,7 @@ const PaymentSuccessPage = () => {
           </button>
 
           <button 
-            onClick={() => navigate('/chats')}
+            onClick={() => navigate('/chats/' + chat.id)}
             className="w-full flex items-center justify-center space-x-2 bg-white text-gray-700 py-4 px-6 rounded-lg border border-gray-200 hover:bg-gray-50"
           >
             <MessageCircle className="w-5 h-5" />

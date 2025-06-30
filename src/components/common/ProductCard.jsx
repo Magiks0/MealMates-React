@@ -13,7 +13,7 @@ const ProductCard = ({product}) => {
 
   return (
     <div 
-      className="relative max-w-2xs w-64 h-full rounded-lg overflow-hidden shadow-lg bg-white hover:shadow-xl transition-shadow duration-300 cursor-pointer"
+      className="relative max-w-2xs w-64 flex flex-col h-full rounded-lg overflow-hidden shadow-lg bg-white hover:shadow-xl transition-shadow duration-300 cursor-pointer"
       onClick={handleProductClick}
     >
       <div className="relative">

@@ -104,15 +104,19 @@ const ChatService = {
     return res.data;
   },
 
-  getChatByProductIdAndUsers: async (productId, sellerId, buyerId) => {
-    const res = await axios.get(`${API_URL}/chat/check-existence`, {
-      params: { sellerId, productId, buyerId },
-      headers: {
-        ...getBearerToken(),
-      },
+  getChatByProductIdAndUsers: async (buyerId, sellerId, productId) => {
+   return axios
+    .get(`${API_URL}/chats/${buyerId}/${sellerId}/${productId}`, {
+        headers: {
+          ...getBearerToken(),
+        },
+      })
+    .then((res) => res.data)
+    .catch((err) => {
+      console.error(`Erreur lors de la récupération du chat:`, err);
+      throw err;
     });
-    return res.data;
-  }
+  },
 };
 
 export default ChatService;

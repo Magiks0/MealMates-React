@@ -9,6 +9,7 @@
     const [step, setStep] = useState(1);
     const totalSteps = 5;
     const [selectedImages, setSelectedImages] = useState([]);
+    const [loading, setLoading] = useState(false);
   
   // États pour la gestion de la carte et de la recherche d'adresses
   const [searchTerm, setSearchTerm] = useState('');
@@ -42,6 +43,7 @@
         }
       },
       onSubmit: async ({ value }) => {
+        setLoading(true);
         const formData = new FormData();
         formData.append('title', value.title);
         formData.append('description', value.description);
@@ -60,6 +62,7 @@
         const res = await ProductService.createProduct(formData);
 
         if (res.status === 'success') {
+          setLoading(false);
           setStep(5);
         } else {
           console.error('Error creating product:', res);
@@ -230,6 +233,10 @@
       };
       fetchProductTypes();
     }, []);
+
+    if (loading) {
+      return <div className="p-4 text-center">Chargement...</div>;
+    }
 
     return (
       <div className="max-w-md mx-auto h-full bg-white rounded-lg shadow-lg overflow-y-auto">
