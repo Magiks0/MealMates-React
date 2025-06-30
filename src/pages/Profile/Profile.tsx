@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router";
 import { AiOutlineArrowLeft, AiFillStar } from "react-icons/ai";
-import Navbar from "../../components/common/navbar/Navbar";
 import UserService from "../../services/UserService";
 import { useForm } from "@tanstack/react-form";
 import { z } from "zod";
@@ -34,9 +33,6 @@ const ProfilePage = () => {
       lastName: user?.lastName ?? "",
       email: user?.email ?? "",
       address: user?.address ?? "",
-    },
-    onSubmit: async ({ value }) => {
-      console.log(value);
     },
     validators: {
       onChange: z.object({

@@ -1,5 +1,5 @@
-  import React, { createContext, useContext, useState, useEffect } from 'react';
-  import AuthService from '../services/AuthService';
+import { createContext, useContext, useState, useEffect } from 'react';
+import AuthService from '../services/AuthService';
 
   const AuthContext = createContext();
 
@@ -32,8 +32,13 @@
       setIsAuthenticated(false);
     };
 
+    const loginWithToken = (token) => {
+      localStorage.setItem("token", token);
+      setIsAuthenticated(true);
+    };
+
     return (
-      <AuthContext.Provider value={{ isAuthenticated, login, logout, loadingAuth }}>
+      <AuthContext.Provider value={{ isAuthenticated, login, logout, loadingAuth, loginWithToken }}>
         {children}
       </AuthContext.Provider>
     );

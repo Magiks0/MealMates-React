@@ -1,100 +1,77 @@
-import authService from "./AuthService";
+import AuthService from "./AuthService";
 import axios from 'axios';
 
 const API_URL = import.meta.env.VITE_API_URL;
-const TOKEN = authService.getToken();
 
-export const chatService = {
-  createChatWithMessage: async ({ productId, message, userId }) => {
-    const res = await axios.post(`${API_URL}/chats/new/${userId}`, {
+function getBearerToken() {
+  const token = localStorage.getItem('token');
+  return token ? { Authorization: `Bearer ${token}` } : {};
+}
+
+const ChatService = {
+  createChatWithMessage({ productId, message, userId }) {
+    return axios
+    .post(`${API_URL}/chats/new/${userId}`, {
       userId,
       productId,
       message,
     }, 
     {
       headers: {
-        'Authorization': `Bearer ${TOKEN}`,
+        ...getBearerToken(),
       }
+    }).then((res) => {return  res.data.id}
+    ).catch((err) => {
+      console.error('Erreur lors de la création du chat avec message:', err);
+      throw err;
     });
-
-    return { chatId: res.data.id };
   },
   
-
-  getChats: async () => {
-    try {
-      const response = await fetch(`${API_URL}/chats`, {
+  getChats() {
+    return axios.get(`${API_URL}/chats`, {
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${TOKEN}`,
+          ...getBearerToken(),
         },
+      })
+      .then((res) => res.data)
+      .catch((err) => {
+        console.error('Erreur lors de la récupération des chats:', err);
+        throw err;
       });
+    },
+  
 
-      if (!response.ok) {
-        throw new Error(`Erreur HTTP: ${response.status}`);
-      }
-
-      return await response.json();
-    } catch (error) {
-      console.error('Erreur lors de la récupération des chats:', error);
-      throw error;
-    }
+  getChatByID(chatId) {
+    return axios.get(`${API_URL}/chats/${chatId}`, {
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        ...getBearerToken(),
+      },
+    })
+      .then((res) => {return res.data;})
+      .catch((err) => {
+        console.error(`Erreur lors de la récupération du chat ${chatId}:`, err);
+        throw err;
+      });
   },
 
-  /**
-   * Récupérer un chat spécifique par ID
-   */
-  getChat: async (chatId) => {
-    try {
-      const response = await fetch(`${API_URL}/chats/${chatId}`, {
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${TOKEN}`,
-        },
-        credentials: 'include'
+  getMessages(chatId, afterId = null) {
+    return axios.get(`${API_URL}/chats/${chatId}/messages`, {
+      params: { after_id: afterId },
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        ...getBearerToken(),
+      },
+    })
+      .then((res) => res.data)
+      .catch((err) => {
+        console.error(`Erreur lors de la récupération des messages du chat ${chatId}:`, err);
+        throw err;
       });
-
-      if (!response.ok) {
-        throw new Error(`Erreur HTTP: ${response.status}`);
-      }
-
-      return await response.json();
-    } catch (error) {
-      console.error(`Erreur lors de la récupération du chat ${chatId}:`, error);
-      throw error;
-    }
-  },
-
-  /**
-   * Récupérer les messages d'un chat après un certain ID
-   */
-  getMessages: async (chatId, afterId = null) => {
-    try {
-      let url = `${API_URL}/chats/${chatId}/messages`;
-      if (afterId) {
-        url += `?after_id=${afterId}`;
-      }
-
-      const response = await fetch(url, {
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${TOKEN}`,
-        },
-        credentials: 'include'
-      });
-
-      if (!response.ok) {
-        throw new Error(`Erreur HTTP: ${response.status}`);
-      }
-
-      return await response.json();
-    } catch (error) {
-      console.error(`Erreur lors de la récupération des messages:`, error);
-      throw error;
-    }
   },
 
   sendMessage : async (chatId, content) => {
@@ -105,7 +82,7 @@ export const chatService = {
         {
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${TOKEN}`,
+            ...getBearerToken(),
           },
         }
       );
@@ -121,44 +98,25 @@ export const chatService = {
     const res = await axios.get(`${API_URL}/chat/check-existence`, {
       params: { userId, productId },
       headers: {
-        'Authorization': `Bearer ${TOKEN}`,
+        ...getBearerToken(),
       },
     });
     return res.data;
   },
 
-  createChat: async (userId) => {
-    try {
-      const response = await fetch(`${API_URL}/chats/new/${userId}`, {
-        method: 'POST',
+  getChatByProductIdAndUsers: async (buyerId, sellerId, productId) => {
+   return axios
+    .get(`${API_URL}/chats/${buyerId}/${sellerId}/${productId}`, {
         headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${TOKEN}`,
+          ...getBearerToken(),
         },
-        credentials: 'include'
-      });
-
-      if (!response.ok) {
-        throw new Error(`Erreur HTTP: ${response.status}`);
-      }
-
-      return await response.json();
-    } catch (error) {
-      console.error(`Erreur lors de la création de la conversation:`, error);
-      throw error;
-    }
-  },
-
-  getChatByProductIdAndUsers: async (productId, sellerId, buyerId) => {
-    const res = await axios.get(`${API_URL}/chat/check-existence`, {
-      params: { sellerId, productId, buyerId },
-      headers: {
-        'Authorization': `Bearer ${TOKEN}`,
-      },
+      })
+    .then((res) => res.data)
+    .catch((err) => {
+      console.error(`Erreur lors de la récupération du chat:`, err);
+      throw err;
     });
-    return res.data;
-  }
+  },
 };
 
-export default chatService;
+export default ChatService;

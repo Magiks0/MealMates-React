@@ -1,13 +1,14 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Check, Home, MessageCircle, Package } from 'lucide-react';
-import ProductService from "../../services/ProductService";
-import PurchaseService from "../../services/PurchaseService";
 import { useParams, useNavigate } from "react-router";
+import OrderService from "../../services/OrderService";
+import ChatService from "../../services/ChatServices";
 
 const PaymentSuccessPage = () => {
   const [showAnimation, setShowAnimation] = useState(false);
   const [showContent, setShowContent] = useState(false);
   const [purchase, setPurchase] = useState(null);
+  const [chat, setChat] = useState(null);
   const [loading, setLoading] = useState(true);
 
   const navigate = useNavigate();
@@ -19,7 +20,7 @@ const PaymentSuccessPage = () => {
 
     const fetchPurchase = async () => {
       try {
-        const purchaseData = await PurchaseService.getPurchaseById(params.id);
+        const purchaseData = await OrderService.getOrderById(params.id);
         setPurchase(purchaseData);
       } catch (error) {
         console.error('Erreur lors du chargement de la transaction :', error);
@@ -34,7 +35,20 @@ const PaymentSuccessPage = () => {
       clearTimeout(timer1);
       clearTimeout(timer2);
     };
-  }, [params.id]);
+  }, [params]);
+
+  useEffect(() => {
+    const fetchChat = async () => {
+      try {
+        const chatData = await ChatService.getChatByProductIdAndUsers(purchase.buyer.id, purchase.seller.id, purchase.product.id);
+        setChat(chatData);
+      } catch(err) {
+        console.error('Erreur lors de la récupéeration du chat: ', err)
+      }
+    }
+
+    fetchChat();
+  }, [purchase]);
 
   if (loading) {
     return (
@@ -83,16 +97,14 @@ const PaymentSuccessPage = () => {
         }`}>
           <h1 className="text-3xl font-bold text-gray-900 mb-4">Paiement réussi !</h1>
           <p className="text-gray-600 text-lg mb-2">Votre transaction a été effectuée avec succès</p>
-          <p className="text-gray-500 text-sm mb-8">Vous recevrez un email de confirmation sous peu</p>
 
           <div className="bg-white rounded-lg p-6 shadow-sm mb-8 text-left max-w-sm">
+             <div className="flex justify-between items-center mb-3">
+              <span className="font-semibold text-gray-900 m-auto">{purchase.product.title}</span>
+            </div>
             <div className="flex justify-between items-center mb-3">
               <span className="text-gray-600">Montant</span>
               <span className="font-semibold text-gray-900">{purchase.product.price} €</span>
-            </div>
-            <div className="flex justify-between items-center mb-3">
-              <span className="text-gray-600">Transaction ID</span>
-              <span className="font-mono text-sm text-gray-900">#TXN{purchase.id}</span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-gray-600">Date</span>
@@ -122,32 +134,12 @@ const PaymentSuccessPage = () => {
           </button>
 
           <button 
-            onClick={() => navigate('/chats')}
+            onClick={() => navigate('/chats/' + chat.id)}
             className="w-full flex items-center justify-center space-x-2 bg-white text-gray-700 py-4 px-6 rounded-lg border border-gray-200 hover:bg-gray-50"
           >
             <MessageCircle className="w-5 h-5" />
             <span>Contacter le vendeur</span>
           </button>
-        </div>
-      </div>
-
-      {/* Message bas de page */}
-      <div className={`px-6 pb-6 transition-all duration-800 delay-1200 ${
-        showContent ? 'opacity-100' : 'opacity-0'
-      }`}>
-        <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-          <div className="flex items-start space-x-3">
-            <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center mt-0.5">
-              <Check className="w-4 h-4 text-white" />
-            </div>
-            <div>
-              <h3 className="font-medium text-green-900 mb-1">Transaction sécurisée</h3>
-              <p className="text-sm text-green-700">
-                Votre paiement a été traité de manière sécurisée via Stripe. 
-                Vos données bancaires sont protégées.
-              </p>
-            </div>
-          </div>
         </div>
       </div>
     </div>

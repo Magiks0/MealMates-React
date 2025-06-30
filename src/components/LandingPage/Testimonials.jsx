@@ -123,7 +123,7 @@ export default function Testimonials() {
             >
               <div className="p-6 flex flex-col items-center">
                 <img 
-                  src="/api/placeholder/100/100" 
+                  src={`https://randomuser.me/api/portraits/men/${testimonial.id}.jpg`} 
                   alt={testimonial.name} 
                   className="w-24 h-24 rounded-full object-cover mb-4"
                 />

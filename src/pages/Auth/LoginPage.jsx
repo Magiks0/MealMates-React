@@ -6,10 +6,10 @@ import authService from "../../services/AuthService";
 import "../../style/auth.css";
 
 const LoginPage = () => {
-  const [credentials, setCredentials] = useState({ username: "", password: "" });
+  const [credentials, setCredentials] = useState({ username: "", email:"", password: "" });
   const [error, setError] = useState("");
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login, loginWithToken } = useAuth();
 
   const handleChange = (e) => {
     setCredentials({ ...credentials, [e.target.name]: e.target.value });
@@ -32,13 +32,13 @@ const LoginPage = () => {
 
   const handleGoogleSuccess = async (credentialResponse) => {
     try {
-      // Appelle le service directement, car on doit stocker aussi le token
       const res = await authService.googleLogin(credentialResponse.credential);
+
       if (res.token) {
-        localStorage.setItem("token", res.token);
-        // Tu peux aussi envisager d'ajouter une fonction googleLogin dans ton AuthContext
+        loginWithToken(res.token);
         navigate("/home");
       }
+
     } catch (error) {
       console.error("Erreur lors de la connexion Google", error);
       setError("Connexion Google échouée");
@@ -46,7 +46,7 @@ const LoginPage = () => {
   };
 
   const handleGoogleFailure = (error) => {
-    console.error("Google Login Error:", error);
+  console.error("Échec de la connexion Google", error);
     setError("Connexion Google échouée");
   };
 
@@ -90,7 +90,7 @@ const LoginPage = () => {
 
         <div className="separator">
           <hr />
-          <span>Ou</span>
+          <span>OU</span>
           <hr />
         </div>
 

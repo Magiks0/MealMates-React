@@ -13,7 +13,7 @@ const ProductCard = ({product}) => {
 
   return (
     <div 
-      className="relative max-w-2xs w-64 h-full rounded-lg overflow-hidden shadow-lg bg-white hover:shadow-xl transition-shadow duration-300 cursor-pointer"
+      className="relative max-w-2xs w-64 flex flex-col h-full rounded-lg overflow-hidden shadow-lg bg-white hover:shadow-xl transition-shadow duration-300 cursor-pointer"
       onClick={handleProductClick}
     >
       <div className="relative">
@@ -57,7 +57,7 @@ const ProductCard = ({product}) => {
         
         <div className="flex items-center text-xs text-gray-500 mb-1">
           <MapPin className="w-4 h-4 mr-1" /> 
-          <span>9 rue de Janville, MOUY</span>
+          <span>{product.address.name}</span>
         </div>
       </div>
       
