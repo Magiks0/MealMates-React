@@ -1,5 +1,3 @@
-// Créez ce nouveau fichier, par exemple dans src/components/QrCodeScanner.js
-
 import React from 'react';
 import { Scanner } from '@yudiel/react-qr-scanner'; // La librairie de scan
 import { X, ScanLine } from 'lucide-react';

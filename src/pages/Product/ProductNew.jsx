@@ -4,6 +4,7 @@
   import ProductService from '../../services/ProductService';
   import DashBoardService from '../../services/DashBoardService';
   import { useNavigate } from 'react-router';
+  import imageCompression from 'browser-image-compression';
 
   export default function ProductNew() {
     const [step, setStep] = useState(1);
@@ -195,11 +196,36 @@
   const nextStep = () => setStep((s) => s + 1);
   const prevStep = () => setStep((s) => s - 1);
 
-  const handleImageSelection = (e) => {
+  const handleImageSelection = async (e) => {
     const files = Array.from(e.target.files || []);
-    setSelectedImages(files.map(file => URL.createObjectURL(file)));
-    form.setFieldValue('files', files);
-  };
+    if (files.length === 0) return;
+
+    const options = {
+        maxSizeMB: 0.8,
+        maxWidthOrHeight: 1920,
+        useWebWorker: true,
+        fileType: 'image/webp',
+    };
+
+    try {
+        setLoading(true); // Affiche un indicateur pendant la compression
+        const compressionPromises = files.map(file => imageCompression(file, options));
+        const compressedFiles = await Promise.all(compressionPromises);
+
+        const newImageUrls = compressedFiles.map(file => URL.createObjectURL(file));
+        setSelectedImages(prev => [...prev, ...newImageUrls]);
+        
+        // On ajoute les fichiers COMPRESSÉS à l'état du formulaire
+        const allFiles = [...form.getFieldValue('files'), ...compressedFiles];
+        form.setFieldValue('files', allFiles);
+        
+        setLoading(false);
+    } catch (error) {
+        console.error("Erreur lors de la compression :", error);
+        setLoading(false);
+        alert("Une erreur est survenue lors du traitement des images.");
+    }
+};
 
     const renderProgressBar = () => {
       return (
