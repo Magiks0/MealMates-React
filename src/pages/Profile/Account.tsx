@@ -101,14 +101,6 @@ const Profile = () => {
           <FileText className="w-5 h-5 text-gray-600" />
           <span className="text-gray-700">Mes annonces</span>
         </Link>
-
-        <Link
-          to="/settings"
-          className="w-full flex items-center space-x-3 p-4 hover:bg-gray-50 transition-colors"
-        >
-          <Settings className="w-5 h-5 text-gray-600" />
-          <span className="text-gray-700">Paramètres</span>
-        </Link>
       </div>
 
       {/* Bouton de déconnexion */}
