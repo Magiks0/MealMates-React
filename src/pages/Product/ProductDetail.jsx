@@ -7,6 +7,30 @@ import UserService from '../../services/UserService';
 import Modal from '../../components/common/Modal';
 import BuyingButton from '../../components/common/Product/BuyingButton';
 
+// Service des favoris intégré temporairement
+const FavoriteService = {
+  checkFavorite: async (productId) => {
+    const token = localStorage.getItem('token');
+    const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:8000/api'}/favorites/check/${productId}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    return response.json();
+  },
+  
+  toggleFavorite: async (productId) => {
+    const token = localStorage.getItem('token');
+    const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:8000/api'}/favorites/${productId}`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    return response.json();
+  }
+};
+
 const ProductDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -33,6 +57,11 @@ const ProductDetail = () => {
         setLoading(true);
         const response = await ProductService.getProductById(Number(id));
         setProduct(response);
+        
+        // Check if product is favorite
+        const favoriteStatus = await FavoriteService.checkFavorite(Number(id));
+        setIsFavorite(favoriteStatus.isFavorite);
+        
         setLoading(false);
       } catch (err) {
         setLoading(false);
@@ -54,6 +83,15 @@ const ProductDetail = () => {
     } catch (error) {
       console.error('Erreur lors de la vérification du chat :', error);
       alert('Impossible de vérifier la conversation. Veuillez réessayer.');
+    }
+  };
+
+  const handleToggleFavorite = async () => {
+    try {
+      const result = await FavoriteService.toggleFavorite(product.id);
+      setIsFavorite(result.isFavorite);
+    } catch (error) {
+      console.error('Erreur lors de la gestion des favoris :', error);
     }
   };
 
@@ -90,7 +128,6 @@ const ProductDetail = () => {
     );
   }
 
-  //TODO: Améliorer l'affichage de l'image du produit
   const productImage = import.meta.env.VITE_IMG_URL + product.files[0]?.path || defaultImage;
 
   return (
@@ -105,7 +142,7 @@ const ProductDetail = () => {
           </button>
           <div className="flex space-x-2">
             <button 
-              onClick={() => setIsFavorite(!isFavorite)}
+              onClick={handleToggleFavorite}
               className="p-2 bg-white/90 backdrop-blur-sm rounded-full shadow-lg hover:bg-white transition-all duration-200"
             >
               <Heart 
@@ -215,7 +252,7 @@ const ProductDetail = () => {
         </div>
       </div>
 
-      <div className="bg-white border-t border-gray-200 p-4 space-y-3 flex flex-col  items  -center">
+      <div className="bg-white border-t border-gray-200 p-4 space-y-3 flex flex-col items-center">
         <button 
           className="w-full bg-secondary text-white px-8 py-4 rounded-md font-semibold text-lg shadow-lg hover:shadow-xl transform hover:scale-[1.02] transition-all duration-200 flex items-center justify-center"
           onClick={handleContactClick}
