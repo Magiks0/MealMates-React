@@ -280,10 +280,6 @@
         {/* Content */}
         <div className="p-4 pb-16">
           <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              form.handleSubmit();
-            }}
             className="space-y-4"
           >
             {/* Step 1: Product Details */}
@@ -677,7 +673,11 @@
                 </button>
               )} {step === 4 && ( 
                 <button
-                    type="submit"
+                    type="button"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      form.handleSubmit();
+                    }}
                     className="py-2 px-4 bg-green-500 text-white rounded-lg flex items-center ml-auto"
                 >
                     Publier
