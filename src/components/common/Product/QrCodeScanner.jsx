@@ -1,11 +1,18 @@
 import React from 'react';
 import { Scanner } from '@yudiel/react-qr-scanner'; // La librairie de scan
 import { X, ScanLine } from 'lucide-react';
+import { useNavigate } from 'react-router';
 
 const QrCodeScanner = ({ onClose, onScan }) => {
+    const PICKUP_PAGE = import.meta.env.VITE_VALIDATE_PICKUP_DOMAIN;
+    const navigate = useNavigate();
 
     const handleDecode = (result) => {
         onScan(result);
+
+        onClose(true);
+
+        navigate(PICKUP_PAGE + result);
     };
 
     const handleError = (error) => {

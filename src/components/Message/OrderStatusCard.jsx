@@ -1,35 +1,10 @@
 import { CheckCircle, QrCode } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import { useState } from 'react';
-import QrCodeScanner from '../common/Product/QrCodeScanner'
-import { useNavigate } from 'react-router';
+import QrCodeScanner from '../common/Product/QrCodeScanner';
 
 function OrderStatusCard({ chat }) {
-    const PICKUP_PAGE = import.meta.env.VITE_VALIDATE_PICKUP_DOMAIN;
-
     const [isScannerOpen, setIsScannerOpen] = useState(false);
-    const navigate = useNavigate();
-
-    const handleScanResult = (result) => {
-        const urlScanned = typeof result === 'string' ? result : result?.text;
-
-        if (!urlScanned) {
-            console.error("Aucune donnée reçue du scanner.");
-            setIsScannerOpen(false);
-            return;
-        }
-
-        setIsScannerOpen(false);
-
-        try {
-            const urlObject = new URL(urlScanned);
-            const path = urlObject.pathname;
-            navigate(path);
-        } catch (error) {
-            console.error("Le QR code ne contient pas une URL valide.", error);
-            alert("QR Code invalide.");
-        }
-    };
 
     if (chat.linkedOrder.role === 'seller') {
         if (chat.linkedOrder.status === 'awaiting_pickup') {
@@ -50,7 +25,7 @@ function OrderStatusCard({ chat }) {
                     </div>
 
                     <div className="flex justify-center">
-                        <QRCodeSVG value={PICKUP_PAGE + '/' + chat.linkedOrder.qrToken} size={100} className='border p-2 rounded-lg' />
+                        <QRCodeSVG value={chat.linkedOrder.qrToken} size={100} className='border p-2 rounded-lg' />
                     </div>
                 </div>
             );
@@ -81,7 +56,6 @@ function OrderStatusCard({ chat }) {
                     {isScannerOpen && (
                         <QrCodeScanner
                             onClose={() => setIsScannerOpen(false)}
-                            onScan={handleScanResult}
                         />
                     )}
 
