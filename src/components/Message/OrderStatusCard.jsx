@@ -6,28 +6,26 @@ function OrderStatusCard({ chat }) {
 
     console.log('OrderStatusCard props:', chat);
 
-    // if (chat.linkedOrder.status !== 'awaiting_pickup') {
-    //     return (
-    //         <div className="bg-green-50 border border-green-200 text-green-800 rounded-lg p-3 my-2 shadow-sm text-center">
-    //             <div className="flex items-center mb-2 justify-center">
-    //                 <span className="font-semibold text-lg">✅ Bonne nouvelle !</span>
-    //             </div>
-    //             <p className="mb-3 text-sm text-left">
-    //                 {chat.linkedOrder.buyer} a effectué un achat de {chat.productPrice}€ pour votre produit "{chat.productName}".
-    //             </p>
-    //             <p className="mb-3 text-sm text-left">
-    //                 Faites scanner ce QR pour valider la transaction.
-    //             </p>
-    //             <div className="flex justify-center p-2 rounded-md">
-    //                 <QRCodeSVG value={PICKUP_PAGE + chat.linkedOrder.qrCodeToken} />
-    //             </div>
-    //         </div>
-    //     );
-    // }
+    if (chat.linkedOrder.status !== 'awaiting_pickup') {
+        return (
+            <div className="bg-green-50 border border-green-200 text-green-800 rounded-lg p-3 my-2 shadow-sm text-center">
+                <div className="flex items-center mb-2 justify-center">
+                    <span className="font-semibold text-lg">✅ Bonne nouvelle !</span>
+                </div>
+                <p className="mb-3 text-sm text-left">
+                    {chat.linkedOrder.buyer} a effectué un achat de {chat.productPrice}€ pour votre produit "{chat.productName}".
+                </p>
+                <p className="mb-3 text-sm text-left">
+                    Faites scanner ce QR pour valider la transaction.
+                </p>
+                <div className="flex justify-center p-2 rounded-md">
+                    <QRCodeSVG value={PICKUP_PAGE + chat.linkedOrder.qrCodeToken} />
+                </div>
+            </div>
+        );
+    }
 
-
-    // Message pour évaluer la transaction
-    // if (chat.linkedOrder.status === 'completed' ) {
+    if (chat.linkedOrder.status === 'completed' ) {
         console.log('OrderStatusCard:', chat);
     
         return (
@@ -43,7 +41,7 @@ function OrderStatusCard({ chat }) {
             </button>
             </div>
         );
-    // }
+    }
 
     return null;
 }
