@@ -52,6 +52,7 @@ export default function SavedSearches({
     }
     if (c.peremptionDate) parts.push(`À consommer avant : ${c.peremptionDate}`);
     if (c.dietaries?.length) parts.push(`Régimes : ${c.dietaries.join(", ")}`);
+    if (c.types) parts.push(`Types : ${c.types}`);
     return parts.join(" • ");
   };
 
@@ -69,6 +70,7 @@ export default function SavedSearches({
       peremptionDate:
         params.get("peremptionDate") ?? params.get("expiry_before"),
       dietaries: params.getAll("dietary[]"),
+      types: params.get("types"),
       keyword: params.get("keyword"),
     });
 
