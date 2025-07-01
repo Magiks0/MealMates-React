@@ -5,6 +5,7 @@ import { useSearchParams } from 'react-router';
 import ProductSlider from '../../components/Dashboard/ProductSlider';
 import ProductCard from '../../components/common/ProductCard'; 
 import ProductService from '../../services/ProductService';
+import NotificationDropdown from '../../components/common/Notification/NotificationDropdown';
 
 export default function Dashboard() {
   const [products, setProducts] = useState([]);
@@ -14,6 +15,12 @@ export default function Dashboard() {
   const [filterOpen, setFilterOpen] = useState(false);
   const [filters, setFilters] = useSearchParams();
   
+  // Ajouter ces variables pour les notifications
+  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
+  // Si vous avez un système d'authentification, utilisez-le :
+  // const { user } = useAuth();
+  // Sinon, vous pouvez passer true pour tester :
+  const user = true; // Remplacez par votre utilisateur réel si vous avez un système d'auth
 
   useEffect(() => {
     const load = async () => {
@@ -46,7 +53,14 @@ export default function Dashboard() {
             <MapPin className="w-5 h-5 text-gray-500 mr-2" />
             <div className="font-medium">10 Rue de la Paix, Paris</div>
           </div>
-          <div className="flex items-center space-x-1">
+          <div className="flex items-center space-x-2">
+            {/* Composant de notifications ajouté ici */}
+            <NotificationDropdown 
+              apiUrl={API_URL} 
+              currentUser={user}
+            />
+            
+            {/* Bouton filtre existant */}
             <button
               onClick={() => setFilterOpen(true)}
               className="p-2 text-white"
