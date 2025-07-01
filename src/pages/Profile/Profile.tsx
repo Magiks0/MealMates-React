@@ -1,21 +1,27 @@
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router";
-import { AiOutlineArrowLeft, AiFillStar } from "react-icons/ai";
+import { useNavigate } from "react-router";
+import { ArrowLeft, Camera, User, Mail, Star } from "lucide-react";
+import authService from "../../services/AuthService";
 import UserService from "../../services/UserService";
+import RatingService from "../../services/RatingService";
 import { useForm } from "@tanstack/react-form";
 import { z } from "zod";
-import { ArrowLeft, Star, ChevronRight, Camera, User, Mail, Calendar, Utensils } from 'lucide-react';
 
-interface User {
-  username: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  address: string;
-}
+const Profile = () => {
+  type User = {
+    id: number;
+    email: string;
+    username: string;
+    firstName?: string;
+    lastName?: string;
+    address?: string;
+    roles: string[];
+  };
 
-const ProfilePage = () => {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<User>();
+  const [averageRating, setAverageRating] = useState<number>(0);
+  const [ratingsCount, setRatingsCount] = useState<number>(0);
+  const [loadingRatings, setLoadingRatings] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -25,6 +31,47 @@ const ProfilePage = () => {
     };
     fetchUser();
   }, []);
+
+  useEffect(() => {
+    const fetchRatings = async () => {
+      try {
+        setLoadingRatings(true);
+        const ratings = await RatingService.getMyRatings();
+        
+        if (ratings.length > 0) {
+          const sum = ratings.reduce((acc: number, rating: any) => acc + rating.score, 0);
+          const avg = sum / ratings.length;
+          setAverageRating(Number(avg.toFixed(1)));
+          setRatingsCount(ratings.length);
+        } else {
+          setAverageRating(0);
+          setRatingsCount(0);
+        }
+      } catch (error) {
+        console.error('Erreur lors du chargement des évaluations:', error);
+        setAverageRating(0);
+        setRatingsCount(0);
+      } finally {
+        setLoadingRatings(false);
+      }
+    };
+
+    fetchRatings();
+  }, []);
+
+  const renderStars = (rating: number) => {
+    return (
+      <div className="flex text-yellow-400">
+        {[1, 2, 3, 4, 5].map((star) => (
+          <Star 
+            key={star} 
+            size={16} 
+            className={star <= Math.round(rating) ? "fill-current" : ""}
+          />
+        ))}
+      </div>
+    );
+  };
 
   const form = useForm({
     defaultValues: {
@@ -125,47 +172,41 @@ const ProfilePage = () => {
 
       {/* Reviews Section */}
       <div className="bg-white mx-4 mt-4 rounded-2xl shadow-sm overflow-hidden">
-        <button className="w-full p-6 flex items-center justify-between hover:bg-gray-50 transition-colors">
+        <button
+          className="w-full p-6 flex items-center justify-between hover:bg-gray-50 transition-colors"
+          onClick={() => navigate("/my-ratings")}
+        >
           <div className="flex items-center space-x-3">
             <div className="flex items-center space-x-2">
               <span className="text-base font-medium text-gray-800">Avis</span>
-              <div className="flex text-yellow-400">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} size={16} fill="currentColor" />
-                ))}
-              </div>
+              {loadingRatings ? (
+                <div className="flex text-gray-300">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} size={16} />
+                  ))}
+                </div>
+              ) : (
+                renderStars(averageRating)
+              )}
               <span className="text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
-                4.2
+                {loadingRatings ? "..." : (averageRating > 0 ? averageRating : "Aucun avis")}
               </span>
+              {ratingsCount > 0 && (
+                <span className="text-xs text-gray-400">
+                  ({ratingsCount} avis)
+                </span>
+              )}
             </div>
           </div>
-          <ChevronRight size={20} className="text-gray-400" />
+          <div className="text-gray-400">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+              <path d="M6 12l4-4-4-4v8z"/>
+            </svg>
+          </div>
         </button>
       </div>
-
-      {/* Menu Items */}
-      <div className="bg-white mx-4 mt-4 rounded-2xl shadow-sm overflow-hidden">
-        <button className="w-full p-6 flex items-center justify-between hover:bg-gray-50 transition-colors border-b border-gray-100">
-          <div className="flex items-center space-x-3">
-            <Calendar size={20} className="text-green-500" />
-            <span className="text-base font-medium text-gray-800">Mes disponibilités</span>
-          </div>
-          <ChevronRight size={20} className="text-gray-400" />
-        </button>
-        
-        <button className="w-full p-6 flex items-center justify-between hover:bg-gray-50 transition-colors">
-          <div className="flex items-center space-x-3">
-            <Utensils size={20} className="text-green-500" />
-            <span className="text-base font-medium text-gray-800">Mes préférences alimentaires</span>
-          </div>
-          <ChevronRight size={20} className="text-gray-400" />
-        </button>
-      </div>
-
-      {/* Bottom spacing */}
-      <div className="h-8"></div>
     </div>
   );
 };
 
-export default ProfilePage;
+export default Profile;

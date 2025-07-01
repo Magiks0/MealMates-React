@@ -1,14 +1,36 @@
 import { CheckCircle, QrCode } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import QrCodeScanner from '../common/Product/QrCodeScanner'
 import { useNavigate } from 'react-router';
+import RatingService from '../../services/RatingService';
 
 function OrderStatusCard({ chat }) {
     const PICKUP_PAGE = import.meta.env.VITE_VALIDATE_PICKUP_DOMAIN;
 
     const [isScannerOpen, setIsScannerOpen] = useState(false);
     const navigate = useNavigate();
+    const [hasRated, setHasRated] = useState(false);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const checkRatingStatus = async () => {
+            if (chat.linkedOrder.status === 'completed') {
+                try {
+                    const result = await RatingService.checkIfRated(chat.linkedOrder.id);
+                    setHasRated(result);
+                } catch (error) {
+                    console.error('Erreur lors de la vérification de l\'évaluation:', error);
+                } finally {
+                    setLoading(false);
+                }
+            } else {
+                setLoading(false);
+            }
+        };
+
+        checkRatingStatus();
+    }, [chat.linkedOrder.id, chat.linkedOrder.status]);
 
     const handleScanResult = (result) => {
         const urlScanned = typeof result === 'string' ? result : result?.text;
@@ -57,7 +79,23 @@ function OrderStatusCard({ chat }) {
         }
 
         if (chat.linkedOrder.status === 'completed' ) {
-            return (
+            if (!hasRated) {
+                return (
+                    <div className="bg-green-100 border border-green-400 text-green-800 rounded-lg p-6 my-4 shadow-md text-center">
+                        <CheckCircle size={64} className="text-green-600 mx-auto mb-4" />
+                        <h2 className="text-2xl font-bold mb-2">Commande Récupérée avec Succès !</h2>
+                        <p className="text-gray-700 mb-4">Le retrait pour le produit "{chat.productName}" a été validé.</p>
+                        <button
+                            className="mt-4 px-6 py-3 text-white rounded-lg font-medium transition-colors shadow-sm hover:shadow-md transform hover:scale-105 duration-200"
+                            style={{ backgroundColor: '#00a43d' }}
+                            onClick={() => window.location.href = `/rate-transaction/${chat.linkedOrder.id}/${chat.otherUser.id}`}
+                        >
+                            Noter la transaction
+                        </button>
+                    </div>
+                );
+            } else {
+                return (
                 <div className="bg-white border border-gray-200 rounded-xl p-6 my-4 mx-auto w-full max-w-sm shadow-sm text-center">
                     {/* En-tête avec l'icône et le titre */}
                     <div className="flex flex-col items-center justify-center">
@@ -68,11 +106,12 @@ function OrderStatusCard({ chat }) {
                     {/* Paragraphe de confirmation */}
                     <div className="text-sm text-gray-600 mt-3">
                         <p>
-                            La remise du produit <span className="font-semibold">"{chat.productName}"</span> a bien été enregistrée.
+                            La remise du produit <span className="font-semibold">"{chat.productName}"</span> a bien été validée.
                         </p>
                     </div>
                 </div>
             );
+            }
         }
     } else if (chat.linkedOrder.role === 'buyer') {
         if (chat.linkedOrder.status === 'awaiting_pickup') {
@@ -109,6 +148,38 @@ function OrderStatusCard({ chat }) {
                     </div>
                 </>
             );
+        } else if (chat.linkedOrder.status === 'completed' ) {
+            if (!hasRated) {
+                return (
+                    <div className="bg-green-100 border border-green-400 text-green-800 rounded-lg p-6 my-4 shadow-md text-center">
+                        <CheckCircle size={64} className="text-green-600 mx-auto mb-4" />
+                        <h2 className="text-2xl font-bold mb-2">Commande Récupérée avec Succès !</h2>
+                        <p className="text-gray-700 mb-4">Le retrait pour le produit "{chat.productName}" a été validé.</p>
+                        <button
+                            className="mt-4 px-6 py-3 text-white rounded-lg font-medium transition-colors shadow-sm hover:shadow-md transform hover:scale-105 duration-200"
+                            style={{ backgroundColor: '#00a43d' }}
+                            onClick={() => window.location.href = `/rate-transaction/${chat.linkedOrder.id}/${chat.otherUser.id}`}
+                        >
+                            Noter la transaction
+                        </button>
+                    </div>
+                );
+            } else {
+                return (
+                <div className="bg-white border border-gray-200 rounded-xl p-6 my-4 mx-auto w-full max-w-sm shadow-sm text-center">
+                    <div className="flex flex-col items-center justify-center">
+                        <CheckCircle className="w-16 h-16 text-green-500 mb-4" />
+                        <h2 className="text-xl font-bold text-gray-800">Transaction Validée !</h2>
+                    </div>
+
+                    <div className="text-sm text-gray-600 mt-3">
+                        <p>
+                            La reception du produit <span className="font-semibold">"{chat.productName}"</span> a bien été validée.
+                        </p>
+                    </div>
+                </div>
+            );
+            }
         }
     }
 
