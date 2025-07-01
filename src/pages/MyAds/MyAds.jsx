@@ -159,15 +159,6 @@ const MyAds = () => {
                             {showMenu === product.id && (
                               <div className="absolute right-0 top-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-10 min-w-[120px]">
                                 <button 
-                                  onClick={() => {
-                                    setShowMenu(null);
-                                  }}
-                                  className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
-                                >
-                                  <Edit className="w-4 h-4 mr-2" />
-                                  Modifier
-                                </button>
-                                <button 
                                   onClick={() => handleDeleteProduct(product.id)}
                                   className="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50"
                                 >
