@@ -123,6 +123,20 @@ const ProductService = {
         console.error("Error getUserProducts :", err);
         return [];
     });
+  },
+
+  deleteProduct(productId) {
+    return axios
+      .delete(`${API_URL}/product/${productId}`, {
+        headers: {
+          ...getAuthHeaders(),
+        },
+      })
+      .then((res) => res.data)
+      .catch((error) => {
+        console.error("Error in deleting product:", error);
+        throw error;
+      });
   }
 };
 
