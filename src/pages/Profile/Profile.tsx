@@ -6,6 +6,7 @@ import {
   ArrowLeft, Star, ChevronRight, Camera, User,
   Mail, Calendar, Utensils, MapPin, Check, X
 } from 'lucide-react';
+import RatingService from "../../services/RatingService";
 
 const Profile = () => {
   type User = {
@@ -116,20 +117,6 @@ const Profile = () => {
 
     fetchRatings();
   }, []);
-
-  const renderStars = (rating: number) => {
-    return (
-      <div className="flex text-yellow-400">
-        {[1, 2, 3, 4, 5].map((star) => (
-          <Star 
-            key={star} 
-            size={16} 
-            className={star <= Math.round(rating) ? "fill-current" : ""}
-          />
-        ))}
-      </div>
-    );
-  };
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({

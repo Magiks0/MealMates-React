@@ -7,7 +7,6 @@ const AdvancedFilter = ({ isOpen, onClose }) => {
   const [filters, setFilters] = useState({});
   const [error, setError] = useState(null);
   const [dietaries, setDietaries] = useState([]);
-  const [dietaries, setDietaries] = useState([]);
   const [types, setTypes] = useState([]);
   const [params, setParams] = useSearchParams();
   const [selectedTypes, setSelectedTypes] = useState([]);
