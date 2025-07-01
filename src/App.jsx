@@ -49,7 +49,7 @@ export default function App() {
           <Route path="/search" element={<Map />} />
           <Route path='/validate-pickup/:qrCodeToken' element={<ValidatePickup />} />
           <Route path="/my-ads" element={<MyAds />} />
-          <Route path="/favourite" element={<FavoritesPage />} />
+          <Route path="/favorite" element={<FavoritesPage />} />
         </Route>
       </Route>
     </Routes>

@@ -25,7 +25,7 @@ const FavoriteService = {
 
   toggleFavorite(productId) {
     return axios
-      .post(`${API_URL}/favorites/${productId}`, {}, {
+      .get(`${API_URL}/favorites/${productId}`, {}, {
         headers: {
           ...getAuthHeaders(),
         },
