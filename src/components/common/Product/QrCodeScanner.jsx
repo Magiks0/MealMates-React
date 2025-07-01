@@ -3,16 +3,20 @@ import { Scanner } from '@yudiel/react-qr-scanner'; // La librairie de scan
 import { X, ScanLine } from 'lucide-react';
 import { useNavigate } from 'react-router';
 
-const QrCodeScanner = ({ onClose, onScan }) => {
+const QrCodeScanner = ({ onClose, onScan, qrtoken }) => {
     const PICKUP_PAGE = import.meta.env.VITE_VALIDATE_PICKUP_DOMAIN;
     const navigate = useNavigate();
 
     const handleDecode = (result) => {
-        onScan(result);
+        if (!result) return;
 
-        onClose(true);
+        if (onScan) {
+            onScan(result);
+        }
 
-        navigate(PICKUP_PAGE + result);
+        onClose();
+
+        navigate(`/validate-pickup/${result}`);
     };
 
     const handleError = (error) => {
@@ -56,6 +60,8 @@ const QrCodeScanner = ({ onClose, onScan }) => {
                 <p className="text-center text-secondary  mt-4 text-sm">
                     Positionnez le QR Code du vendeur dans le cadre.
                 </p>
+
+                <button onClick={() => handleDecode(qrtoken)}>TEst du scanner</button>
             </div>
         </div>
     );

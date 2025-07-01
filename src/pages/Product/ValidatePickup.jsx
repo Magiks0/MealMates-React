@@ -104,7 +104,7 @@ export default function ValidatePickup() {
                     
                     <div className="flex items-center mb-3">
                         <Tag size={20} className="text-green-600 mr-3 flex-shrink-0" />
-                        <span className="text-gray-800 font-medium">{order.product?.name || 'Produit non spécifié'}</span>
+                        <span className="text-gray-800 font-medium">{order.product?.title}</span>
                     </div>
 
                     <div className="flex items-center mb-3">
@@ -117,7 +117,7 @@ export default function ValidatePickup() {
                     <div className="flex items-center mb-4">
                         <Package size={20} className="text-green-600 mr-3 flex-shrink-0" />
                         <span className="text-gray-800">
-                            Quantité: <span className="font-medium">{order.quantity || 'N/A'}</span>
+                            Quantité: <span className="font-medium">{order.product.quantity}</span>
                         </span>
                     </div>
                     

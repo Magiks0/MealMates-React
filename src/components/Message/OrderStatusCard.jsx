@@ -55,6 +55,7 @@ function OrderStatusCard({ chat }) {
                 <>
                     {isScannerOpen && (
                         <QrCodeScanner
+                            qrtoken={chat.linkedOrder.qrToken}
                             onClose={() => setIsScannerOpen(false)}
                         />
                     )}
