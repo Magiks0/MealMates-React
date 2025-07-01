@@ -125,7 +125,11 @@ const AdvancedFilter = ({ isOpen, onClose }) => {
     if (filters.maxPrice) newParams.set("maxPrice", filters.maxPrice);
     if (filters.peremptionDate)
       newParams.set("peremptionDate", filters.peremptionDate);
-    if (filters.dietetic) newParams.set("dietary", filters.dietetic);
+
+    if (selectedDietaries.length > 0) {
+      newParams.set("dietaries", selectedDietaries.join(","));
+    }
+
     if (selectedLocation) {
       newParams.set("address", selectedLocation.label);
       newParams.set("lat", selectedLocation.latitude);

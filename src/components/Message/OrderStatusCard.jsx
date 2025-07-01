@@ -1,6 +1,7 @@
 import { CheckCircle, QrCode } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router';
 import QrCodeScanner from '../common/Product/QrCodeScanner';
 import RatingService from '../../services/RatingService';
 
