@@ -7,6 +7,7 @@ const QrCodeScanner = ({ onClose, onScan }) => {
     const navigate = useNavigate();
 
     const handleDecode = (result) => {
+        console.log('Scanned QR Code:', result);
         if (!result) return;
 
         if (onScan) {
