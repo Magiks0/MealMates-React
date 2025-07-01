@@ -125,19 +125,22 @@ const ProfilePage = () => {
 
       {/* Reviews Section */}
       <div className="bg-white mx-4 mt-4 rounded-2xl shadow-sm overflow-hidden">
-        <button className="w-full p-6 flex items-center justify-between hover:bg-gray-50 transition-colors">
+        <button
+          className="w-full p-6 flex items-center justify-between hover:bg-gray-50 transition-colors"
+          onClick={() => navigate("/my-ratings")}
+        >
           <div className="flex items-center space-x-3">
-            <div className="flex items-center space-x-2">
-              <span className="text-base font-medium text-gray-800">Avis</span>
-              <div className="flex text-yellow-400">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} size={16} fill="currentColor" />
-                ))}
-              </div>
-              <span className="text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
-                4.2
-              </span>
-            </div>
+        <div className="flex items-center space-x-2">
+          <span className="text-base font-medium text-gray-800">Avis</span>
+          <div className="flex text-yellow-400">
+            {[...Array(5)].map((_, i) => (
+          <Star key={i} size={16} fill="currentColor" />
+            ))}
+          </div>
+          <span className="text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
+            4.2
+          </span>
+        </div>
           </div>
           <ChevronRight size={20} className="text-gray-400" />
         </button>
