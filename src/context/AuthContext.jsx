@@ -27,10 +27,22 @@ import AuthService from '../services/AuthService';
       setIsAuthenticated(true);
     };
 
+<<<<<<< Updated upstream
     const logout = () => {
       AuthService.logout();
       setIsAuthenticated(false);
     };
+=======
+  const loginWithToken = (token) => {
+    localStorage.setItem("token", token);
+    setIsAuthenticated(true);
+  };
+
+  const login = async (credentials) => {
+    await AuthService.login(credentials);
+    setIsAuthenticated(true);
+  };
+>>>>>>> Stashed changes
 
     const loginWithToken = (token) => {
       localStorage.setItem("token", token);

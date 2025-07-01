@@ -25,6 +25,7 @@
   // TODO: Récupérer l'adresse de l'utilisateur depuis son profil
     const [selectedFiles, setSelectedFiles] = useState([]);
     const [productTypes, setProductTypes] = useState([]);
+    const [productDietaries, setProductDietaries] = useState([])
     const navigate = useNavigate();
 
     const form = useForm({
@@ -35,6 +36,7 @@
         quantity: 1,
         peremptionDate: '',
         price: '',
+        dietaries: [],
         donation: false,
         collectionDate: '',
         files: [],
@@ -54,6 +56,7 @@
         formData.append('price', value.price.toString());
         formData.append('donation', value.donation.toString());
         formData.append('collection_date', value.collectionDate);
+        formData.append('dietaries', JSON.stringify(value.dietaries)) 
         formData.append('location', JSON.stringify(value.location));
 
         value.files.forEach((file) => {
@@ -260,6 +263,19 @@
       fetchProductTypes();
     }, []);
 
+    useEffect(() => {
+      const fetchProductDietaries = async () => {
+        try {
+          const dietaries = await DashBoardService.getDietaries();
+          setProductDietaries(dietaries);
+        } catch(err) {
+          console.error('Error fetching product dietaries:', err);
+          throw err;
+        }
+      };
+      fetchProductDietaries();
+    }, [])
+
     if (loading) {
       return <div className="p-4 text-center">Chargement...</div>;
     }
@@ -345,6 +361,35 @@
                       </select>
                     )}
                   </form.Field>
+                  </div>
+                  <div className="mb-6">
+                    <h2 className="font-bold mb-1">Le produit correspond-il à un régime alimentaire spécifique ?</h2>
+                    <p className="text-gray-500 text-sm mb-2">Sélectionnez un ou plusieurs régimes si nécessaire.</p>
+                    <form.Field name="dietaries">
+                      {(field) => (
+                        <div className="grid grid-cols-2 gap-2">
+                          {productDietaries.map((dietary) => (
+                            <div key={dietary.id} className="flex items-center">
+                              <input
+                                type="checkbox"
+                                id={`dietary-${dietary.id}`}
+                                checked={field.state.value.includes(dietary.id)}
+                                onChange={(e) => {
+                                  const newDietaries = e.target.checked
+                                    ? [...field.state.value, dietary.id]
+                                    : field.state.value.filter((id) => id !== dietary.id);
+                                  field.handleChange(newDietaries);
+                                }}
+                                className="h-4 w-4 rounded border-gray-300 text-green-600 focus:ring-green-500"
+                              />
+                              <label htmlFor={`dietary-${dietary.id}`} className="ml-2 block text-sm text-gray-900">
+                                {dietary.name}
+                              </label>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </form.Field>
                   </div>
                 <div className="mb-6">
                   <div className="mb-4">
@@ -624,6 +669,20 @@
                       <strong className="w-24 flex-shrink-0">Localisation:</strong>
                       <span className="break-words">{form.getFieldValue('location.address') || 'Non spécifiée'}</span>
                     </div>
+
+                    {form.getFieldValue('dietaries')?.length > 0 && (
+                      <div className="flex items-start">
+                        <Heart size={16} className="text-green-500 mr-2 flex-shrink-0 mt-0.5" />
+                        <strong className="w-24 flex-shrink-0">Régimes:</strong>
+                        <span className="break-words">
+                          {productDietaries
+                            .filter(d => form.getFieldValue('dietaries').includes(d.id))
+                            .map(d => d.name)
+                            .join(', ')
+                          }
+                        </span>
+                      </div>
+                    )}
 
                     {selectedImages.length > 0 && (
                       <div className="flex items-start">
