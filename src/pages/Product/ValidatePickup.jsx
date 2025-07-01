@@ -49,7 +49,7 @@ export default function ValidatePickup() {
         try {
             const response = await OrderService.confirmPickup(qrCodeToken); 
             if (response) {
-                navigate('/home');
+                navigate('/home', {state : {'success' : true}});
             }
         } catch (err) {
             setError('Échec de la confirmation : ' +  err.message );
