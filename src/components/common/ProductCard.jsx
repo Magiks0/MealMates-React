@@ -68,8 +68,7 @@ const ProductCard = ({product}) => {
         </div>
         <div className="flex items-center px-2 py-1 rounded-full text-xs font-bold bg-green-100 text-green-700">
           <span className="mr-1">★</span>
-           'N/A'
-        </div>
+          {product.user?.note ? product.user.note.toFixed(1) : 'N/A'}        </div>
       </div>
     </div>
   );
