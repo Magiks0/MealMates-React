@@ -7,9 +7,11 @@ const AdvancedFilter = ({ isOpen, onClose }) => {
   const [filters, setFilters] = useState({});
   const [error, setError] = useState(null);
   const [dietaries, setDietaries] = useState([]);
+  const [dietaries, setDietaries] = useState([]);
   const [types, setTypes] = useState([]);
   const [params, setParams] = useSearchParams();
   const [selectedTypes, setSelectedTypes] = useState([]);
+  const [selectedDietaries, setSelectedDietaries] = useState([]);
   const [searchValue, setSearchValue] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [searching, setSearching] = useState(false);
@@ -90,23 +92,35 @@ const AdvancedFilter = ({ isOpen, onClose }) => {
 
   const handleRadiusChange = (e) => setSearchRadius(parseInt(e.target.value));
   const handleReset = () => {
-    setFilters({
-      minPrice: "",
-      maxPrice: "",
-      address: "",
-      category: "",
-      peremptionDate: "",
-      dietetic: "",
-    });
+    setFilters({ minPrice: '', maxPrice: '', address: '', category: '', peremptionDate: '' });
     setSelectedTypes([]);
+    setSelectedDietaries([]);
     clearLocation();
     setParams({});
     onClose();
   };
 
+  const handleCheckboxChangeType = (typeId) => {
+    setSelectedTypes((prevSelected) => 
+        prevSelected.includes(typeId)
+            ? prevSelected.filter((id) => id !== typeId)
+            : [...prevSelected, typeId]
+    );
+  };
+
+  const handleCheckboxChangeDiet = (dietId) => {
+    setSelectedDietaries((prevSelected) =>
+      prevSelected.includes(dietId)
+        ? prevSelected.filter((id) => id !== dietId)
+        : [...prevSelected, dietId]
+    );
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
+
     const newParams = new URLSearchParams();
+
 
     if (filters.minPrice) newParams.set("minPrice", filters.minPrice);
     if (filters.maxPrice) newParams.set("maxPrice", filters.maxPrice);
@@ -168,55 +182,55 @@ const AdvancedFilter = ({ isOpen, onClose }) => {
       <form onSubmit={handleSubmit} className="h-full flex flex-col">
         <div className="flex items-center justify-between p-5 border-b">
           <h2 className="text-lg font-medium text-gray-800">Filtres</h2>
-          <button
-            type="button"
-            onClick={onClose}
+          <button 
+            type="button" 
+            onClick={onClose} 
             className="text-gray-400 hover:text-gray-600 transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        <div className="p-5 overflow-y-auto flex-grow space-y-6">
-          <div className="space-y-4">
-            <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider">
+          <div className="p-5 overflow-y-auto flex-grow space-y-6">
+            <div className="space-y-4">
+              <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider">
               Prix
             </h3>
-            <div className="flex gap-4">
-              <div className="flex-1">
-                <input
-                  type="number"
-                  name="minPrice"
-                  value={filters.minPrice || ""}
-                  onChange={handleChange}
-                  className="w-full p-3 border-0 bg-gray-50 rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none transition-all"
-                  placeholder="Min €"
-                />
-              </div>
-              <div className="flex-1">
-                <input
-                  type="number"
-                  name="maxPrice"
-                  value={filters.maxPrice || ""}
-                  onChange={handleChange}
-                  className="w-full p-3 border-0 bg-gray-50 rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none transition-all"
-                  placeholder="Max €"
-                />
+              <div className="flex gap-4">
+                <div className="flex-1">
+                  <input
+                    type="number"
+                    name="minPrice"
+                    value={filters.minPrice || ""}
+                    onChange={handleChange}
+                    className="w-full p-3 border-0 bg-gray-50 rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none transition-all"
+                    placeholder="Min €"
+                  />
+                </div>
+                <div className="flex-1">
+                  <input
+                    type="number"
+                    name="maxPrice"
+                    value={filters.maxPrice || ""}
+                    onChange={handleChange}
+                    className="w-full p-3 border-0 bg-gray-50 rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none transition-all"
+                    placeholder="Max €"
+                  />
+                </div>
               </div>
             </div>
-          </div>
 
-          <div className="space-y-2 relative">
-            <label className="text-sm font-medium text-gray-500 uppercase tracking-wider">
+            <div className="space-y-2 relative">
+              <label className="text-sm font-medium text-gray-500 uppercase tracking-wider">
               Localisation
             </label>
             <div className="relative">
-              <input
-                type="text"
-                value={searchValue}
-                onChange={handleSearchInputChange}
-                placeholder="Ville, région..."
-                className="w-full p-3 border-0 bg-gray-50 rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none transition-all pr-10"
+                <input
+                  type="text"
+                    value={searchValue}
+                  onChange={handleSearchInputChange}
+                    placeholder="Ville, région..."
+                  className="w-full p-3 border-0 bg-gray-50 rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none transition-all pr-10"
               />
               {searchValue && (
                 <button
@@ -280,109 +294,96 @@ const AdvancedFilter = ({ isOpen, onClose }) => {
                 </div>
               </div>
             )}
-          </div>
+            </div>
 
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-500 uppercase tracking-wider">
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-500 uppercase tracking-wider">
               Périme après
             </label>
-            <input
-              type="date"
-              name="peremptionDate"
-              value={filters.peremptionDate || ""}
-              onChange={handleChange}
-              className="w-full p-3 border-0 bg-gray-50 rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none transition-all"
-            />
-          </div>
+              <input
+                type="date"
+                name="peremptionDate"
+                value={filters.peremptionDate || ""}
+                onChange={handleChange}
+                className="w-full p-3 border-0 bg-gray-50 rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none transition-all"
+              />
+            </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-500 uppercase tracking-wider">
-              Régime alimentaire
-            </label>
-            <div className="relative">
-              <select
-                name="dietetic"
-                value={filters.dietetic || ""}
-                onChange={handleChange}
-                className="w-full p-3 border-0 bg-gray-50 rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none appearance-none transition-all pr-10"
-              >
-                <option value="">Tous les régimes</option>
-                {dietaries.map((d) => (
-                  <option key={d.id} value={d.name}>
-                    {d.name}
-                  </option>
-                ))}
-              </select>
-              <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                <svg
-                  className="w-5 h-5 text-gray-400"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M19 9l-7 7-7-7"
-                  />
-                </svg>
-              </div>
-            </div>
-          </div>
-
-          <div className="space-y-3">
-            <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider">
-              Types de produits
-            </h3>
+            <label className="text-sm font-medium text-gray-500 uppercase tracking-wider">Régime alimentaire</label>
             <div className="space-y-2">
-              {types.map((type) => (
-                <label
-                  key={type.id}
-                  className="flex items-center space-x-3 cursor-pointer group"
-                >
+              {dietaries.map(dietary => (
+                <div key={dietary.id} className="flex items-center space-x-3">
                   <div className="relative flex items-center justify-center">
-                    <input
+                    <input 
                       type="checkbox"
-                      checked={selectedTypes.includes(type.id)}
-                      onChange={() => handleCheckboxChange(type.id)}
+                      id={`dietary-${dietary.id}`}
+                      checked={selectedDietaries.includes(dietary.id)}
+                      onChange={() => handleCheckboxChangeDiet(dietary.id)}
                       className="w-5 h-5 border border-gray-300 rounded focus:outline-none transition-colors cursor-pointer"
                     />
-                    {selectedTypes.includes(type.id) && (
+                    {selectedDietaries.includes(dietary.id) && (
                       <div className="absolute inset-0 bg-green-500 rounded flex items-center justify-center pointer-events-none">
-                        <svg
-                          className="w-3 h-3 text-white"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="3"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        >
+                        <svg className="w-3 h-3 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                           <polyline points="20 6 9 17 4 12"></polyline>
                         </svg>
                       </div>
                     )}
                   </div>
-                  <span className="text-sm text-gray-700 group-hover:text-gray-900 transition-colors">
+                  <label 
+                    htmlFor={`dietary-${dietary.id}`}
+                    className="text-sm text-gray-700 hover:text-gray-900 transition-colors cursor-pointer"
+                  >
+                    {dietary.name}
+                  </label>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="space-y-3">
+            <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider">Types de produits</h3>
+            <div className="space-y-2">
+              {types.map(type => (
+                <div key={type.id} className="flex items-center space-x-3">
+                  <div className="relative flex items-center justify-center">
+                    <input 
+                      type="checkbox"
+                      id={`type-${type.id}`}
+                      checked={selectedTypes.includes(type.id)}
+                      onChange={() => handleCheckboxChangeType(type.id)}
+                      className="w-5 h-5 border border-gray-300 rounded focus:outline-none transition-colors cursor-pointer"
+                    />
+                    {selectedTypes.includes(type.id) && (
+                      <div className="absolute inset-0 bg-green-500 rounded flex items-center justify-center pointer-events-none">
+                        <svg className="w-3 h-3 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                          <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                      </div>
+                    )}
+                  </div>
+                  <label 
+                    htmlFor={`type-${type.id}`}
+                    className="text-sm text-gray-700 hover:text-gray-900 transition-colors cursor-pointer"
+                  >
                     {type.name}
-                  </span>
-                </label>
+                  </label>
+                </div>
               ))}
             </div>
           </div>
         </div>
 
         <div className="p-5 bg-white border-t flex gap-3 mt-auto">
-          <button
-            type="button"
-            onClick={handleReset}
+          <button 
+            type="button" 
+            onClick={handleReset} 
             className="flex-1 py-3 px-4 border border-gray-200 rounded-lg text-gray-600 font-medium text-sm hover:bg-gray-50 transition-colors"
           >
             Réinitialiser
           </button>
-          <button
-            type="submit"
+          <button 
+            type="submit" 
             className="flex-1 py-3 px-4 bg-green-500 hover:bg-green-600 text-white rounded-lg text-sm font-medium transition-colors"
           >
             Appliquer

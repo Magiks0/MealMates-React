@@ -35,7 +35,11 @@ const LoginPage = () => {
       const res = await authService.googleLogin(credentialResponse.credential);
 
       if (res.token) {
+<<<<<<< Updated upstream
         loginWithToken(res.token);
+=======
+        authService.loginWithToken(res.token);
+>>>>>>> Stashed changes
         navigate("/home");
       }
 
