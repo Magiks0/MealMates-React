@@ -51,7 +51,7 @@ const ProfilePage = () => {
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <div className="bg-white px-4 py-4 flex items-center shadow-sm">
-        <button className="p-2 -ml-2 text-gray-600" onClick={() => navigate(-1)}>
+        <button className="p-2 -ml-2 text-gray-600" onClick={() => navigate("/account")}>
           <ArrowLeft size={24} />
         </button>
         <h1 className="text-lg font-semibold text-gray-800 flex-1 text-center mr-10">
@@ -153,7 +153,10 @@ const ProfilePage = () => {
           <ChevronRight size={20} className="text-gray-400" />
         </button>
         
-        <button className="w-full p-6 flex items-center justify-between hover:bg-gray-50 transition-colors">
+        <button
+          className="w-full p-6 flex items-center justify-between hover:bg-gray-50 transition-colors"
+          onClick={() => navigate("/account/preferences")}
+        >
           <div className="flex items-center space-x-3">
             <Utensils size={20} className="text-green-500" />
             <span className="text-base font-medium text-gray-800">Mes préférences alimentaires</span>
