@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router";
-import { AiOutlineArrowLeft, AiFillStar } from "react-icons/ai";
+import { useNavigate } from "react-router";
 import UserService from "../../services/UserService";
-import { useForm } from "@tanstack/react-form";
-import { z } from "zod";
-import { ArrowLeft, Star, ChevronRight, Camera, User, Mail, Calendar, Utensils } from 'lucide-react';
+import {
+  ArrowLeft, Star, ChevronRight, Camera, User,
+  Mail, Calendar, Utensils, MapPin, Check, X
+} from 'lucide-react';
 
 interface User {
   username: string;
@@ -16,34 +16,78 @@ interface User {
 
 const ProfilePage = () => {
   const [user, setUser] = useState<User | null>(null);
+  const [formData, setFormData] = useState({
+    username: "",
+    email: "",
+    address: ""
+  });
+  const [isEditing, setIsEditing] = useState(false);
+  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'success' | 'error'>('idle');
+  const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchUser = async () => {
-      const data = await UserService.getCurrentUser();
-      setUser(data);
+      try {
+        const data = await UserService.getCurrentUser();
+        setUser(data);
+        setFormData({
+          username: data.username || "",
+          email: data.email || "",
+          address: data.address || ""
+        });
+      } catch (error) {
+        console.error("Erreur lors du chargement du profil:", error);
+      }
     };
     fetchUser();
   }, []);
 
-  const form = useForm({
-    defaultValues: {
-      username: user?.username ?? "",
-      firstName: user?.firstName ?? "",
-      lastName: user?.lastName ?? "",
-      email: user?.email ?? "",
-      address: user?.address ?? "",
-    },
-    validators: {
-      onChange: z.object({
-        username: z.string().min(1, "Username is required"),
-        firstName: z.string().min(1, "First name is required"),
-        lastName: z.string().min(1, "Last name is required"),
-        email: z.string().email("Email invalide"),
-        address: z.string().min(1, "Adresse requise"),
-      }),
-    },
-  });
+  const handleInputChange = (field: string, value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!formData.username.trim() || !formData.email.trim() || !formData.address.trim()) {
+      setSaveStatus('error');
+      setErrorMessage("Tous les champs doivent être remplis");
+      return;
+    }
+
+    setSaveStatus('saving');
+    setErrorMessage("");
+
+    try {
+      await UserService.updateUser(formData);
+      const updatedUser = await UserService.getCurrentUser();
+      setUser(updatedUser);
+      setSaveStatus('success');
+      setIsEditing(false);
+      setTimeout(() => setSaveStatus('idle'), 3000);
+      navigate("/login");
+    } catch (error: any) {
+      setSaveStatus('error');
+      setErrorMessage(error?.response?.data?.message || "Erreur lors de la sauvegarde");
+    }
+  };
+
+  const handleCancel = () => {
+    if (user) {
+      setFormData({
+        username: user.username || "",
+        email: user.email || "",
+        address: user.address || ""
+      });
+    }
+    setIsEditing(false);
+    setSaveStatus('idle');
+    setErrorMessage("");
+  };
 
   if (!user) return <div className="p-4 text-center">Chargement...</div>;
 
@@ -65,7 +109,7 @@ const ProfilePage = () => {
           <div className="relative">
             <div className="w-20 h-20 bg-gradient-to-br from-green-100 to-green-200 rounded-full flex items-center justify-center">
               <span className="text-2xl font-bold text-green-700">
-                {user?.username[0]}
+                {user?.username[0]?.toUpperCase()}
               </span>
             </div>
             <button className="absolute -bottom-1 -right-1 bg-green-500 text-white p-2 rounded-full shadow-lg hover:bg-green-600 transition-colors">
@@ -86,10 +130,33 @@ const ProfilePage = () => {
         </p>
       </div>
 
-      {/* User Information */}
-      <div className="bg-white mx-4 mt-4 rounded-2xl p-6 shadow-sm">
-        <h3 className="text-lg font-semibold text-gray-800 mb-4">Informations</h3>
-        
+      <form onSubmit={handleSubmit} className="bg-white mx-4 mt-4 rounded-2xl p-6 shadow-sm">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-semibold text-gray-800">Informations</h3>
+          {!isEditing && (
+            <button
+              type="button"
+              onClick={() => setIsEditing(true)}
+              className="text-green-600 text-sm font-medium hover:text-green-700"
+            >
+              Modifier
+            </button>
+          )}
+        </div>
+
+        {saveStatus === 'success' && (
+          <div className="mb-4 p-3 bg-green-100 text-green-700 rounded-lg flex items-center">
+            <Check size={20} className="mr-2" />
+            Profil mis à jour avec succès !
+          </div>
+        )}
+        {saveStatus === 'error' && (
+          <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-lg flex items-center">
+            <X size={20} className="mr-2" />
+            {errorMessage || "Erreur lors de la mise à jour"}
+          </div>
+        )}
+
         <div className="space-y-4">
           <div className="space-y-2">
             <label className="text-sm font-medium text-gray-700 flex items-center">
@@ -98,12 +165,18 @@ const ProfilePage = () => {
             </label>
             <input
               type="text"
-              value={user?.username}
-              className="w-full px-4 py-3 bg-gray-50 border-0 rounded-xl text-gray-800 focus:bg-white focus:ring-2 focus:ring-green-500 focus:outline-none transition-all"
+              value={formData.username}
+              onChange={(e) => handleInputChange('username', e.target.value)}
+              disabled={!isEditing}
+              className={`w-full px-4 py-3 border-0 rounded-xl text-gray-800 transition-all ${
+                isEditing 
+                  ? 'bg-white ring-2 ring-green-500 focus:ring-green-600' 
+                  : 'bg-gray-50 cursor-not-allowed'
+              }`}
               placeholder="Votre nom d'utilisateur"
             />
           </div>
-          
+
           <div className="space-y-2">
             <label className="text-sm font-medium text-gray-700 flex items-center">
               <Mail size={16} className="mr-2 text-gray-500" />
@@ -111,19 +184,66 @@ const ProfilePage = () => {
             </label>
             <input
               type="email"
-              value={user?.email}
-              className="w-full px-4 py-3 bg-gray-50 border-0 rounded-xl text-gray-800 focus:bg-white focus:ring-2 focus:ring-green-500 focus:outline-none transition-all"
+              value={formData.email}
+              onChange={(e) => handleInputChange('email', e.target.value)}
+              disabled={!isEditing}
+              className={`w-full px-4 py-3 border-0 rounded-xl text-gray-800 transition-all ${
+                isEditing 
+                  ? 'bg-white ring-2 ring-green-500 focus:ring-green-600' 
+                  : 'bg-gray-50 cursor-not-allowed'
+              }`}
               placeholder="Votre adresse email"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-gray-700 flex items-center">
+              <MapPin size={16} className="mr-2 text-gray-500" />
+              Adresse
+            </label>
+            <input
+              type="text"
+              value={formData.address}
+              onChange={(e) => handleInputChange('address', e.target.value)}
+              disabled={!isEditing}
+              className={`w-full px-4 py-3 border-0 rounded-xl text-gray-800 transition-all ${
+                isEditing 
+                  ? 'bg-white ring-2 ring-green-500 focus:ring-green-600' 
+                  : 'bg-gray-50 cursor-not-allowed'
+              }`}
+              placeholder="Votre adresse"
             />
           </div>
         </div>
 
-        <button className="w-full mt-6 bg-green-500 text-white py-3 rounded-xl font-medium hover:bg-green-600 transition-colors">
-          Sauvegarder
-        </button>
-      </div>
+        {isEditing ? (
+          <div className="flex gap-3 mt-6">
+            <button
+              type="submit"
+              disabled={saveStatus === 'saving'}
+              className="flex-1 bg-green-500 text-white py-3 rounded-xl font-medium hover:bg-green-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {saveStatus === 'saving' ? 'Sauvegarde...' : 'Sauvegarder'}
+            </button>
+            <button
+              type="button"
+              onClick={handleCancel}
+              className="flex-1 bg-gray-200 text-gray-700 py-3 rounded-xl font-medium hover:bg-gray-300 transition-colors"
+            >
+              Annuler
+            </button>
+          </div>
+        ) : (
+          <button 
+            type="button"
+            onClick={() => setIsEditing(true)}
+            className="w-full mt-6 bg-green-500 text-white py-3 rounded-xl font-medium hover:bg-green-600 transition-colors"
+          >
+            Modifier mes informations
+          </button>
+        )}
+      </form>
 
-      {/* Reviews Section */}
       <div className="bg-white mx-4 mt-4 rounded-2xl shadow-sm overflow-hidden">
         <button className="w-full p-6 flex items-center justify-between hover:bg-gray-50 transition-colors">
           <div className="flex items-center space-x-3">
@@ -143,16 +263,17 @@ const ProfilePage = () => {
         </button>
       </div>
 
-      {/* Menu Items */}
       <div className="bg-white mx-4 mt-4 rounded-2xl shadow-sm overflow-hidden">
-        <button className="w-full p-6 flex items-center justify-between hover:bg-gray-50 transition-colors border-b border-gray-100">
+        <button
+          className="w-full p-6 flex items-center justify-between hover:bg-gray-50 transition-colors border-b border-gray-100"
+          onClick={() => navigate("/account/availability")}
+        >
           <div className="flex items-center space-x-3">
             <Calendar size={20} className="text-green-500" />
             <span className="text-base font-medium text-gray-800">Mes disponibilités</span>
           </div>
           <ChevronRight size={20} className="text-gray-400" />
         </button>
-        
         <button
           className="w-full p-6 flex items-center justify-between hover:bg-gray-50 transition-colors"
           onClick={() => navigate("/account/preferences")}
@@ -165,7 +286,6 @@ const ProfilePage = () => {
         </button>
       </div>
 
-      {/* Bottom spacing */}
       <div className="h-8"></div>
     </div>
   );
