@@ -1,13 +1,10 @@
 import { CheckCircle, QrCode } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import { useState, useEffect } from 'react';
-import QrCodeScanner from '../common/Product/QrCodeScanner'
-import { useNavigate } from 'react-router';
+import QrCodeScanner from '../common/Product/QrCodeScanner';
 import RatingService from '../../services/RatingService';
 
 function OrderStatusCard({ chat }) {
-    const PICKUP_PAGE = import.meta.env.VITE_VALIDATE_PICKUP_DOMAIN;
-
     const [isScannerOpen, setIsScannerOpen] = useState(false);
     const navigate = useNavigate();
     const [hasRated, setHasRated] = useState(false);
@@ -32,27 +29,6 @@ function OrderStatusCard({ chat }) {
         checkRatingStatus();
     }, [chat.linkedOrder.id, chat.linkedOrder.status]);
 
-    const handleScanResult = (result) => {
-        const urlScanned = typeof result === 'string' ? result : result?.text;
-
-        if (!urlScanned) {
-            console.error("Aucune donnée reçue du scanner.");
-            setIsScannerOpen(false);
-            return;
-        }
-
-        setIsScannerOpen(false);
-
-        try {
-            const urlObject = new URL(urlScanned);
-            const path = urlObject.pathname;
-            navigate(path);
-        } catch (error) {
-            console.error("Le QR code ne contient pas une URL valide.", error);
-            alert("QR Code invalide.");
-        }
-    };
-
     if (chat.linkedOrder.role === 'seller') {
         if (chat.linkedOrder.status === 'awaiting_pickup') {
             return (
@@ -72,7 +48,7 @@ function OrderStatusCard({ chat }) {
                     </div>
 
                     <div className="flex justify-center">
-                        <QRCodeSVG value={PICKUP_PAGE + '/' + chat.linkedOrder.qrToken} size={100} className='border p-2 rounded-lg' />
+                        <QRCodeSVG value={chat.linkedOrder.qrToken} size={100} className='border p-2 rounded-lg' />
                     </div>
                 </div>
             );
@@ -119,8 +95,8 @@ function OrderStatusCard({ chat }) {
                 <>
                     {isScannerOpen && (
                         <QrCodeScanner
+                            qrtoken={chat.linkedOrder.qrToken}
                             onClose={() => setIsScannerOpen(false)}
-                            onScan={handleScanResult}
                         />
                     )}
 

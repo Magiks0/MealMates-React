@@ -7,7 +7,7 @@ import LandingPage from './pages/LandingPage/LandingPage.jsx';
 import Dashboard from "./pages/Dashboard/Dashboard.jsx"; 
 import Account from "./pages/Profile/Account.jsx"; 
 import ProfilePage from "./pages/Profile/Profile.tsx"; 
-import Preference from "./pages/Preference/Preference.jsx"; 
+import Preference from "./pages/Preference/PreferencesPage.jsx"; 
 import Availability from "./pages/Availability/Availability.jsx";
 import ProductNew from "./pages/Product/ProductNew.jsx";
 import ProductDetail from "./pages/Product/ProductDetail.jsx";

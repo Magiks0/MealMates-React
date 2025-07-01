@@ -21,6 +21,52 @@ const UserService = {
         throw err;
       });
   },
+
+  updateUser(data) {
+    return axios
+    .put(`${API_URL}/users/update`, data, {
+      headers: {
+        ...getAuthHeaders(),
+        'Content-Type': 'application/json',
+      },
+    })
+    .then((res) => res.data)
+    .catch((err) => {
+      console.error("Erreur lors de la mise à jour de l'utilisateur :", err);
+      throw err;
+    });
+  },
+
+  getAvailabilities() {
+    return axios
+      .get(`${API_URL}/availabilities`, {
+        headers: {
+          ...getAuthHeaders(),
+          'Content-Type': 'application/json',
+        },
+      })
+      .then((res) => res.data)
+      .catch((err) => {
+        console.error("Erreur lors du chargement des disponibilités :", err);
+        throw err;
+      });
+  },
+
+  updateAvailabilities(data) {
+    return axios
+      .put(`${API_URL}/availabilities/update`, data, {
+        headers: {
+          ...getAuthHeaders(),
+          'Content-Type': 'application/json',
+        },
+      })
+      .then((res) => res.data)
+      .catch((err) => {
+        console.error("Erreur lors de la mise à jour des disponibilités :", err);
+        throw err;
+      });
+  },
+
 }
 
 export default UserService;

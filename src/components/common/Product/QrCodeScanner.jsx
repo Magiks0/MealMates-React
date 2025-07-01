@@ -1,16 +1,11 @@
 import React from 'react';
-import { Scanner } from '@yudiel/react-qr-scanner'; // La librairie de scan
 import { X, ScanLine } from 'lucide-react';
+import { useNavigate } from 'react-router';
+import BarcodeScanner from "react-qr-barcode-scanner";
 
-const QrCodeScanner = ({ onClose, onScan }) => {
 
-    const handleDecode = (result) => {
-        onScan(result);
-    };
-
-    const handleError = (error) => {
-        console.error("Erreur de la caméra :", error?.message);
-    };
+const QrCodeScanner = ({ onClose }) => {
+    const navigate = useNavigate();
 
     return (
         <div className="fixed inset-0 backdrop-blur-sm flex items-center justify-center z-50">
@@ -27,13 +22,14 @@ const QrCodeScanner = ({ onClose, onScan }) => {
                         <X size={24} />
                     </button>
                 </div>
-                <div className="relative w-full aspect-square rounded-lg overflow-hidden bg-black">
-                    <Scanner
-                        onDecode={handleDecode}
-                        onError={handleError}
-                        styles={{
-                            container: { width: '100%', height: '100%', paddingTop: '0px' },
-                            video: { objectFit: 'cover' }
+                <div className="relative w-full aspect-square rounded-lg overflow-hidden bg-black flex justify-center items-center">
+                    <BarcodeScanner
+                        className="absolute inset-0 w-full h-full object-cover"
+                        onUpdate={(err, result) => {
+                            if (result) {
+                                onClose();
+                                navigate('/validate-pickup/' + result.text);
+                            }
                         }}
                     />
 
