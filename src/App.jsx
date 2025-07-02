@@ -13,6 +13,7 @@ import ProductNew from "./pages/Product/ProductNew.jsx";
 import ProductDetail from "./pages/Product/ProductDetail.jsx";
 import Map from "./pages/Search/Map.jsx";
 import MyAds from "./pages/MyAds/MyAds.jsx";
+import Notifcations from "./components/common/Notification/Notification.jsx";
 import MyOrders from "./pages/MyOrder/MyOrders.jsx";
 import RateTransaction from "./pages/Rating/RateTransaction.jsx";
 import MyRatings from "./pages/Rating/MyRatings.jsx";
@@ -53,6 +54,7 @@ export default function App() {
           <Route path="/search" element={<Map />} />
           <Route path='/validate-pickup/:qrCodeToken' element={<ValidatePickup />} />
           <Route path="/my-ads" element={<MyAds />} />
+          <Route path="/notifications" element={<Notifcations />} />
           <Route path="/rate-transaction/:orderId/:reviewedId" element={<RateTransaction />} />
           <Route path="/my-ratings" element={<MyRatings />} />
           <Route path="/favorite" element={<FavoritesPage />} />
