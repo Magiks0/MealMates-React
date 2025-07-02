@@ -10,6 +10,7 @@
   import { listSavedSearches } from "../../services/SavedSearchService";
   import { buildSearchParams } from "../../utils/cleanParams";
   import { toast } from "react-toastify";
+import NotificationDropdown from '../../components/common/Notification/NotificationDropdown';
 
   export default function Dashboard() {
     const [products, setProducts] = useState([]);
@@ -27,6 +28,12 @@
     }, []);
 
     const [showSavedList, setShowSavedList] = useState(false);
+  // Ajouter ces variables pour les notifications
+  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
+  // Si vous avez un système d'authentification, utilisez-le :
+  // const { user } = useAuth();
+  // Sinon, vous pouvez passer true pour tester :
+  const user = true; // Remplacez par votre utilisateur réel si vous avez un système d'auth
 
     useEffect(() => {
       const load = async () => {
@@ -89,7 +96,14 @@
               <div className="font-medium">10 Rue de la Paix, Paris</div>
             </div>
             <div className="flex items-center space-x-1">
-              <div className="flex items-center space-x-1">
+              <div className="flex items-center space-x-2">
+            {/* Composant de notifications ajouté ici */}
+            <NotificationDropdown 
+              apiUrl={API_URL} 
+              currentUser={user}
+            />
+            
+            {/* Bouton filtre existant */}
                 <button
                   onClick={() => setFilterOpen(true)}
                   className="p-2 text-white"
