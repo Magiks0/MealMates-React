@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
+const API_URL = import.meta.env.VITE_API_URL;
 const TOKEN_KEY = 'token';
 
 function getAuthHeaders() {
@@ -123,6 +123,20 @@ const ProductService = {
         console.error("Error getUserProducts :", err);
         return [];
     });
+  },
+
+  deleteProduct(productId) {
+    return axios
+      .delete(`${API_URL}/product/${productId}`, {
+        headers: {
+          ...getAuthHeaders(),
+        },
+      })
+      .then((res) => res.data)
+      .catch((error) => {
+        console.error("Error in deleting product:", error);
+        throw error;
+      });
   }
 };
 

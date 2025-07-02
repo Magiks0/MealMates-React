@@ -22,20 +22,20 @@ import AuthService from '../services/AuthService';
       checkAuth();
     }, []);
 
-    const login = async (credentials) => {
-      await AuthService.login(credentials);
-      setIsAuthenticated(true);
-    };
+      const login = async (credentials) => {
+        await AuthService.login(credentials);
+        setIsAuthenticated(true);
+      };
 
-    const logout = () => {
-      AuthService.logout();
-      setIsAuthenticated(false);
-    };
+      const logout = () => {
+        AuthService.logout();
+        setIsAuthenticated(false);
+      };
 
-    const loginWithToken = (token) => {
-      localStorage.setItem("token", token);
-      setIsAuthenticated(true);
-    };
+      const loginWithToken = (token) => {
+        localStorage.setItem("token", token);
+        setIsAuthenticated(true);
+      };
 
     return (
       <AuthContext.Provider value={{ isAuthenticated, login, logout, loadingAuth, loginWithToken }}>

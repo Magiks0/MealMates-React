@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = import.meta.env.VITE_API_URL;
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
 const TOKEN_KEY = 'token';
 
 function getAuthHeaders() {
@@ -8,48 +8,48 @@ function getAuthHeaders() {
   return token ? { Authorization: `Bearer ${token}` } : {};
 }
 
-const OrderService = {
-  getOrderById(orderId) {
+const FavoriteService = {
+  getFavorites() {
     return axios
-      .get(`${API_URL}/orders/${orderId}`, {
+      .get(`${API_URL}/favorites`, {
         headers: {
           ...getAuthHeaders(),
         },
       })
       .then((res) => res.data)
       .catch((err) => {
+        console.error('Erreur getFavorites :', err);
         throw err;
       });
-  }, 
+  },
 
-  getOrderByUserAndToken(userId, qrCodeToken) {
+  toggleFavorite(productId) {
     return axios
-      .get(`${API_URL}/orders/${userId}/${qrCodeToken}`, {
+      .get(`${API_URL}/favorites/${productId}`, {}, {
         headers: {
           ...getAuthHeaders(),
         },
       })
       .then((res) => res.data)
       .catch((err) => {
+        console.error('Erreur toggleFavorite :', err);
         throw err;
       });
   },
 
-  confirmPickup(qrCodeToken) {
+  checkFavorite(productId) {
     return axios
-      .get(
-        `${API_URL}/order/validate-pickup/${qrCodeToken}`,
-        {
-          headers: {
-            ...getAuthHeaders(),
-          },
-        }
-      )
+      .get(`${API_URL}/favorites/check/${productId}`, {
+        headers: {
+          ...getAuthHeaders(),
+        },
+      })
       .then((res) => res.data)
       .catch((err) => {
+        console.error('Erreur checkFavorite :', err);
         throw err;
       });
   },
-}
+};
 
-export default OrderService;
+export default FavoriteService;
