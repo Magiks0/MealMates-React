@@ -6,6 +6,8 @@ import "./Maps.css";
 import SearchBar from "../../components/common/searchbar/SearchBar";
 import L from "leaflet";
 import productService from "../../services/ProductService";
+import FavoriteService from "../../services/FavoriteService";
+import { Heart } from "lucide-react";
 
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -56,31 +58,11 @@ const Map = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  
+  const [favoriteStatus, setFavoriteStatus] = useState({});
+  const [isProcessing, setIsProcessing] = useState(false);
   const [searchedLocation, setSearchedLocation] = useState(null);
   const [mapCenter, setMapCenter] = useState(null);
-  const [searchRadius, setSearchRadius] = useState(10); // Rayon en km
-
-  // Fonction optimisée pour la recherche géospatiale
-  const fetchProducts = async (latitude, longitude, radius) => {
-    try {
-      setLoading(true);
-      let lat = latitude;
-      let lng = longitude;
-      if (userPosition && userPosition.length === 2) {
-        lat = userPosition[0];
-        lng = userPosition[1];
-      }
-
-      const data = await productService.getNearbyProducts(lat, lng, radius || searchRadius);
-      
-      setProducts(data);
-      setLoading(false);
-    }catch (err) {
-      setError("Impossible de charger les produits");
-      setLoading(false);
-    }
-  };
+  const [searchRadius, setSearchRadius] = useState(10);
 
   const getUserLocation = () => {
     setIsLocating(true);
@@ -91,7 +73,6 @@ const Map = () => {
           setUserPosition([latitude, longitude]);
           setMapCenter([latitude, longitude]);
           setIsLocating(false);
-          
           fetchProducts(latitude, longitude, searchRadius);
         },
         (error) => {
@@ -99,22 +80,46 @@ const Map = () => {
           setIsLocating(false);
         }
       );
-    } else {
-      console.error("La géolocalisation n'est pas prise en charge par ce navigateur.");
-      setIsLocating(false);
     }
   };
 
-  const handleMarkerClick = (product) => {
-    setSelectedMarker(product);
-    setShowModal(true);
+  const fetchProducts = async (latitude, longitude, radius) => {
+    try {
+      setLoading(true);
+      const data = await productService.getNearbyProducts(latitude, longitude, radius);
+      setProducts(data);
+      const favorites = await FavoriteService.getFavorites();
+      const favMap = {};
+      favorites.forEach((p) => {
+        favMap[p.id] = true;
+      });
+      setFavoriteStatus(favMap);
+      setLoading(false);
+    } catch (err) {
+      console.error("Erreur chargement produits :", err);
+      setError("Impossible de charger les produits");
+      setLoading(false);
+    }
   };
 
-  const closeModal = () => {
-    setShowModal(false);
+  const handleToggleFavorite = async (e, productId) => {
+    e.stopPropagation();
+    if (isProcessing) return;
+    setIsProcessing(true);
+    try {
+      const result = await FavoriteService.toggleFavorite(productId);
+      setFavoriteStatus((prev) => ({
+        ...prev,
+        [productId]: result.isFavorite,
+      }));
+    } catch (err) {
+      console.error("Erreur favoris :", err);
+    } finally {
+      setIsProcessing(false);
+    }
   };
-  
-  const handleSelectAddress = (address) => {    
+
+  const handleSelectAddress = (address) => {
     setSearchedLocation(address);
 
     setUserPosition([address.latitude, address.longitude, searchRadius]);
@@ -122,7 +127,7 @@ const Map = () => {
     
     fetchProducts(address.latitude, address.longitude, searchRadius);
   };
-  
+
   const handleRadiusChange = (radius) => {
     setSearchRadius(radius);
     
@@ -142,32 +147,33 @@ const Map = () => {
     if (!products || products.length === 0) return [];
     
     return products
-      .filter(product => product.address && product.address.latitude && product.address.longitude)
-      .map(product => {
-        return {
-          id: product.id,
-          position: [parseFloat(product.address.latitude), parseFloat(product.address.longitude)],
-          name: product.title,
-          description: product.description,
+      .filter((p) => p.address?.latitude && p.address?.longitude)
+      .map((product) => ({
+        id: product.id,
+        position: [parseFloat(product.address.latitude), parseFloat(product.address.longitude)],
+        name: product.title,
+        description: product.description,
           date: new Date(product.collection_date).toLocaleDateString('fr-FR'),
-          price: product.donation ? "Don" : `${product.price}€`,
-          type: product.type?.name || "Non spécifié",
-          rating: product.user?.note || 0,
-          image: "../assets/sandwich.webp"
-        };
-      });
+        price: product.donation ? "Don" : `${product.price}€`,
+        type: product.type?.name || "Non spécifié",
+        rating: product.user?.note || 0,
+        image: product.files?.[0]?.path
+          ? `${import.meta.env.VITE_IMG_URL || ''}${product.files[0].path}`
+          : "/assets/sandwich.webp",
+      }));
   };
 
   const markersData = getMarkerData();
   
   const currentMapCenter = mapCenter || userPosition;
-  
-  const radiusCenter = searchedLocation ? [searchedLocation.latitude, searchedLocation.longitude] : userPosition;
+  const radiusCenter = searchedLocation
+    ? [searchedLocation.latitude, searchedLocation.longitude]
+    : userPosition;
 
   return (
-    <div>
-      <SearchBar 
-        onSelectAddress={handleSelectAddress} 
+    <div className="h-full w-full flex flex-col">
+      <SearchBar
+        onSelectAddress={handleSelectAddress}
         selectedLocation={searchedLocation}
         searchRadius={searchRadius}
         onRadiusChange={handleRadiusChange}
@@ -185,18 +191,12 @@ const Map = () => {
         zoomControl={false}
       >
         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-        
-        <Marker 
-          position={userPosition}
-          icon={userIcon}
-        >
-          <Popup>
-            Votre position
-          </Popup>
+        <Marker position={userPosition} icon={userIcon}>
+          <Popup>Votre position</Popup>
         </Marker>
-        
+
         {searchedLocation && (
-          <Marker 
+          <Marker
             position={[searchedLocation.latitude, searchedLocation.longitude]}
             icon={searchLocationIcon}
           >
@@ -205,11 +205,11 @@ const Map = () => {
             </Popup>
           </Marker>
         )}
-        
-        <Circle 
+
+        <Circle
           center={radiusCenter}
-          radius={searchRadius * 1000} 
-          pathOptions={{ 
+          radius={searchRadius * 1000}
+          pathOptions={{
             color: '#009B6A', 
             fillColor: '#009B6A', 
             fillOpacity: 0.2
@@ -223,89 +223,98 @@ const Map = () => {
         ) : error ? (
           <div className="error-message">{error}</div>
         ) : (
-          markersData.map((marker, index) => (
-            <Marker 
-              key={marker.id || index} 
+          markersData.map((marker) => (
+            <Marker
+              key={marker.id}
               position={marker.position}
               eventHandlers={{
-                click: () => handleMarkerClick(marker),
+                click: () => {
+                  setSelectedMarker(marker);
+                  setShowModal(true);
+                },
               }}
             />
           ))
         )}
 
         <ZoomControl position="bottomright" />
-        {showModal && selectedMarker && (
-          <div
-            className="fixed inset-0 z-[2000] flex items-end justify-center bg-opacity-40 mb-30 px-4"
-            onClick={() => {
-              window.location.href = `/product/${selectedMarker.id}`;
-            }}
-            style={{ cursor: "pointer" }}
-          >
-            <div
-              className="bg-white rounded-lg shadow-lg w-full max-w-xl relative animate-fade-in mx-auto"
-              style={{
-                minWidth: 0,
-                width: "100%",
-                maxWidth: "600px",
-                marginLeft: "auto",
-                marginRight: "auto",
-              }}
-              onClick={e => e.stopPropagation()}
-            >
-            <button className="hidden md:flex absolute top-3 left-3 bg-white w-9 h-9 items-center justify-center rounded-full shadow hover:bg-gray-100 transition z-10" aria-label="Like">
-          <img className="w-7 h-7" src="../assets/like.svg" alt="like-button" />
-              </button>
-              <button
-                className="absolute top-3 right-3 bg-red-500 text-white w-7 h-7 flex items-center justify-center rounded-full hover:bg-red-600 transition"
-                onClick={closeModal}
-                aria-label="Fermer"
-              >
-          <span className="text-lg font-bold">×</span>
-              </button>
-              <div className="flex flex-col md:flex-row">
-          <div className="md:w-2/5 w-full h-40 md:h-auto rounded-t-lg md:rounded-l-lg md:rounded-tr-none overflow-hidden flex-shrink-0">
-            <img
-              src={selectedMarker.image}
-              alt={selectedMarker.name}
-              className="w-full h-full object-cover"
-            />
-          </div>
-          <div className="flex-1 p-4 flex flex-col justify-between">
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <h3 className="text-lg font-semibold">{selectedMarker.name}</h3>
-                <img className="w-7 h-7 md:hidden" src="../assets/like.svg" alt="like-button" />
-              </div>
-              <p className="text-sm text-gray-700 mb-2 line-clamp-2">{selectedMarker.description}</p>
-            </div>
-            <div className="flex items-center justify-between mt-2">
-              <div>
-                <p className="text-xs text-gray-500">{selectedMarker.date}</p>
-                <h5 className="font-bold text-[#009B6A]">{selectedMarker.price}</h5>
-                <p className="text-xs text-gray-600">{selectedMarker.type}</p>
-              </div>
-              <div className="flex items-center gap-1">
-                <img src="../assets/star.svg" alt="notation" className="w-5 h-5" />
-                <span className="font-medium">{selectedMarker.rating}</span>
-              </div>
-            </div>
-          </div>
-              </div>
-            </div>
-          </div>
-        )}
-
       </MapContainer>
-      
-      <button 
+
+      {showModal && selectedMarker && (
+      <div
+        className="fixed bottom-0 z-[2000] flex items-end justify-center bg-opacity-40 mb-30 px-4 h-auto w-full"
+        onClick={() => setShowModal(false)} // ← clic hors carte ferme le modal
+      >
+        <div
+          className="bg-white rounded-lg shadow-lg w-full max-w-xl relative animate-fade-in mx-auto"
+          onClick={(e) => e.stopPropagation()} // ← empêche propagation
+        >
+          <button
+            className="absolute top-3 right-3 bg-red-500 text-white w-7 h-7 flex items-center justify-center rounded-full hover:bg-red-600 transition"
+            onClick={() => setShowModal(false)}
+            aria-label="Fermer"
+          >
+            <span className="text-lg font-bold">×</span>
+          </button>
+
+          <div
+            className="flex flex-col md:flex-row cursor-pointer"
+            onClick={() => window.location.href = `/product/${selectedMarker.id}`}
+          >
+            <div className="md:w-2/5 w-full h-40 md:h-auto rounded-t-lg md:rounded-l-lg md:rounded-tr-none overflow-hidden relative">
+              <img
+                src={selectedMarker.image}
+                alt={selectedMarker.name}
+                className="w-full h-full object-cover"
+              />
+              <button
+                className={`absolute top-2 left-2 p-2 bg-white rounded-full shadow hover:bg-gray-100 z-10 ${
+                  isProcessing ? "opacity-50 cursor-not-allowed" : ""
+                }`}
+                onClick={(e) => handleToggleFavorite(e, selectedMarker.id)}
+                disabled={isProcessing}
+              >
+                <Heart
+                  className={`w-5 h-5 transition-colors ${
+                    favoriteStatus[selectedMarker.id]
+                      ? "text-red-500 fill-red-500"
+                      : "text-gray-400"
+                  }`}
+                />
+              </button>
+            </div>
+            <div className="flex-1 p-4 flex flex-col justify-between">
+              <div>
+                <h3 className="text-lg font-semibold">{selectedMarker.name}</h3>
+                <p className="text-sm text-gray-700 mb-2 line-clamp-2">
+                  {selectedMarker.description}
+                </p>
+              </div>
+              <div className="flex items-center justify-between mt-2">
+                <div>
+                  <p className="text-xs text-gray-500">{selectedMarker.date}</p>
+                  <h5 className="font-bold text-[#009B6A]">{selectedMarker.price}</h5>
+                  <p className="text-xs text-gray-600">{selectedMarker.type}</p>
+                </div>
+                <div className="flex items-center gap-1">
+                  <img src="/assets/star.svg" alt="note" className="w-5 h-5" />
+                  <span className="font-medium">{selectedMarker.rating}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    )}
+
+
+      <button
         onClick={getUserLocation}
         className="fixed left-4 top-1/2 transform -translate-y-1/2 bg-[#009B6A] text-white p-3 rounded-full shadow-lg z-1000"
         disabled={isLocating}
         aria-label="Me localiser"
       >
-        <i className={`fa-solid fa-location-crosshairs ${isLocating ? 'animate-pulse' : ''}`}></i>
+        <i className={`fa-solid fa-location-crosshairs ${isLocating ? "animate-pulse" : ""}`}></i>
       </button>
       
       <Navbar />
