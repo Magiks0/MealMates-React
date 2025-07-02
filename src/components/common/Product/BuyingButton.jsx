@@ -16,7 +16,7 @@ const BuyingButton = ({productId}) => {
 
   return (
     <button 
-        className="bg-gradient-to-r bg-secondary text-white px-8 py-4 rounded-md font-semibold text-lg shadow-lg hover:shadow-xl transform hover:scale-[1.02] transition-all duration-200 flex items-center justify-center"
+        className="bg-gradient-to-r bg-secondary text-white px-8 py-4 rounded-md font-semibold text-lg shadow-lg hover:shadow-xl transform hover:scale-[1.02] transition-all duration-200 flex items-center justify-center w-full"
         onClick={() => {
             handleCheckout();
         }}

@@ -202,16 +202,8 @@ const ProductDetail = () => {
             <div className="flex items-end justify-between">
               <div className="flex items-center">
                 <div className="relative">
-                  <div className="w-12 h-12 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center mr-3 shadow-lg">
-                    {product.user?.image_url ? (
-                      <img 
-                        src={product.user.image_url} 
-                        alt={product.user.username} 
-                        className="w-full h-full rounded-full object-cover" 
-                      />
-                    ) : (
-                      <User className="h-6 w-6 text-white" />
-                    )}
+                  <div className="w-12 h-12 bg-secondary rounded-full flex items-center justify-center mr-3 shadow-lg text-white ">
+                    {product.user.username.charAt(0).toUpperCase()}
                   </div>
                 </div>
                 <div>

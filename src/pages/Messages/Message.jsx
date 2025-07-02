@@ -126,13 +126,16 @@ export default function Message() {
             alt="Product" 
             className="w-full h-full object-cover rounded-md" />
         </div>
-        <div className="flex-1" onClick={() => navigate(`/product/${chat.productId}`)}>
+        <div className="flex-1" onClick={() => {chat.currentUser === "buyer" ? navigate(`/product/${chat.productId}`) : '' }}>
           <div className="text-md font-semibold text-gray-800">{chat.productName}</div>
           <div className="text-sm text-gray-600 font-medium">{chat.productPrice == 0 ? 'Don' : `${chat.productPrice}€`}</div>
         </div>
-        {chat.productStatus && (
-          <BuyingButton productId={chat.productId} />
-        )}
+        <div className='w-1/4'>
+          {chat.productStatus && chat.currentUser === "buyer" && (
+            <BuyingButton productId={chat.productId} />
+          )}
+        </div>
+        
       </div>
 
       <div className="flex-1 overflow-y-auto p-4 bg-gray-100 flex flex-col space-y-3"> {/* Utilise space-y pour l'espacement */}

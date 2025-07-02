@@ -58,21 +58,13 @@ const Profile = () => {
       </div>
 
       {/* Grille d'actions rapides */}
-      <div className="p-4 grid grid-cols-3 gap-4">
+      <div className="p-4 grid grid-cols-2 gap-4">
         <Link
           to="/favorite"
           className="flex flex-col items-center bg-white p-3 rounded-lg shadow-sm hover:bg-gray-50 transition-colors"
         >
           <Heart className="w-6 h-6 text-red-500 mb-2" />
           <p className="text-sm text-gray-700">Favoris</p>
-        </Link>
-
-        <Link
-          to="/wallet"
-          className="flex flex-col items-center bg-white p-3 rounded-lg shadow-sm hover:bg-gray-50 transition-colors"
-        >
-          <CreditCard className="w-6 h-6 text-blue-500 mb-2" />
-          <p className="text-sm text-gray-700">Wallet</p>
         </Link>
 
         <Link
